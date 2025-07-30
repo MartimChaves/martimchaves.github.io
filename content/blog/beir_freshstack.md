@@ -1,10 +1,10 @@
 +++
-title = "BEIR vs FreshStack"
-date = "2025-07-29T23:46:13Z"
-description = "Some quick notes on BEIR and FreshStack"
+title = "BEIR and FreshStack"
+date = "2025-01-30T11:22:13Z"
+description = ""
 draft = false
 
-tags = ["RAG"]
+tags = ["LLM", "IR"]
 +++
 
 ### BEIR
