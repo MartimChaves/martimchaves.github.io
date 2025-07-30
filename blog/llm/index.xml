@@ -1,2 +1,46 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LLM on low throughput thought stream</title><link>https://martimchaves.github.io/blog/llm/</link><description>Recent content in LLM on low throughput thought stream</description><generator>Hugo</generator><language>en-US</language><copyright>Copyright © 2025, Martim Chaves.</copyright><lastBuildDate>Thu, 30 Jan 2025 11:22:13 +0000</lastBuildDate><atom:link href="https://martimchaves.github.io/blog/llm/index.xml" rel="self" type="application/rss+xml"/><item><title>uncommon is an uncommon word - or a short intro to tokenization</title><link>https://martimchaves.github.io/uncommon-is-an-uncommon-word-or-a-short-intro-to-tokenization/</link><pubDate>Thu, 30 Jan 2025 11:22:13 +0000</pubDate><guid>https://martimchaves.github.io/uncommon-is-an-uncommon-word-or-a-short-intro-to-tokenization/</guid><description>&lt;p>did you know that &amp;ldquo;uncommon&amp;rdquo; is an uncommon word? we can arrive at this conclusion from tokenizers! creating a tokenizer is the first step towards building a large language model (LLM). tokenizers create tokens that can, ideally, represent the smallest units of meaning in language. for example, the word &amp;ldquo;influx&amp;rdquo; can be broken down into two tokens, &amp;ldquo;in&amp;rdquo; and &amp;ldquo;flux&amp;rdquo;.&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LLM on low throughput thought stream</title><link>https://martimchaves.github.io/blog/llm/</link><description>Recent content in LLM on low throughput thought stream</description><generator>Hugo</generator><language>en-US</language><copyright>Copyright © 2025, Martim Chaves.</copyright><lastBuildDate>Thu, 30 Jan 2025 11:22:13 +0000</lastBuildDate><atom:link href="https://martimchaves.github.io/blog/llm/index.xml" rel="self" type="application/rss+xml"/><item><title>BEIR and FreshStack</title><link>https://martimchaves.github.io/beir-and-freshstack/</link><pubDate>Thu, 30 Jan 2025 11:22:13 +0000</pubDate><guid>https://martimchaves.github.io/beir-and-freshstack/</guid><description>&lt;h3 id="beir">BEIR&lt;/h3>
+&lt;ul>
+&lt;li>The BEIR benchmark (Benchmarking Information Retrieval) is a collection of 19 datasets. Each dataset tests information retrieval for a specific task (question answering, fact-checking, &amp;hellip;).&lt;/li>
+&lt;li>It was supposedly a zero-shot benchmark - models wouldn&amp;rsquo;t use BEIR to train, so their results on BEIR would be more reliable.&lt;/li>
+&lt;li>But nowadays, that doesn&amp;rsquo;t really happen - after all, there are some private models, and even with open models, you can, indirectly, tune for a high BEIR score (i.e. keep choosing the best performing strategies for BEIR and improve those).&lt;/li>
+&lt;li>The scoring algorithm checks if the top 10 retrieved documents are, in order, the best document to answer the query.
+&lt;ul>
+&lt;li>The algo is called nDCG@10 (Normalized Discounted Cumulative Gain at 10). How it works:
+&lt;ul>
+&lt;li>DCG@10 = sum for positions 1 to 10:
+&lt;ul>
+&lt;li>sum relevance of i / log⁡2(i+1) for i in top 10 retrieved documents;&lt;/li>
+&lt;li>e.g. if ranking is:
+&lt;ul>
+&lt;li>Doc A (rel = 2) at pos 1,&lt;/li>
+&lt;li>Doc B (rel = 1) at pos 2,&lt;/li>
+&lt;li>others zero:
+&lt;ul>
+&lt;li>DCG = 2 / log₂(2) + 1 / log₂(3) ≈ 2 / 1 + 1 / 1.585 ≈ 2 + 0.63 = 2.63&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>IDCG@10 = the ideal (best possible) DCG using perfect ordering by relevance. If only those two relevant docs, same order gives IDCG ≈ 2.63.&lt;/li>
+&lt;li>nDCG@10 = DCG@10 / IDCG@10. In this case: 2.63 / 2.63 = 1.0 (perfect score).&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="freshstack">FreshStack&lt;/h3>
+&lt;p>FreshStack was created as a framework to create tailored benchmarks for RAG. It works by:&lt;/p></description></item><item><title>Promptriever - instructions-aware IR</title><link>https://martimchaves.github.io/promptriever-instructions-aware-ir/</link><pubDate>Thu, 30 Jan 2025 11:22:13 +0000</pubDate><guid>https://martimchaves.github.io/promptriever-instructions-aware-ir/</guid><description>&lt;p>Promptriever is an encoding transformer (aka like regular LLM) that has been finetuned to create embeddings that learn instructions for queries used in IR.&lt;/p>
+&lt;p>The creators of promptriever started with a dataset of pairs of (query, relevant document). From these pairs, they created triplets with a positive instruction (i.e. an instruction that the relevant document respected) and a negative instruction (an instruction that the document didn&amp;rsquo;t respect). Then they finetuned the model to bring the embedding of the [query+positive instruction] closer to the embedding of the relevant document, and the opposite for the negative instruction. This is how they created this model that respects instructions when retrieving documents.&lt;/p></description></item><item><title>PyLate and late interaction models</title><link>https://martimchaves.github.io/pylate-and-late-interaction-models/</link><pubDate>Thu, 30 Jan 2025 11:22:13 +0000</pubDate><guid>https://martimchaves.github.io/pylate-and-late-interaction-models/</guid><description>&lt;p>Late interaction models basically means a model that doesn&amp;rsquo;t compress several embedding vectors into a single vector. So instead of having just one embedding vector for a bit of text, you have N.&lt;/p>
+&lt;p>This way, when comparing between a query and a document, less context is missed/destroyed. This has shown great results. This preserves context and nuance, improving retrieval accuracy.&lt;/p>
+&lt;p>The major downside is that it&amp;rsquo;s compute intensive - after all instead of searching for just one embedding vector, we have to compare between groups of N embedding vectors.&lt;/p></description></item><item><title>Rank1 - IR with reasoning</title><link>https://martimchaves.github.io/rank1-ir-with-reasoning/</link><pubDate>Thu, 30 Jan 2025 11:22:13 +0000</pubDate><guid>https://martimchaves.github.io/rank1-ir-with-reasoning/</guid><description>&lt;ul>
+&lt;li>RANK1 is a &lt;strong>reranker&lt;/strong>. It takes in a query and a document and determines the value of the document to answer the query.&lt;/li>
+&lt;li>It has the architecture of a regular LLM, but it was finetuned with the chain of thought trace of larger reasoning models - DeepSeek R1.&lt;/li>
+&lt;li>So, even though it&amp;rsquo;s doing next token prediction, it can, in a way, reason about how the document fetched is valuable to answer the query. This makes it more available to capture nuance in the instructions of the query.&lt;/li>
+&lt;li>After the chain of thought, the model predicts, as a next token, the score, from 0 to 1, of how relevant the document is to the query.&lt;/li>
+&lt;/ul>
+&lt;p>TBC&amp;hellip;&lt;/p></description></item><item><title>thoughts on representations of data</title><link>https://martimchaves.github.io/thoughts-on-representations-of-data/</link><pubDate>Thu, 30 Jan 2025 11:22:13 +0000</pubDate><guid>https://martimchaves.github.io/thoughts-on-representations-of-data/</guid><description>&lt;p>Embeddings are ways to represent data. We can have many different embeddings, from many different embedding strategies.&lt;/p>
+&lt;p>The art of RAG may be seen instead as which representation to use, for which query - perhaps even decomposing queries, and using different representations for each sub-query.&lt;/p>
+&lt;p>TBC&amp;hellip;&lt;/p></description></item><item><title>uncommon is an uncommon word - or a short intro to tokenization</title><link>https://martimchaves.github.io/uncommon-is-an-uncommon-word-or-a-short-intro-to-tokenization/</link><pubDate>Thu, 30 Jan 2025 11:22:13 +0000</pubDate><guid>https://martimchaves.github.io/uncommon-is-an-uncommon-word-or-a-short-intro-to-tokenization/</guid><description>&lt;p>did you know that &amp;ldquo;uncommon&amp;rdquo; is an uncommon word? we can arrive at this conclusion from tokenizers! creating a tokenizer is the first step towards building a large language model (LLM). tokenizers create tokens that can, ideally, represent the smallest units of meaning in language. for example, the word &amp;ldquo;influx&amp;rdquo; can be broken down into two tokens, &amp;ldquo;in&amp;rdquo; and &amp;ldquo;flux&amp;rdquo;.&lt;/p>
 &lt;p>the &amp;ldquo;in&amp;rdquo; token carries plenty of meaning, being used in the formation of other words, such as &amp;ldquo;incoming&amp;rdquo; for things that are coming in, into us. and &amp;ldquo;flux&amp;rdquo; also encapsulates an idea, flow, movement. but tokens aren&amp;rsquo;t always sub-representations of words. tokens can also be entire words, like &amp;ldquo;hello&amp;rdquo;. the principal idea is that tokens are the lego blocks of language, used to construct text with meaning.&lt;/p></description></item></channel></rss>
