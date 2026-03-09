@@ -2,7 +2,7 @@ import { Box, Flex, Link, Text } from '@chakra-ui/react'
 
 export default function Footer() {
   return (
-    <Box as="footer" mt={20} py={8} borderTop="1px solid" borderColor="slate.200">
+    <Box as="footer" mt={20} py={8} borderTop="1px solid" borderColor="page.border">
       <Flex
         maxW="760px"
         mx="auto"
@@ -12,14 +12,14 @@ export default function Footer() {
         flexWrap="wrap"
         gap={3}
       >
-        <Text fontSize="sm" color="slate.500">
+        <Text fontSize="sm" color="page.textSecondary">
           © {new Date().getFullYear()} Martim Chaves
         </Text>
         <Flex gap={5}>
-          <Link href="https://github.com/MartimChaves" isExternal fontSize="sm" color="slate.500" _hover={{ color: 'slate.900' }}>
+          <Link href="https://github.com/MartimChaves" isExternal fontSize="sm" color="page.textSecondary" _hover={{ color: 'page.text' }}>
             GitHub
           </Link>
-          <Link href="mailto:mgrc99@gmail.com" fontSize="sm" color="slate.500" _hover={{ color: 'slate.900' }}>
+          <Link href="mailto:martim.chaves@pm.me" fontSize="sm" color="page.textSecondary" _hover={{ color: 'page.text' }}>
             Email
           </Link>
         </Flex>

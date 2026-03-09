@@ -15,6 +15,7 @@ export interface Post {
   description: string
   draft: boolean
   tags: string[]
+  type: 'tech' | 'personal'
   content: string
 }
 
@@ -60,6 +61,7 @@ function makePost(raw: string): Post {
     description: (meta.description as string) ?? '',
     draft: (meta.draft as boolean) ?? false,
     tags: (meta.tags as string[]) ?? [],
+    type: ((meta.type as string) === 'personal' ? 'personal' : 'tech'),
     content,
   }
 }
@@ -77,6 +79,9 @@ export const ALL_POSTS: Post[] = [
 ]
   .filter((p) => !p.draft)
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+export const TECH_POSTS = ALL_POSTS.filter((p) => p.type === 'tech')
+export const PERSONAL_POSTS = ALL_POSTS.filter((p) => p.type === 'personal')
 
 export function getPostBySlug(slug: string): Post | undefined {
   return ALL_POSTS.find((p) => p.slug === slug)

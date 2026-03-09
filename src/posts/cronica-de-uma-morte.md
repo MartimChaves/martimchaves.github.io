@@ -5,6 +5,7 @@ description: "um dos melhores livros que já li"
 draft: false
 tags: ["livros", "pt"]
 slug: "cronica-de-uma-morte"
+type: "personal"
 ---
 
 compreender aquelas velhas memórias que se misturam pelos tempos, aquelas que nos acompanham, sempre no fundo da nossa mente, sorrateiramente a remoer e a mexer, é um passatempo carregado de humanidade e talvez mesmo imprescindível como um remédio santo para as grandes dúvidas. como se a compreensão de alguns eventos esclarecesse o mistério de estar aqui, das coisas que nós pessoas fazemos, e o porquê de as fazermos. mas talvez a resposta a essas memórias seja mesmo que não há razão para as explicar, e que nós não temos nada a fazer senão deixá-las estar, como um lento borbulhar de uma água quase a ferver.

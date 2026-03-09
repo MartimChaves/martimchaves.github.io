@@ -1,82 +1,54 @@
 ---
 title: "Model Context Protocol (MCP)"
 date: "2025-08-19"
-description: ""
+description: "How LLMs went from hoping for clean JSON to a proper standard for calling tools"
 draft: false
 tags: ["LLM", "MCP"]
 slug: "mcp"
+type: "tech"
 ---
 
-MCP stands for Model Context Protocol. It's a protocol that has been developed to standardize tool use.
+MCP stands for Model Context Protocol - a standard that was developed to make LLM tool use more reliable.
 
-Some folks started using LLMs to produce json that could be parsed to run a function - i.e. a tool. Say you built a function that looks like this:
+### The problem it solves
+
+People started using LLMs to produce JSON that could be parsed and used to call a function. Say you have this:
 
 ```python
 def hello_greeting(name: str):
     print(f"Hello, {name}!")
 ```
 
-You would tell your LLM, something like:
-```
-Assistant: If you want to run a greeting tool, you can run the following tool:
-Tool name: 'hello_greeting'
-Arguments:
-  - name: string
-```
-
-And then, you hoped that, if there ever was a need to run this tool, the LLM would output something like this:
+You'd tell the LLM about the tool in your system prompt, then hope that whenever it needed to use it, it would output something like:
 
 ```json
-{'tool_name': 'hello_greeting', 'arguments':{'name':'world'}}
+{ "tool_name": "hello_greeting", "arguments": { "name": "world" } }
 ```
 
-You would parse this, and run the hello_greeting function - either passing the output of the function back to the LLM or just printing it out.
+You'd parse that and call the function. This worked! But it was fragile. You were relying on the LLM to always produce valid JSON, use the right field names, and remember every tool you'd described. Any variation and your parser would break.
 
-This worked! But it was a bit fragile. You're counting on the LLM to output clean json and to remember tools.
+### How MCP fixes this
 
-This was why MCP was invented. MCP requires a client (i.e. the streaming LLM) and a host server.
-
-The streaming LLM has been rigorously trained to always output text following a format that explains what the words being output are part of - just a bit of text, a tool_call, or a tool_result. So the training data looks like this:
+MCP introduces a proper client-server architecture. The LLM (client) is trained to emit structured messages that explicitly label what they are - plain text, a tool call, or a tool result:
 
 ```
-{ "type": "text", "text": "heya call the greeting tool to greet the world" }
-{ "type": "text", "text": "Hey, how are you? Yes, I'll call the greeting tool!" }
+{ "type": "text", "text": "Sure, I'll call the greeting tool." }
 { "type": "tool_use", "name": "hello_greeting", "input": { "name": "World" } }
-{ "type": "tool_result", "text": "Hello, world!" }
-{ "type": "text", "text": "Hello, world!" }
+{ "type": "tool_result", "text": "Hello, World!" }
 ```
 
-Now, if an LLM wants to do a tool call, it will stream out something like this:
-```
-{ "type": "tool_use", "name": "hello_greeting", "input": { "name": "World" } }
-```
+When the LLM emits a `tool_use` message, it gets sent to an MCP server rather than your ad-hoc parser. The server validates the call - does this tool exist? are the arguments correct? - and if everything checks out, it executes the call and returns the result in a standard format.
 
-Instead of this being just simply validated by a simple data model, the host server runs several checks to make sure that the function to run this tool exists, the arguments are right, and if all checks out, returns a nicely formatted json tool call, something like:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 42,
-  "method": "callTool",
-  "params": {
-    "name": "hello_greeting",
-    "arguments": {
-      "name": "World"
-    }
-  }
-}
-```
-
-This host server is another layer that helps deal with the non-determinism associated with LLMs. This way we guarantee that tool calls are made in a more robust way. If, for example, there's some argument missing or the tool is not available, that message can be returned back to the LLM so that it can try again:
+If something is wrong, the server sends back a clear error:
 
 ```
-{ "type": "tool_use", "name": "hello_greeting", "input": { "greeting_name": "World" } }
+{ "type": "tool_error", "text": "greeting_name is not an argument to hello_greeting. Available arguments: name" }
 ```
 
-beep beep, processing... woops looks like there's no greeting_name argument!
+The LLM sees this, understands the mistake, and tries again with the right arguments.
 
-```
-{ "type": "tool_error", "text": "greeting_name is not an argument to the hello_greeting tool. Available arguments: name" }
-```
+### Why this matters
 
-And that's why MCP was developed - to standardize a robust way to allow LLMs to interact with tools.
+The MCP server adds a validation layer between the LLM's non-deterministic output and your actual functions. Instead of hoping the LLM gets it right every time, you now have structured error handling and a defined contract. It also means tool definitions are portable - any MCP-compatible client can connect to any MCP server without custom integration work.
+
+In short: MCP turns "hope the LLM produces valid JSON" into a proper, robust protocol.

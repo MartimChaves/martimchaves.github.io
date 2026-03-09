@@ -1,37 +1,44 @@
 ---
 title: "BEIR and FreshStack"
 date: "2025-01-30"
-description: ""
+description: "Two benchmarks for evaluating information retrieval systems"
 draft: false
 tags: ["LLM", "IR"]
 slug: "beir-freshstack"
+type: "tech"
 ---
 
+When building retrieval systems, you need a way to measure how good they are. That's what benchmarks are for.
+
 ### BEIR
-* The BEIR benchmark (Benchmarking Information Retrieval) is a collection of 19 datasets. Each dataset tests information retrieval for a specific task (question answering, fact-checking, ...).
-* It was supposedly a zero-shot benchmark - models wouldn't use BEIR to train, so their results on BEIR would be more reliable.
-* But nowadays, that doesn't really happen - after all, there are some private models, and even with open models, you can, indirectly, tune for a high BEIR score (i.e. keep choosing the best performing strategies for BEIR and improve those).
-* The scoring algorithm checks if the top 10 retrieved documents are, in order, the best document to answer the query.
-	* The algo is called nDCG@10 (Normalized Discounted Cumulative Gain at 10). How it works:
-		* DCG@10 = sum for positions 1 to 10:
-			* sum relevance of i / log⁡2(i+1) for i in top 10 retrieved documents;
-			* e.g. if ranking is:
-				* Doc A (rel = 2) at pos 1,
-				* Doc B (rel = 1) at pos 2,
-				* others zero:
-					* DCG = 2 / log₂(2) + 1 / log₂(3) ≈ 2 / 1 + 1 / 1.585 ≈ 2 + 0.63 = 2.63
-		* IDCG@10 = the ideal (best possible) DCG using perfect ordering by relevance. If only those two relevant docs, same order gives IDCG ≈ 2.63.
-		* nDCG@10 = DCG@10 / IDCG@10. In this case: 2.63 / 2.63 = 1.0 (perfect score).
+
+BEIR (Benchmarking Information Retrieval) is a collection of 19 datasets covering different retrieval tasks - question answering, fact-checking, citation recommendation, and more. The idea is simple: run your model across all 19, compare the scores, and get a sense of how well it generalises.
+
+The metric used is **nDCG@10** (Normalized Discounted Cumulative Gain at 10). It measures the quality of the top 10 results returned. The intuition:
+
+- A relevant document at position 1 is worth more than the same document at position 5. Earlier is better.
+- You sum scores across all 10 positions, where each position's score is `relevance / log₂(position + 1)`. Position 1 gives full credit, position 2 gives ~63%, position 3 ~50%, and so on.
+- You then divide by the score of the *perfect* ranking, bringing the final number between 0 and 1.
+
+So nDCG@10 = 1.0 means your top 10 is in perfect order. nDCG@10 = 0.5 means your ranking is roughly half as good as it could be.
+
+BEIR was originally designed as a *zero-shot* benchmark - models weren't meant to train on it, which was supposed to make the scores more trustworthy. In practice that's hard to guarantee today, especially with closed models. You can also indirectly optimise for BEIR by repeatedly picking the strategies that score best on it. So headline numbers should be taken with a grain of salt.
 
 ### FreshStack
 
-FreshStack was created as a framework to create tailored benchmarks for RAG. It works by:
-* Getting queries and answers from stackoverflow (selected recent queries and answers from niche topics)
-* Transforming each answer into a set of atomic facts - the nuggets
-* Getting a corpus of documents from github using several methods that are relevant to those queries
-* Use LLM-as-a-judge to determine if the documents retrieved were relevant to support the nuggets
+FreshStack is a framework for building *custom* RAG benchmarks. The motivation: BEIR's datasets are static and increasingly familiar to models. FreshStack creates fresh benchmarks from recent StackOverflow threads and GitHub repositories, making it much harder to game.
 
-The three metrics introduced to check the quality of FreshStack pipeline results are:
-* Diversity (alpha-nDCG@10): Prioritize retrieving as little documents as possible. Penalizes the retrieval of multiple documents that support the same fact (measure redundancy).
-* Grounding (Coverage@20): Make sure that all nuggets are supported. Measures the percentage of unique nuggets supported by the retrieved documents, directly evaluating evidence collection.
-* Relevance (Recall@50): Check whether the retrieved documents are on-topic - % of relevant documents in top 50 retrieved documents.
+The pipeline:
+
+1. Pick recent StackOverflow questions and answers on niche topics.
+2. Break each answer into atomic facts - called *nuggets*.
+3. Collect a corpus of relevant documents from GitHub.
+4. Use an LLM as a judge to score how well retrieved documents support each nugget.
+
+Three metrics come out of this:
+
+- **Diversity** (alpha-nDCG@10): rewards retrieving fewer, non-redundant documents. Penalises retrieving multiple documents that all say the same thing.
+- **Grounding** (Coverage@20): measures whether the top 20 results collectively cover all nuggets. Are all the facts accounted for?
+- **Relevance** (Recall@50): checks what fraction of the top 50 results are actually on-topic.
+
+Together these give a more complete picture than a single score - a system can be accurate but redundant, or relevant but missing key facts.

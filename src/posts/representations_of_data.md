@@ -2,9 +2,10 @@
 title: "thoughts on representations of data"
 date: "2025-01-30"
 description: ""
-draft: false
+draft: true
 tags: ["LLM", "IR"]
 slug: "representations-of-data"
+type: "tech"
 ---
 
 Embeddings are ways to represent data. We can have many different embeddings, from many different embedding strategies.
