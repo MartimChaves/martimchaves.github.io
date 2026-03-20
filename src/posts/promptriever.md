@@ -5,7 +5,7 @@ description: "teaching a retrieval model to follow instructions, not just match 
 draft: false
 tags: ["LLM", "IR"]
 slug: "promptriever"
-type: "tech"
+type: "notes"
 ---
 
 Standard retrieval models find documents that are *relevant* to a query. But relevance depends on context. "Tell me about Paris" means something different depending on whether you want a travel guide, a history article, or a French grammar lesson.

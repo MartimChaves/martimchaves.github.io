@@ -5,7 +5,7 @@ description: "what happens when you give a reranker the ability to think before 
 draft: false
 tags: ["LLM", "IR"]
 slug: "rank1"
-type: "tech"
+type: "notes"
 ---
 
 Retrieval systems typically work in two stages. First, a fast model retrieves a large candidate set (hundreds of documents). Then a *reranker* re-scores those candidates to find the best ones. Rerankers are slower but more precise - they can look at the query and document together, not just in isolation.

@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Link, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Text } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
-import { PERSONAL_POSTS, TECH_POSTS } from '../utils/posts'
+import { NOTES_POSTS, PERSONAL_POSTS, TECH_POSTS } from '../utils/posts'
 import type { Post } from '../utils/posts'
 
 function formatDate(dateStr: string): string {
@@ -71,7 +71,7 @@ export default function Blog() {
       </Box>
       <Tabs variant="unstyled">
         <TabList mb={8} borderBottom="1px solid" borderColor="page.border" gap={0}>
-          {(['Technical', 'Personal'] as const).map((label) => (
+          {(['Technical', 'Notes', 'Personal'] as const).map((label) => (
             <Tab
               key={label}
               pb={3}
@@ -94,6 +94,12 @@ export default function Blog() {
               Notes on LLMs, information retrieval, and building AI systems.
             </Text>
             <PostList posts={TECH_POSTS} />
+          </TabPanel>
+          <TabPanel p={0}>
+            <Text color="page.textSecondary" fontSize="sm" mb={6}>
+              Short notes on papers, tools, and ideas.
+            </Text>
+            <PostList posts={NOTES_POSTS} />
           </TabPanel>
           <TabPanel p={0}>
             <Text color="page.textSecondary" fontSize="sm" mb={6}>

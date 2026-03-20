@@ -1,0 +1,11 @@
+services:
+  mcp-hello:
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-mistral}
+      - LLM_MODEL=${LLM_MODEL:-}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}

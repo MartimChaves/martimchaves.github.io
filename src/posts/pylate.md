@@ -5,7 +5,7 @@ description: "why one embedding vector per document isn't always enough"
 draft: false
 tags: ["LLM", "IR"]
 slug: "pylate"
-type: "tech"
+type: "notes"
 ---
 
 Most retrieval models work like this: encode your query into a single vector, encode each document into a single vector, then find the documents whose vectors are closest to the query vector. Fast and simple.

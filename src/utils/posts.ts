@@ -15,7 +15,7 @@ export interface Post {
   description: string
   draft: boolean
   tags: string[]
-  type: 'tech' | 'personal'
+  type: 'tech' | 'personal' | 'notes'
   content: string
 }
 
@@ -61,7 +61,7 @@ function makePost(raw: string): Post {
     description: (meta.description as string) ?? '',
     draft: (meta.draft as boolean) ?? false,
     tags: (meta.tags as string[]) ?? [],
-    type: ((meta.type as string) === 'personal' ? 'personal' : 'tech'),
+    type: ((meta.type as string) === 'personal' ? 'personal' : (meta.type as string) === 'notes' ? 'notes' : 'tech'),
     content,
   }
 }
@@ -82,6 +82,7 @@ export const ALL_POSTS: Post[] = [
 
 export const TECH_POSTS = ALL_POSTS.filter((p) => p.type === 'tech')
 export const PERSONAL_POSTS = ALL_POSTS.filter((p) => p.type === 'personal')
+export const NOTES_POSTS = ALL_POSTS.filter((p) => p.type === 'notes')
 
 export function getPostBySlug(slug: string): Post | undefined {
   return ALL_POSTS.find((p) => p.slug === slug)

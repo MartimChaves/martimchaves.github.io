@@ -5,10 +5,10 @@ description: "Two benchmarks for evaluating information retrieval systems"
 draft: false
 tags: ["LLM", "IR"]
 slug: "beir-freshstack"
-type: "tech"
+type: "notes"
 ---
 
-When building retrieval systems, you need a way to measure how good they are. That's what benchmarks are for.
+When building retrieval systems, you need a way to measure how good they are. That's what benchmarks are for!
 
 ### BEIR
 
