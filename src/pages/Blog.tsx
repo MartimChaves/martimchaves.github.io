@@ -21,23 +21,43 @@ function PostList({ posts }: { posts: Post[] }) {
         >
           <Flex justify="space-between" align="flex-start" gap={4} flexWrap="wrap">
             <Box flex="1" minW="0">
-              <Link
-                as={RouterLink}
-                to={`/blog/${post.slug}`}
-                textDecoration="none"
-                _hover={{ textDecoration: 'none' }}
-              >
-                <Text
-                  fontWeight="600"
-                  fontSize="md"
-                  color="page.text"
-                  mb={1}
-                  _hover={{ color: 'page.brand' }}
-                  transition="color 0.15s"
+              {post.externalUrl ? (
+                <Link
+                  href={post.externalUrl}
+                  isExternal
+                  textDecoration="none"
+                  _hover={{ textDecoration: 'none' }}
                 >
-                  {post.title}
-                </Text>
-              </Link>
+                  <Text
+                    fontWeight="600"
+                    fontSize="md"
+                    color="page.text"
+                    mb={1}
+                    _hover={{ color: 'page.brand' }}
+                    transition="color 0.15s"
+                  >
+                    {post.title} ↗
+                  </Text>
+                </Link>
+              ) : (
+                <Link
+                  as={RouterLink}
+                  to={`/blog/${post.slug}`}
+                  textDecoration="none"
+                  _hover={{ textDecoration: 'none' }}
+                >
+                  <Text
+                    fontWeight="600"
+                    fontSize="md"
+                    color="page.text"
+                    mb={1}
+                    _hover={{ color: 'page.brand' }}
+                    transition="color 0.15s"
+                  >
+                    {post.title}
+                  </Text>
+                </Link>
+              )}
               {post.description && (
                 <Text fontSize="sm" color="page.textSecondary" mb={2}>
                   {post.description}

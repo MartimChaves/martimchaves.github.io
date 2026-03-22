@@ -100,44 +100,50 @@ export default function Home() {
           </Link>
         </Flex>
         <Box>
-          {recentPosts.map((post) => (
-            <Flex
-              key={post.slug}
-              as={RouterLink}
-              to={`/blog/${post.slug}`}
-              justify="space-between"
-              align="baseline"
-              py={4}
-              borderBottom="1px solid"
-              borderColor="page.borderSubtle"
-              gap={4}
-              textDecoration="none"
-              _hover={{ '& .post-title': { color: 'page.brand' } }}
-            >
-              <Box flex="1" minW="0">
-                <Text
-                  className="post-title"
-                  fontWeight="500"
-                  color="page.text"
-                  fontSize="sm"
-                  transition="color 0.15s"
-                  noOfLines={1}
-                >
-                  {post.title}
+          {recentPosts.map((post) => {
+            const inner = (
+              <Flex
+                justify="space-between"
+                align="baseline"
+                py={4}
+                borderBottom="1px solid"
+                borderColor="page.borderSubtle"
+                gap={4}
+              >
+                <Box flex="1" minW="0">
+                  <Text
+                    className="post-title"
+                    fontWeight="500"
+                    color="page.text"
+                    fontSize="sm"
+                    transition="color 0.15s"
+                    noOfLines={1}
+                  >
+                    {post.title}{post.externalUrl ? ' ↗' : ''}
+                  </Text>
+                  <Flex gap={1.5} mt={1} flexWrap="wrap">
+                    {post.tags.map((tag) => (
+                      <Tag key={tag} size="sm" bg="page.tagBg" color="page.tagColor" border="1px solid" borderColor="page.tagBorder" fontSize="xs">
+                        {tag}
+                      </Tag>
+                    ))}
+                  </Flex>
+                </Box>
+                <Text fontSize="xs" color="page.textMuted" flexShrink={0}>
+                  {formatDate(post.date)}
                 </Text>
-                <Flex gap={1.5} mt={1} flexWrap="wrap">
-                  {post.tags.map((tag) => (
-                    <Tag key={tag} size="sm" bg="page.tagBg" color="page.tagColor" border="1px solid" borderColor="page.tagBorder" fontSize="xs">
-                      {tag}
-                    </Tag>
-                  ))}
-                </Flex>
-              </Box>
-              <Text fontSize="xs" color="page.textMuted" flexShrink={0}>
-                {formatDate(post.date)}
-              </Text>
-            </Flex>
-          ))}
+              </Flex>
+            )
+            return post.externalUrl ? (
+              <Link key={post.slug} href={post.externalUrl} isExternal textDecoration="none" _hover={{ textDecoration: 'none', '& .post-title': { color: 'page.brand' } }}>
+                {inner}
+              </Link>
+            ) : (
+              <Link key={post.slug} as={RouterLink} to={`/blog/${post.slug}`} textDecoration="none" _hover={{ textDecoration: 'none', '& .post-title': { color: 'page.brand' } }}>
+                {inner}
+              </Link>
+            )
+          })}
         </Box>
       </Box>
     </Box>

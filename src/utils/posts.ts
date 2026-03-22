@@ -17,6 +17,7 @@ export interface Post {
   tags: string[]
   type: 'tech' | 'personal' | 'notes'
   content: string
+  externalUrl?: string
 }
 
 function parseFrontmatter(raw: string): { meta: Record<string, unknown>; content: string } {
@@ -66,6 +67,31 @@ function makePost(raw: string): Post {
   }
 }
 
+const EXTERNAL_POSTS: Post[] = [
+  {
+    slug: 'glcms-ml-arsenal',
+    title: 'GLCMs: A Great Tool for Your ML Arsenal',
+    date: '2022-01-21',
+    description: 'How Gray-Level Co-occurrence Matrices can boost your ML pipeline',
+    draft: false,
+    tags: ['ML', 'Computer Vision'],
+    type: 'tech',
+    content: '',
+    externalUrl: 'https://medium.com/data-science/glcms-a-great-tool-for-your-ml-arsenal-7a59f1e45b65',
+  },
+  {
+    slug: 'image-classification-web-app',
+    title: 'How to Deploy a Fast and Scalable Image Classification Web App',
+    date: '2023-02-06',
+    description: 'Building and deploying an image classification app from scratch',
+    draft: false,
+    tags: ['ML', 'Deployment'],
+    type: 'tech',
+    content: '',
+    externalUrl: 'https://medium.com/@mgrc99/how-to-deploy-a-fast-and-scalable-image-classification-web-app-538b1f43fb22',
+  },
+]
+
 export const ALL_POSTS: Post[] = [
   makePost(beirContent),
   makePost(chronicaContent),
@@ -76,6 +102,7 @@ export const ALL_POSTS: Post[] = [
   makePost(pylateContent),
   makePost(rank1Content),
   makePost(representationsContent),
+  ...EXTERNAL_POSTS,
 ]
   .filter((p) => !p.draft)
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
