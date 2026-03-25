@@ -7,6 +7,7 @@ import promptrieverContent from '../posts/promptriever.md?raw'
 import pylateContent from '../posts/pylate.md?raw'
 import rank1Content from '../posts/RANK1.md?raw'
 import representationsContent from '../posts/representations_of_data.md?raw'
+import smolInvoiceContent from '../posts/smol-invoice-agent.md?raw'
 
 export interface Post {
   slug: string
@@ -102,6 +103,7 @@ export const ALL_POSTS: Post[] = [
   makePost(pylateContent),
   makePost(rank1Content),
   makePost(representationsContent),
+  makePost(smolInvoiceContent),
   ...EXTERNAL_POSTS,
 ]
   .filter((p) => !p.draft)
