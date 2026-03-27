@@ -89,6 +89,88 @@ export default function Home() {
 
       <Divider borderColor="page.border" mb={12} />
 
+      {/* Portfolio */}
+      <Box mb={14}>
+        <Text fontSize="xs" fontWeight="600" letterSpacing="0.08em" color="page.textMuted" textTransform="uppercase" mb={6}>
+          Projects
+        </Text>
+        <Flex direction="column" gap={5}>
+          {[
+            {
+              name: 'ragbandit-core',
+              description: 'A Python library for building RAG pipelines. Handles PDF ingestion with OCR, multiple chunking strategies, and embeddings from providers like Mistral, OpenAI, and Cohere.',
+              tech: ['Python', 'Mistral', 'OpenAI', 'Cohere', 'Pydantic'],
+              links: [{ label: 'GitHub', href: 'https://github.com/MartimChaves/ragbandit-core' }],
+            },
+            {
+              name: 'ragbandit',
+              description: 'A full-stack web app for building and managing document processing pipelines. Includes an interactive pipeline builder, dataset management, semantic search, and a REST API for programmatic access.',
+              tech: ['FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'pgvector', 'Celery', 'Redis', 'Docker'],
+              links: [],
+            },
+            {
+              name: 'smol invoice agent',
+              description: 'An AI agent that processes PDF invoices using Claude. Extracts and validates invoice data, normalizes vendor names, categorizes line items, detects anomalies, and learns from user corrections over time. Exposes a REST API for programmatic access.',
+              tech: ['FastAPI', 'React', 'TypeScript', 'Anthropic Claude', 'PostgreSQL', 'Celery', 'Stripe'],
+              links: [],
+            },
+          ].map((project) => (
+            <Box
+              key={project.name}
+              p={5}
+              bg="page.surface"
+              border="1px solid"
+              borderColor="page.border"
+              borderRadius="lg"
+            >
+              <Text fontWeight="600" fontSize="sm" color="page.text" mb={2}>
+                {project.name}
+              </Text>
+              <Text fontSize="sm" color="page.textSecondary" lineHeight="1.7" mb={3}>
+                {project.description}
+              </Text>
+              <Flex gap={2} flexWrap="wrap" mb={project.links.length > 0 ? 3 : 0}>
+                {project.tech.map((t) => (
+                  <Box
+                    key={t}
+                    px={2.5}
+                    py={1}
+                    bg="page.tagBg"
+                    border="1px solid"
+                    borderColor="page.tagBorder"
+                    borderRadius="md"
+                    fontSize="xs"
+                    color="page.tagColor"
+                    fontWeight="500"
+                  >
+                    {t}
+                  </Box>
+                ))}
+              </Flex>
+              {project.links.length > 0 && (
+                <Flex gap={4}>
+                  {project.links.map((link) => (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      isExternal
+                      fontSize="sm"
+                      color="page.brand"
+                      fontWeight="500"
+                      _hover={{ textDecoration: 'underline' }}
+                    >
+                      {link.label} →
+                    </Link>
+                  ))}
+                </Flex>
+              )}
+            </Box>
+          ))}
+        </Flex>
+      </Box>
+
+      <Divider borderColor="page.border" mb={12} />
+
       {/* Recent writing */}
       <Box>
         <Flex justify="space-between" align="baseline" mb={6}>
