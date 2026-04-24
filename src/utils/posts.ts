@@ -1,5 +1,6 @@
 import logisticRegressionContent from '../posts/logistic-regression.md?raw'
 import neuralNetworksContent from '../posts/neural-networks.md?raw'
+import residualsAndRnnsContent from '../posts/residuals-and-rnns.md?raw'
 import beirContent from '../posts/beir_freshstack.md?raw'
 import chronicaContent from '../posts/cronica-de-uma-morte.md?raw'
 import llmEvalsContent from '../posts/llm_evals.md?raw'
@@ -98,6 +99,7 @@ const EXTERNAL_POSTS: Post[] = [
 export const ALL_POSTS: Post[] = [
   makePost(logisticRegressionContent),
   makePost(neuralNetworksContent),
+  makePost(residualsAndRnnsContent),
   makePost(beirContent),
   makePost(chronicaContent),
   makePost(llmEvalsContent),
