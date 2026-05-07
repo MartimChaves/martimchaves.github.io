@@ -8,11 +8,38 @@ slug: "logistic-regression"
 type: "tech"
 ---
 
-This series builds a code agent from scratch. A system that reads your codebase, plans a task, writes code, runs it, and fixes what breaks. That's complex. But every piece of it traces back to simple ideas, stacked.
+Let's reinvent coding agents, like claude code, codex, and mistral vibe. We're considering a coding agent a bit of code that uses an LLM to write code, run it, and improve it. Reinventing something is a good way to understand it - I think someone said that. :)
 
-Each post is a node in a tech tree — you need this to build the next thing. This is node 1.
+This is going to be split into different posts, so that it's easier to read (and to write, mostly easier to write ah!).
 
-Before we get to code agents, before language models, before neural networks even — we need the most primitive learnable function there is: logistic regression.
+So, the beginning... I'm reminded of that youtube series where a bloke tries to do a hamburger from scratch, and he ends up building a forge and all that. This is to say that we're picking an arbitrary beginning - if we wanted to go all the way to start then that would be big bang.
+
+So, big bang - how do we reinvent that? So first, grab a hammer...
+
+```interactive-plot
+(-0.07 - 0.07*i)*exp(-i*6*t) + (-0.08 - 0.12*i)*exp(-i*5*t) + (-0.2 + 0.66*i)*exp(-i*3*t) + (-2.45 + 0.73*i)*exp(-i*t) + (5.25 + 0.93*i) + (-1.19 - 0.78*i)*exp(i*t) + (-0.6 - 0.6*i)*exp(i*2*t) + (-0.21 - 0.32*i)*exp(i*3*t) + (-0.07 + 0.24*i)*exp(i*5*t) + (-0.05 + 0.01*i)*exp(i*7*t)
+```
+Fig. 1 - Hammer time (an LLM did this btw)
+
+I'm only joking! The beginning that we're going with here, is none other than logistic regression.
+
+It all started in mid 19th century, with a gent in Belgium, Pierre Verhulst. In that time, people were worried about famine and chaos. You see, a few years before, Malthus (you might've heard of him) said that population would grow exponentially, while food supply would grow linearly. You get a loooooot of people, but only a looot of food. Then you get famine, deaths, chaos.
+
+```interactive-plot
+exp(t)
+```
+Fig. 2 - An exponential growth (exp for exponential)
+
+An exponential growth of population is saying that the babies grow up and have babies before the grandparents are gone, so the number of people keeps piling up faster and faster. From a couple, 2, you get 2 kids, total 4, which both have 2 kids, total 8, and so on.
+
+If you look at today, so far, population has indeed grown a lot, more than doubled over the last century - but the agri tech has kept up with the demand, so, generally speaking, little chaos (-ish...).
+
+But, really, Pierre and the fellows at the time were worried about population growth beyond the available food supply. And if it were today, you might say that Pierre was a bit of a techno-optimist, because he came up with a different idea...
+
+Pierre thought: if the food supply starts being insufficient, then population growth should slow down. People would see that food was tight, not have as many children, and instead of the number going to infinity (or the moon, as the fellow kids might say), it should approach a limit.
+
+So he set off to try and model that. Population would grow exponentially, but something would slow it down, as it approached a limit.
+
 
 ### What it means to learn
 

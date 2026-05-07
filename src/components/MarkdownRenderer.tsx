@@ -5,6 +5,7 @@ import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/pris
 import { Box, Code, Divider, Heading, Image, Link, ListItem, OrderedList, Table, Tbody, Td, Text, Th, Thead, Tr, UnorderedList, useColorModeValue } from '@chakra-ui/react'
 import type { Components } from 'react-markdown'
 import type { CSSProperties } from 'react'
+import InteractivePlot from './InteractivePlot'
 
 interface CodeProps {
   inline?: boolean
@@ -92,7 +93,14 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     th: ({ children }) => <Th color="page.text">{children}</Th>,
     td: ({ children }) => <Td color="page.text">{children}</Td>,
     code: ({ inline, className, children }: CodeProps) => {
-      const match = /language-(\w+)/.exec(className ?? '')
+      const match = /language-([\w-]+)/.exec(className ?? '')
+      if (!inline && match?.[1] === 'interactive-plot') {
+        return (
+          <InteractivePlot
+            defaultExpr={String(children).replace(/\n$/, '')}
+          />
+        )
+      }
       if (!inline && (match || String(children).includes('\n'))) {
         return (
           <Box my={5} fontSize="sm" borderRadius="md" overflow="hidden" border="1px solid" borderColor="page.border">
