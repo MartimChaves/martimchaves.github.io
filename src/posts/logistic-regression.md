@@ -23,7 +23,7 @@ Fig. 1 - Hammer time (an LLM did this btw)
 
 I'm only joking! The beginning that we're going with here, is none other than logistic regression.
 
-It all started in mid 19th century, with a gent in Belgium, Pierre Verhulst. In that time, people were worried about famine and chaos. You see, a few years before, Malthus (you might've heard of him) said that population would grow exponentially, while food supply would grow linearly. You get a loooooot of people, but only a looot of food. Then you get famine, deaths, chaos.
+It all started in mid 19th century, with a gent in Belgium, Pierre Verhulst. In that time, people were worried about famine and chaos. You see, a few years before, Malthus (you might've heard of him) said that population would grow exponentially, while food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, chaos.
 
 ```interactive-plot
 exp(t)
@@ -32,13 +32,13 @@ Fig. 2 - An exponential growth (exp for exponential)
 
 An exponential growth of population is saying that the babies grow up and have babies before the grandparents are gone, so the number of people keeps piling up faster and faster. From a couple, 2, you get 2 kids, total 4, which both have 2 kids, total 8, and so on.
 
-If you look at today, so far, population has indeed grown a lot, more than doubled over the last century - but the agri tech has kept up with the demand, so, generally speaking, little chaos (-ish...).
+If you look at today, so far, population has indeed grown a lot, more than doubled over the last century - but, generally speaking, the agri tech has kept up with the demand.
 
 But, really, Pierre and the fellows at the time were worried about population growth beyond the available food supply. And if it were today, you might say that Pierre was a bit of a techno-optimist, because he came up with a different idea...
 
-Pierre thought: if the food supply starts being insufficient, then population growth should slow down. People would see that food was tight, not have as many children, and instead of the number going to infinity (or the moon, as the fellow kids might say), it should approach a limit.
+Pierre thought: if the food supply starts being insufficient, then population growth should slow down. People would see that food was tight, not have as many children, and instead of the number going to infinity, it should approach a limit.
 
-So he set off to try and model that. Population would grow exponentially, but something would slow it down, as it approached a limit.
+So he set off to try and model that. Population would start to grow exponentially, but, at some point, the amount of people itself would slow its growth down, as it approached a limit.
 
 
 ### What it means to learn
