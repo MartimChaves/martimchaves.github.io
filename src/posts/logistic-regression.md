@@ -8,38 +8,38 @@ slug: "logistic-regression"
 type: "tech"
 ---
 
-Let's reinvent coding agents, like claude code, codex, and mistral vibe. We're considering a coding agent a bit of code that uses an LLM to write code, run it, and improve it. Reinventing something is a good way to understand it - I think someone said that. :)
+Let's reinvent coding agents, like claude code, codex, and mistral vibe. We're considering a coding agent a bit of code that uses an LLM to write code, run it, and improve it.
 
-This is going to be split into different posts, so that it's easier to read (and to write, mostly easier to write ah!).
+The beginning of something is subjective, we're going with the logistic function.
 
-So, the beginning... I'm reminded of that youtube series where a bloke tries to do a hamburger from scratch, and he ends up building a forge and all that. This is to say that we're picking an arbitrary beginning - if we wanted to go all the way to start then that would be big bang.
+In mid 19th century, in Belgium, there was Pierre Verhulst. In that time, people were worried about famine and chaos. A few years before, Malthus said that population would grow exponentially, while food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, chaos. These crisis would slow down population growth, even heavily reduce it, leading to some sort of equilibrium.
 
-So, big bang - how do we reinvent that? So first, grab a hammer...
+```tangent
+Why Malthus thought people would grow exponentially
 
-```interactive-plot
-(-0.07 - 0.07*i)*exp(-i*6*t) + (-0.08 - 0.12*i)*exp(-i*5*t) + (-0.2 + 0.66*i)*exp(-i*3*t) + (-2.45 + 0.73*i)*exp(-i*t) + (5.25 + 0.93*i) + (-1.19 - 0.78*i)*exp(i*t) + (-0.6 - 0.6*i)*exp(i*2*t) + (-0.21 - 0.32*i)*exp(i*3*t) + (-0.07 + 0.24*i)*exp(i*5*t) + (-0.05 + 0.01*i)*exp(i*7*t)
-```
-Fig. 1 - Hammer time (an LLM did this btw)
-
-I'm only joking! The beginning that we're going with here, is none other than logistic regression.
-
-It all started in mid 19th century, with a gent in Belgium, Pierre Verhulst. In that time, people were worried about famine and chaos. You see, a few years before, Malthus (you might've heard of him) said that population would grow exponentially, while food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, chaos.
-
-```interactive-plot
-exp(t)
-```
-Fig. 2 - An exponential growth (exp for exponential)
-
-An exponential growth of population is saying that the babies grow up and have babies before the grandparents are gone, so the number of people keeps piling up faster and faster. From a couple, 2, you get 2 kids, total 4, which both have 2 kids, total 8, and so on.
+An exponential growth of population is saying that the babies grow up and have babies before the grandparents are gone, so the number of people keeps piling up faster and faster. From a couple, 2, you get 2 kids, total 4, which both have 2 kids, total 8, and so on. It can also mean that people have more than 2 babies, or that people live long enough so that even if they only have 1 baby, they can still have a lot of grandchildren and great-grandchildren.
 
 If you look at today, so far, population has indeed grown a lot, more than doubled over the last century - but, generally speaking, the agri tech has kept up with the demand.
+```
 
-But, really, Pierre and the fellows at the time were worried about population growth beyond the available food supply. And if it were today, you might say that Pierre was a bit of a techno-optimist, because he came up with a different idea...
+```interactive-plot xMin=-1 xMax=5 yMin=-1 yMax=5
+exp(x)-1
+x
+```
+Fig. 1 - Exponential growth versus linear growth
 
-Pierre thought: if the food supply starts being insufficient, then population growth should slow down. People would see that food was tight, not have as many children, and instead of the number going to infinity, it should approach a limit.
+Pierre set off to try and model that. Population would start to grow exponentially, but, at some point, the amount of people itself would slow its growth down, as it approached a limit. What he arrived at was the logistic function - `1 / (1 + exp(-r * x))` - `r` being the growth rate. 
 
-So he set off to try and model that. Population would start to grow exponentially, but, at some point, the amount of people itself would slow its growth down, as it approached a limit.
+```interactive-plot xMin=-6 xMax=6 yMin=-0.2 yMax=1.2
+1/(1 + exp(-1*x))
+```
+Fig. 3 - A logistic function
 
+You can play around with the value of the growth rate to increase or decrease the slope around the y-axis, hence the name. The higher the `r`, the higher the growth rate, the faster the population grows. As it is, it converges towards `1` - if you want it to converge to a hypothetical population limit, you can just multiply the whole function by that limit (`L`) - `L / (1 + exp(-r * x))`.
+
+This seemingly simple function is actually quite powerful, because it allows us to convert any number to a value between 0 and 1 - and this, it turns out, came in really handy in the realm of probabilities.
+
+### The logistic function and probabilites
 
 ### What it means to learn
 
@@ -79,9 +79,9 @@ Visualized as a computation graph:
 ```
 x₁ ──w₁──┐
 x₂ ──w₂──┤
-  ...     ├──► z = w·x + b ──► σ(z) = ŷ ──► L(ŷ, y)
+  ...    ├──► z = w·x + b ──► σ(z) = ŷ ──► L(ŷ, y)
 xₙ ──wₙ──┘
-      b ──┘
+     b ──┘
 ```
 
 That's the full forward pass: `ŷ = σ(w·x + b)`. One input vector in, one probability out.

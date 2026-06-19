@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
-import { Box, Button, Flex, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
+import { Box, Button, Flex, Input, Text, useColorModeValue } from '@chakra-ui/react'
 import { compileComplex, usesT } from '../utils/complexEval'
 
 interface InteractivePlotProps {
@@ -194,6 +195,40 @@ function evaluate(
   return { segments, error: null }
 }
 
+interface View {
+  xMin: number
+  xMax: number
+  yMin: number
+  yMax: number
+}
+
+// A "nice" tick step (1, 2, 5 × 10ⁿ) so gridlines stay readable at any zoom.
+function niceStep(range: number, target: number): number {
+  if (!(range > 0)) return 1
+  const raw = range / target
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)))
+  const norm = raw / mag
+  const step = norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10
+  return step * mag
+}
+
+function makeTicks(min: number, max: number, target: number): { ticks: number[]; step: number } {
+  const step = niceStep(max - min, target)
+  const start = Math.ceil(min / step) * step
+  const ticks: number[] = []
+  for (let i = 0; i < 1000; i++) {
+    const t = start + i * step
+    if (t > max + step * 1e-9) break
+    ticks.push(t)
+  }
+  return { ticks, step }
+}
+
+function fmtTick(v: number, step: number): string {
+  const decimals = Math.max(0, Math.min(6, -Math.floor(Math.log10(step))))
+  return Number(v.toFixed(decimals)).toString()
+}
+
 export default function InteractivePlot({
   defaultExpr,
   xMin = -1,
@@ -204,7 +239,13 @@ export default function InteractivePlot({
   tMin = 0,
   tMax = 2 * Math.PI,
 }: InteractivePlotProps) {
-  const [expr, setExpr] = useState(defaultExpr)
+  // One editable input per function. Seeded from defaultExpr (one curve per
+  // line) so existing plots keep working; readers can add/remove rows.
+  const [exprs, setExprs] = useState<string[]>(() => {
+    const lines = defaultExpr.split('\n')
+    return lines.length > 0 ? lines : ['']
+  })
+  const exprText = exprs.join('\n')
   const axisColor = useColorModeValue('#888', '#666')
   const gridColor = useColorModeValue('#e2e8f0', '#2d3748')
   const curvePaletteLight = ['#c0392b', '#2c7a7b', '#6b46c1', '#b7791f', '#2b6cb0']
@@ -215,11 +256,6 @@ export default function InteractivePlot({
   const errorColor = useColorModeValue('#c53030', '#fc8181')
   const labelColor = useColorModeValue('#4a5568', '#a0aec0')
 
-  const result = useMemo(
-    () => evaluate(expr, xMin, xMax, samples, tMin, tMax),
-    [expr, xMin, xMax, samples, tMin, tMax],
-  )
-
   // Plot dimensions
   const W = 640
   const H = 320
@@ -229,12 +265,127 @@ export default function InteractivePlot({
   const padB = 32
   const plotW = W - padL - padR
   const plotH = H - padT - padB
+  const clipId = useId()
 
-  const xToPx = (x: number) => padL + ((x - xMin) / (xMax - xMin)) * plotW
-  const yToPx = (y: number) => padT + (1 - (y - yMin) / (yMax - yMin)) * plotH
+  // The visible window. Initialized from props, then pannable/zoomable. Resets
+  // whenever the configured bounds change.
+  const initialView = useMemo<View>(
+    () => ({ xMin, xMax, yMin, yMax }),
+    [xMin, xMax, yMin, yMax],
+  )
+  const [view, setView] = useState<View>(initialView)
+  useEffect(() => setView(initialView), [initialView])
+
+  // Latest view in a ref so native (non-React) wheel/pointer handlers always
+  // read current bounds without re-binding listeners on every change.
+  const viewRef = useRef(view)
+  viewRef.current = view
+
+  const svgRef = useRef<SVGSVGElement>(null)
+  const dragRef = useRef<{ cx: number; cy: number; view: View } | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null)
+
+  const result = useMemo(
+    () => evaluate(exprText, view.xMin, view.xMax, samples, tMin, tMax),
+    [exprText, view.xMin, view.xMax, samples, tMin, tMax],
+  )
+
+  // Curve color index per input row, counting only rows that actually plot
+  // (non-blank, non-comment) so swatches line up with the rendered curves.
+  const rowColorIndex = useMemo(() => {
+    let active = 0
+    return exprs.map((line) => {
+      if (line.replace(/#.*$/, '').trim().length === 0) return null
+      return active++
+    })
+  }, [exprs])
+
+  const setExprAt = (i: number, value: string) =>
+    setExprs((prev) => prev.map((e, j) => (j === i ? value : e)))
+  const addExpr = () => setExprs((prev) => [...prev, ''])
+  const removeExpr = (i: number) =>
+    setExprs((prev) => (prev.length > 1 ? prev.filter((_, j) => j !== i) : prev))
+
+  const xToPx = (x: number) => padL + ((x - view.xMin) / (view.xMax - view.xMin)) * plotW
+  const yToPx = (y: number) => padT + (1 - (y - view.yMin) / (view.yMax - view.yMin)) * plotH
+
+  // Client (screen) coords -> data coords, using the supplied view.
+  const toData = (clientX: number, clientY: number, v: View) => {
+    const svg = svgRef.current
+    if (!svg) return null
+    const rect = svg.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) return null
+    const vbX = ((clientX - rect.left) / rect.width) * W
+    const vbY = ((clientY - rect.top) / rect.height) * H
+    return {
+      x: v.xMin + ((vbX - padL) / plotW) * (v.xMax - v.xMin),
+      y: v.yMin + (1 - (vbY - padT) / plotH) * (v.yMax - v.yMin),
+    }
+  }
+
+  // Wheel = zoom toward the cursor. Bound natively so we can preventDefault
+  // (React's onWheel is passive and cannot stop the page from scrolling).
+  useEffect(() => {
+    const svg = svgRef.current
+    if (!svg) return
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      const v = viewRef.current
+      const p = toData(e.clientX, e.clientY, v)
+      if (!p) return
+      const scale = Math.exp(e.deltaY * 0.0015)
+      const nxMin = p.x - (p.x - v.xMin) * scale
+      const nxMax = p.x + (v.xMax - p.x) * scale
+      const nyMin = p.y - (p.y - v.yMin) * scale
+      const nyMax = p.y + (v.yMax - p.y) * scale
+      const rx = nxMax - nxMin
+      const ry = nyMax - nyMin
+      if (rx < 1e-9 || ry < 1e-9 || rx > 1e12 || ry > 1e12) return
+      setView({ xMin: nxMin, xMax: nxMax, yMin: nyMin, yMax: nyMax })
+    }
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    return () => svg.removeEventListener('wheel', onWheel)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const onPointerDown = (e: ReactPointerEvent<SVGSVGElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    dragRef.current = { cx: e.clientX, cy: e.clientY, view: viewRef.current }
+    setDragging(true)
+  }
+
+  const onPointerMove = (e: ReactPointerEvent<SVGSVGElement>) => {
+    const drag = dragRef.current
+    if (drag) {
+      const svg = svgRef.current
+      if (!svg) return
+      const rect = svg.getBoundingClientRect()
+      const dxData = (((e.clientX - drag.cx) / rect.width) * W / plotW) * (drag.view.xMax - drag.view.xMin)
+      const dyData = (((e.clientY - drag.cy) / rect.height) * H / plotH) * (drag.view.yMax - drag.view.yMin)
+      setView({
+        xMin: drag.view.xMin - dxData,
+        xMax: drag.view.xMax - dxData,
+        yMin: drag.view.yMin + dyData,
+        yMax: drag.view.yMax + dyData,
+      })
+    } else {
+      setCursor(toData(e.clientX, e.clientY, viewRef.current))
+    }
+  }
+
+  const endDrag = (e: ReactPointerEvent<SVGSVGElement>) => {
+    if (dragRef.current) {
+      dragRef.current = null
+      setDragging(false)
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId)
+      }
+    }
+  }
 
   // Each segment -> one SVG path with the color of its source curve. Points
-  // outside the viewport are kept as-is and clipped by the SVG viewBox.
+  // outside the plot area are clipped via the clipPath below.
   const renderedPaths = result.segments.map((seg) => ({
     d: seg.points
       .map(([x, y], i) => {
@@ -246,11 +397,11 @@ export default function InteractivePlot({
     color: curvePalette[seg.curveIndex % curvePalette.length],
   }))
 
-  // Axis ticks
-  const xTicks: number[] = []
-  for (let t = Math.ceil(xMin); t <= Math.floor(xMax); t++) xTicks.push(t)
-  const yTicks: number[] = []
-  for (let t = Math.ceil(yMin); t <= Math.floor(yMax); t++) yTicks.push(t)
+  // Axis ticks — "nice" spacing recomputed for the current zoom level.
+  const { ticks: xTicks, step: xStep } = makeTicks(view.xMin, view.xMax, 10)
+  const { ticks: yTicks, step: yStep } = makeTicks(view.yMin, view.yMax, 6)
+  const showXAxis = view.yMin <= 0 && view.yMax >= 0
+  const showYAxis = view.xMin <= 0 && view.xMax >= 0
 
   return (
     <Box
@@ -263,10 +414,29 @@ export default function InteractivePlot({
     >
       <Box p={3}>
         <svg
+          ref={svgRef}
           viewBox={`0 0 ${W} ${H}`}
           width="100%"
-          style={{ display: 'block', maxWidth: `${W}px`, margin: '0 auto' }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onPointerLeave={() => setCursor(null)}
+          style={{
+            display: 'block',
+            maxWidth: `${W}px`,
+            margin: '0 auto',
+            touchAction: 'none',
+            cursor: dragging ? 'grabbing' : 'grab',
+            userSelect: 'none',
+          }}
         >
+          <defs>
+            <clipPath id={clipId}>
+              <rect x={padL} y={padT} width={plotW} height={plotH} />
+            </clipPath>
+          </defs>
+
           {/* Grid */}
           {xTicks.map((t) => (
             <line
@@ -291,23 +461,27 @@ export default function InteractivePlot({
             />
           ))}
 
-          {/* Axes */}
-          <line
-            x1={padL}
-            x2={padL + plotW}
-            y1={yToPx(0)}
-            y2={yToPx(0)}
-            stroke={axisColor}
-            strokeWidth={1.5}
-          />
-          <line
-            x1={xToPx(0)}
-            x2={xToPx(0)}
-            y1={padT}
-            y2={padT + plotH}
-            stroke={axisColor}
-            strokeWidth={1.5}
-          />
+          {/* Axes (only drawn when zero is within view) */}
+          {showXAxis && (
+            <line
+              x1={padL}
+              x2={padL + plotW}
+              y1={yToPx(0)}
+              y2={yToPx(0)}
+              stroke={axisColor}
+              strokeWidth={1.5}
+            />
+          )}
+          {showYAxis && (
+            <line
+              x1={xToPx(0)}
+              x2={xToPx(0)}
+              y1={padT}
+              y2={padT + plotH}
+              stroke={axisColor}
+              strokeWidth={1.5}
+            />
+          )}
 
           {/* Tick labels */}
           {xTicks.map((t) => (
@@ -319,7 +493,7 @@ export default function InteractivePlot({
               textAnchor="middle"
               fill={labelColor}
             >
-              {t}
+              {fmtTick(t, xStep)}
             </text>
           ))}
           {yTicks.map((t) => (
@@ -331,38 +505,88 @@ export default function InteractivePlot({
               textAnchor="end"
               fill={labelColor}
             >
-              {t}
+              {fmtTick(t, yStep)}
             </text>
           ))}
 
-          {/* Curves */}
-          {renderedPaths.map(({ d, color }, i) => (
-            <path
-              key={i}
-              d={d}
-              fill="none"
-              stroke={color}
-              strokeWidth={2}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
-          ))}
+          {/* Curves (clipped to the plot area) */}
+          <g clipPath={`url(#${clipId})`}>
+            {renderedPaths.map(({ d, color }, i) => (
+              <path
+                key={i}
+                d={d}
+                fill="none"
+                stroke={color}
+                strokeWidth={2}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            ))}
+          </g>
+
+          {/* Cursor coordinate readout */}
+          {cursor && !dragging && (
+            <text
+              x={padL + plotW}
+              y={padT + 12}
+              fontSize="11"
+              textAnchor="end"
+              fill={labelColor}
+              fontFamily="monospace"
+            >
+              ({cursor.x.toFixed(2)}, {cursor.y.toFixed(2)})
+            </text>
+          )}
         </svg>
       </Box>
 
       <Box borderTop="1px solid" borderColor={borderColor} p={3}>
         <Text fontSize="xs" color={labelColor} mb={1.5}>
-          f(x) =
+          Functions
         </Text>
-        <Textarea
-          value={expr}
-          onChange={(e) => setExpr(e.target.value)}
-          fontFamily="mono"
-          fontSize="sm"
-          rows={2}
-          spellCheck={false}
-          resize="vertical"
-        />
+        <Flex direction="column" gap={1.5}>
+          {exprs.map((value, i) => {
+            const ci = rowColorIndex[i]
+            const swatch =
+              ci === null ? 'transparent' : curvePalette[ci % curvePalette.length]
+            return (
+              <Flex key={i} align="center" gap={2}>
+                <Box
+                  w="10px"
+                  h="10px"
+                  flexShrink={0}
+                  borderRadius="full"
+                  bg={swatch}
+                  border={ci === null ? '1px solid' : 'none'}
+                  borderColor={borderColor}
+                />
+                <Input
+                  value={value}
+                  onChange={(e) => setExprAt(i, e.target.value)}
+                  fontFamily="mono"
+                  fontSize="sm"
+                  size="sm"
+                  spellCheck={false}
+                  placeholder="e.g. sin(x)"
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  px={2}
+                  flexShrink={0}
+                  aria-label="Remove function"
+                  isDisabled={exprs.length <= 1}
+                  onClick={() => removeExpr(i)}
+                >
+                  ✕
+                </Button>
+              </Flex>
+            )
+          })}
+        </Flex>
+        <Button mt={2} size="xs" variant="outline" onClick={addExpr}>
+          + Add function
+        </Button>
         {result.error && (
           <Text mt={2} fontSize="xs" color={errorColor} fontFamily="mono">
             {result.error}
@@ -370,18 +594,30 @@ export default function InteractivePlot({
         )}
         <Flex mt={2} justify="space-between" align="center" gap={3}>
           <Text fontSize="xs" color={labelColor}>
-            One curve per line. <code>f(x)</code> with <code>Math</code>, or{' '}
+            One function per row. <code>f(x)</code> with <code>Math</code>, or{' '}
             <code>z(t)</code> with <code>i</code>, <code>exp</code>,{' '}
             <code>sin</code>, <code>cos</code>, <code>pi</code>, <code>tau</code>,
-            or <code>[[x,y],...]</code>.
+            or <code>[[x,y],...]</code>. Drag to pan, scroll to zoom.
           </Text>
-          <Button
-            size="xs"
-            variant="outline"
-            onClick={() => setExpr(defaultExpr)}
-          >
-            Reset
-          </Button>
+          <Flex gap={2} flexShrink={0}>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={() => setView(initialView)}
+            >
+              Reset view
+            </Button>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={() => {
+                setExprs(defaultExpr.split('\n'))
+                setView(initialView)
+              }}
+            >
+              Reset
+            </Button>
+          </Flex>
         </Flex>
       </Box>
     </Box>

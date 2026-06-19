@@ -6,15 +6,44 @@ import { Box, Code, Divider, Heading, Image, Link, ListItem, OrderedList, Table,
 import type { Components } from 'react-markdown'
 import type { CSSProperties } from 'react'
 import InteractivePlot from './InteractivePlot'
+import Tangent from './Tangent'
 
 interface CodeProps {
   inline?: boolean
   className?: string
   children?: React.ReactNode
+  node?: { data?: { meta?: string | null } }
 }
 
 interface MarkdownRendererProps {
   content: string
+}
+
+// Parse a fence meta string like `xMin=-5 xMax=5 yMin=-1 yMax=2 samples=2000`
+// into numeric props for InteractivePlot. Unknown keys are ignored.
+const PLOT_OPTION_KEYS = [
+  'xMin',
+  'xMax',
+  'yMin',
+  'yMax',
+  'samples',
+  'tMin',
+  'tMax',
+] as const
+
+function parsePlotOptions(meta?: string | null): Record<string, number> {
+  const opts: Record<string, number> = {}
+  if (!meta) return opts
+  for (const token of meta.trim().split(/\s+/)) {
+    const eq = token.indexOf('=')
+    if (eq === -1) continue
+    const key = token.slice(0, eq)
+    const value = Number(token.slice(eq + 1))
+    if ((PLOT_OPTION_KEYS as readonly string[]).includes(key) && Number.isFinite(value)) {
+      opts[key] = value
+    }
+  }
+  return opts
 }
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
@@ -92,14 +121,18 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     tr: ({ children }) => <Tr>{children}</Tr>,
     th: ({ children }) => <Th color="page.text">{children}</Th>,
     td: ({ children }) => <Td color="page.text">{children}</Td>,
-    code: ({ inline, className, children }: CodeProps) => {
+    code: ({ inline, className, children, node }: CodeProps) => {
       const match = /language-([\w-]+)/.exec(className ?? '')
       if (!inline && match?.[1] === 'interactive-plot') {
         return (
           <InteractivePlot
             defaultExpr={String(children).replace(/\n$/, '')}
+            {...parsePlotOptions(node?.data?.meta)}
           />
         )
+      }
+      if (!inline && match?.[1] === 'tangent') {
+        return <Tangent source={String(children)} />
       }
       if (!inline && (match || String(children).includes('\n'))) {
         return (
