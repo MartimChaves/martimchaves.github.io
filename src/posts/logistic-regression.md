@@ -17,7 +17,8 @@ In mid 19th century, in Belgium, there was Pierre Verhulst. In that time, people
 ```tangent
 Why Malthus thought people would grow exponentially
 
-An exponential growth of population is saying that the babies grow up and have babies before the grandparents are gone, so the number of people keeps piling up faster and faster. From a couple, 2, you get 2 kids, total 4, which both have 2 kids, total 8, and so on. It can also mean that people have more than 2 babies, or that people live long enough so that even if they only have 1 baby, they can still have a lot of grandchildren and great-grandchildren.
+
+An exponential growth of population can happen for many reasons. One is that the babies grow up and have babies before the grandparents are gone, so the number of people keeps piling up faster and faster. From a couple, 2, you get 2 kids, total 4, which both have 2 kids, total 8, and so on. It can also mean that people have more than 2 babies, or that people live long enough so that even if they only have 1 baby, they can still have a lot of grandchildren and great-grandchildren.
 
 If you look at today, so far, population has indeed grown a lot, more than doubled over the last century - but, generally speaking, the agri tech has kept up with the demand.
 ```
@@ -40,6 +41,8 @@ You can play around with the value of the growth rate to increase or decrease th
 This seemingly simple function is actually quite powerful, because it allows us to convert any number to a value between 0 and 1 - and this, it turns out, came in really handy in the realm of probabilities.
 
 ### The logistic function and probabilites
+
+The logistic function was never meant to be used for probabilities, but by the end of the 19th century and early 20th century, S-shaped curves were all over the place. In chemistry, certain reactions could be represented by an S-curve. The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains, also found S-curves. The logistic function was a great fit for all of these phenomena.
 
 ### What it means to learn
 
