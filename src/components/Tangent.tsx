@@ -76,7 +76,7 @@ export default function Tangent({ source }: TangentProps) {
       </Flex>
 
       <Collapse in={open} animateOpacity>
-        <Box px={4} pb={1} pt={0} borderTop="1px solid" borderColor={border}>
+        <Box px={4} pb={1} pt={3} borderTop="1px solid" borderColor={border}>
           <MarkdownRenderer content={body} />
         </Box>
       </Collapse>

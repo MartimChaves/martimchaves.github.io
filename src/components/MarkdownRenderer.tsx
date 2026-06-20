@@ -6,6 +6,7 @@ import { Box, Code, Divider, Heading, Image, Link, ListItem, OrderedList, Table,
 import type { Components } from 'react-markdown'
 import type { CSSProperties } from 'react'
 import InteractivePlot from './InteractivePlot'
+import PopulationGrowth from './PopulationGrowth'
 import Tangent from './Tangent'
 
 interface CodeProps {
@@ -130,6 +131,9 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             {...parsePlotOptions(node?.data?.meta)}
           />
         )
+      }
+      if (!inline && match?.[1] === 'population-growth') {
+        return <PopulationGrowth />
       }
       if (!inline && match?.[1] === 'tangent') {
         return <Tangent source={String(children)} />

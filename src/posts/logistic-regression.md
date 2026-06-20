@@ -12,16 +12,21 @@ Let's reinvent coding agents, like claude code, codex, and mistral vibe. We're c
 
 The beginning of something is subjective, we're going with the logistic function.
 
-In mid 19th century, in Belgium, there was Pierre Verhulst. In that time, people were worried about famine and chaos. A few years before, Malthus said that population would grow exponentially, while food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, chaos. These crisis would slow down population growth, even heavily reduce it, leading to some sort of equilibrium.
+In mid 19th century, in Belgium, there was Pierre Verhulst. In that time, people were worried about famine and chaos. A few years before, Malthus said that population would grow exponentially, while food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, chaos. These crisis would slow down population growth, even heavily reduce it, maybe even leading to some sort of equilibrium.
 
-```tangent
-Why Malthus thought people would grow exponentially
-
+````tangent
+What does it mean for population to grow exponentially?
 
 An exponential growth of population can happen for many reasons. One is that the babies grow up and have babies before the grandparents are gone, so the number of people keeps piling up faster and faster. From a couple, 2, you get 2 kids, total 4, which both have 2 kids, total 8, and so on. It can also mean that people have more than 2 babies, or that people live long enough so that even if they only have 1 baby, they can still have a lot of grandchildren and great-grandchildren.
 
 If you look at today, so far, population has indeed grown a lot, more than doubled over the last century - but, generally speaking, the agri tech has kept up with the demand.
+
+Play around with the parameters below and check out how they affect population growth. We're use life expectancy, how many children each couple has, and the age at which they have them. A few assumptions are going on here, that every couple has children, every couple has the same age, and that the population at the start is mostly young people. 
+
+
+```population-growth
 ```
+````
 
 ```interactive-plot xMin=-1 xMax=5 yMin=-1 yMax=5
 exp(x)-1
