@@ -17,9 +17,9 @@ In mid 19th century, in Belgium, there was Pierre Verhulst. In that time, people
 ````tangent
 What does it mean for population to grow exponentially?
 
-An exponential growth of population can happen for many reasons, but fundamentally, it means that the births per person over their lifetime is larger than 1 - for this to happen, each couple needs to have more than 2 children.
+An exponential growth of population can happen for many reasons, but fundamentally, it means that the births per person over their lifetime is larger than 1 - for this to happen, each couple needs to have more than 2 children (assuming that people eventually die).
 
-If you look at today, so far, population has indeed grown a lot, more than doubled over the last century - but, generally speaking, the agri tech has kept up with the demand.
+If you look at today, so far, population has indeed grown a lot, it has more than doubled over the last century - but, generally speaking, the agri tech has kept up with the demand.
 
 Play around with the parameters (life expectancy, number of children per couple, age at which they have them) below and check out how they affect population growth. A few assumptions are being made here, such as that every couple has children, every couple has the same age, and that the population at the start is mostly young people.
 
