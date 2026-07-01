@@ -61,7 +61,7 @@ Here's a summary list of the different levels of RAG that we'll be approaching:
 
 - Naive: the simplest form, vector search, add the chunks to the context besides the inital prompt query, let the LLM answer.
 - Hybrid: do keyword search (i.e. keywords have to match between the query and the documents) and join the results of that with the vector search results. Useful when exact matches are needed (like when referencing acronyms).
-- Reranking: wait for the chunk evaluation to complete (which takes a bit), and use only the chunks that were considered relevant.
+- Filtering with LLM-as-judge: wait for the chunk evaluation to complete (which takes a bit), and use only the chunks that were considered relevant.
 - Multimodal: if there are images attached to chunks, send them to a vision model for extra context, in case the answer is in the image.
 - Agentic: the LLM drives its own search loop with five tools at its disposal: `search` (query the collection), `rephrase_query` (rewrite a query via sub-questions, HyDE, or step-back), `evaluate_retrieval` (judge whether the evidence so far is sufficient, ambiguous, or insufficient), `critique_draft` (check a draft answer for unsupported claims), and `finish` (submit the final answer). It can break down the query, run several searches, and retry when the results are not good enough.
 - Multi-agent: similar to the agentic level, but with specialist agents for search, keywords, documents, and vision, plus a grounding check on every claim.
@@ -230,11 +230,11 @@ Enough formulas - here's the whole thing wired up. Edit the query or the corpus,
 ```
 ````
 
-## Reranking RAG
+## Filtering with LLM-as-judge
 
-- Similarity scores are cheap but blunt. Ask an LLM-as-judge to actually read each chunk and decide whether it's relevant.
-- RAGBandit can do this server-side: pass `calculate_metrics: True`, then poll the query log until the evaluations are ready.
-- Keep only the chunks the judge marked relevant. Fewer, cleaner chunks in the prompt means a more focused answer.
+So, it turns out, vector search sometimes isn't enough. Why? Well, there are several reasons. One, when comparing a query and chunk, we're compressing the entire text of the query and the chunk into two embeddings, so some information is lost there. And also, because embedding models aren't flawless - semantically related things can land far apart in the embedding space, while unrelated things can end up close together. Another point, is that similarity scores are based on cosine similarity, which can lose some nuance, and focus on the wrong things (aspects that aren't relevant to the query). Piotr Migdał wrote a [great piece](https://p.migdal.pl/blog/2025/01/dont-use-cosine-similarity/) on this. So, to deal with this, we want a second opinion on the chunks that vector search hands us.
+
+The approach here is to *filter*: take advantage of the LLM-as-judge that RAGBandit offers, and have it classify each chunk as relevant or not. We poll the query log until the evaluations are ready, and we only keep the chunks that were considered relevant. This way, we get fewer chunks (so less context rot), and the LLM has an easier shot at generating a better answer. The downside of this is that it's slower. To trigger the LLM-as-judge evaluations, we just have to pass `calculate_metrics: True` when searching:
 
 ```python
 import time
@@ -258,26 +258,31 @@ def poll_metrics(client, query_log_id, timeout=60, interval=2):
         if metrics and metrics.get("status") != "calculating":
             return metrics
         time.sleep(interval)  # evaluations are computed asynchronously
-    return {"evaluations": []}
+    return {"evaluations": []}  # on timeout, no evaluations -> we keep all chunks below
 
-def rerank_rag(client, question, top_k=5):
+def judge_filter_rag(client, question, top_k=5):
     chunks, query_log_id = search_with_metrics(client, question, top_k * 2)
 
     metrics = poll_metrics(client, query_log_id)
     relevant_ids = {
         e["chunk_id"] for e in metrics["evaluations"] if e["is_relevant"]
     }
-    chunks = [c for c in chunks if c["chunk_id"] in relevant_ids][:top_k]
+    # if the judge timed out (no evaluations), fall back to the unfiltered chunks
+    if relevant_ids:
+        chunks = [c for c in chunks if c["chunk_id"] in relevant_ids]
+    chunks = chunks[:top_k]
 
     context = format_context(chunks)
     return ask_llm(f"Context:\n{context}\n\nQuestion: {question}")
 ```
 
+LLM-as-judge is a tool that we can use - but, we have to use this responsibly. Generally speaking, an LLM won't have the same knowledge as a domain expertise, so, unless you're aligning the LLM with one (either by prompt engineering or fine tuning), we should expect the LLM-as-judge to be flawed. So, it's not useful as a definitive scorer, but more of as a general guide.
+
+One thing worth being precise about: this *filters* chunks (drops the ones the judge rejects) but it doesn't *reorder* them - the survivors keep their vector-search ranking. True reranking is a related but distinct idea, and a natural next step here. You run every candidate through a reranker - a model that takes the query and chunk together and produces a relevance score - and then sort by that score. Because it looks at the pair jointly (instead of comparing two independent embeddings) it can catch nuance the vector search misses, and it's usually fast and cheap. RAGBandit doesn't ship a dedicated reranker today, so the LLM-as-judge is our stand-in for the same goal of higher-precision context - maybe something to add in the future!
+
 ## Multimodal RAG
 
-- Sometimes the answer is in a figure, chart, or table - text-only retrieval can't see it.
-- Chunks can have images attached. Fetch them and send them alongside the text to a vision model.
-- Same retrieval as before, just a richer prompt: text blocks plus base64 image blocks.
+Sometimes, we can extract relevant information from an image. When we get the chunks back from the search, if they have images attached, we can use those images as an extra source of information, by sending them alongside the query to a vision model. Again, we're just working on making the context that we give to an LLM to answer a query richer. This is also more expensive, and we don't always know if an image can add value. We could try to be more precise, but for now, here's a simple implementation:
 
 ```python
 import requests
@@ -306,6 +311,7 @@ def multimodal_rag(client, question, top_k=5):
 
     resp = llm.messages.create(
         model="claude-sonnet-4-6", max_tokens=1024,
+        system="Answer using only the provided context. Cite [chunk] numbers.",
         messages=[{"role": "user", "content": content}],
     )
     return resp.content[0].text
@@ -313,9 +319,7 @@ def multimodal_rag(client, question, top_k=5):
 
 ## Agentic RAG
 
-- Instead of one fixed search, hand the LLM a `search` tool and let it drive its own loop.
-- It can break the question into pieces, search several times, and stop when it has enough.
-- The snippet below shows the core loop with just `search`. The repo adds `rephrase_query`, `evaluate_retrieval`, `critique_draft`, and `finish` as extra tools.
+Agentic RAG is a big step change when compared to the previous versions of RAG. Instead of running a single search, we let the LLM drive the process, using several tools at its disposal, such as search and rephrasing the query. So, with queries that are more complex, instead of just running one search and being stuck with the results that we get back, a powerful LLM can split the query into smaller parts, search several times, and stop when it has enough information. This should improve the quality of the responses, with the downside of being way more expensive, and taking a lot more time. The snippet below shows the core loop with just the `search` tool, but the repo contains other tools: `rephrase_query`, `evaluate_retrieval`, `critique_draft`, and `finish`. Check out the [invoice agent post](https://martimchaves.com/#/blog/smol-invoice-agent) that goes deeper into how an agent works.
 
 ```python
 SEARCH_TOOL = {
@@ -354,22 +358,47 @@ def agentic_rag(client, question, max_iterations=5):
                 })
         messages.append({"role": "user", "content": tool_results})
 
+    # Bailing out here is crude - a nicer version would ask the model for a
+    # best-effort answer from what it has gathered so far, instead of giving up.
     return "Ran out of iterations."
 ```
 
 ## Multi-agent RAG
 
-- The agentic loop with specialists: one orchestrator delegates to a search agent, a keyword agent, a document agent, and a vision agent.
-- Searches fan out in parallel into a shared evidence store that dedupes by `chunk_id`, so agents build on each other's findings.
-- Before answering, a grounding agent checks every claim against the evidence - if something isn't supported, the orchestrator searches again.
+Multi-agent RAG is agentic RAG with a boost: instead of using just one agent, we use different specialized agents. By specialized agents, we mean agents that have a single, smaller task, with a specific system prompt, and specific tools.
+
+Why do this? The big one is managing context. Instead of having an LLM deal with an ever increasing context, with lots of different facts, and chunks, and image info, we split the broader tasks into sub-tasks, so that each agent can deal with a smaller, easier to manage context, and a clearer goal.
+
+Having smaller goals, with less information, generally leads to better results. One mega-prompt that keeps accumulating can get very expensive and slow things down. The downside is that there are more agents to manage, and more coordination overhead, which can complicate things.
+
+To do multi-agent RAG we need an orchestrator, an agent that delegates, and specialized agents that perform specific tasks - a search agent, a keyword search agent, a vision agent, a grounding agent (an agent that checks the claims made against the evidence). The code snippet below is simplified to make it easier to understand.
 
 ```python
-def parallel_search(client, queries):
-    evidence = {}
-    for q in queries:                 # the repo runs these concurrently
-        for chunk in client.search(q):
-            evidence[chunk["chunk_id"]] = chunk   # dedupe by chunk_id
-    return list(evidence.values())
+import json
+
+# Each specialist owns a retrieval strategy, its own prompt, and its own tools.
+# In the repo these are full agentic loops (like agentic_rag); here they're
+# compact retrieval functions so the orchestration stays easy to read.
+def search_agent(client, question):
+    return client.search(question)                      # semantic vector search
+
+def keyword_agent(client, question):
+    corpus = all_chunks(client)                         # exact-term BM25 over everything
+    bm25 = BM25Okapi([tokenize(c["chunk_text"]) for c in corpus])
+    ranked = sorted(zip(corpus, bm25.get_scores(tokenize(question))),
+                    key=lambda p: p[1], reverse=True)
+    return [c for c, _ in ranked[:5]]
+
+def vision_agent(client, question):
+    chunks = client.search(question)                    # keep only chunks that carry images
+    return [c for c in chunks
+            if get_chunk_images(client, c["chunking_result_id"], c["chunk_id"])]
+
+SPECIALISTS = {"search": search_agent, "keyword": keyword_agent, "vision": vision_agent}
+
+ORCHESTRATOR_SYSTEM = """You route a question to retrieval specialists.
+Reply with ONLY a JSON list drawn from: "search" (semantic), "keyword" (exact
+terms, codes, acronyms), "vision" (figures, charts, tables). Pick all that apply."""
 
 def is_grounded(answer, evidence):
     verdict = ask_llm(
@@ -380,14 +409,18 @@ def is_grounded(answer, evidence):
     return verdict.strip().lower().startswith("yes")
 
 def multiagent_rag(client, question):
-    # Orchestrator fans out a few angles, pools the evidence, then verifies.
-    evidence = parallel_search(client, [
-        question,
-        f"background context for: {question}",
-        f"specific details about: {question}",
-    ])
+    # Orchestrator delegates: pick the specialists worth running for this question.
+    picks = json.loads(ask_llm(question, system=ORCHESTRATOR_SYSTEM))
+
+    evidence = {}                                       # shared store, deduped by chunk_id
+    for name in picks:                                  # the repo runs these concurrently
+        for chunk in SPECIALISTS[name](client, question):
+            evidence[chunk["chunk_id"]] = chunk
+    evidence = list(evidence.values())
+
     answer = ask_llm(f"Context:\n{format_context(evidence)}\n\nQuestion: {question}")
 
+    # Grounding agent: if a claim isn't supported, flag it (the repo re-searches).
     if not is_grounded(answer, evidence):
         answer += "\n\n(Note: some claims could not be fully grounded.)"
     return answer
@@ -405,7 +438,7 @@ import json
 ROUTER_SYSTEM = """Pick exactly ONE level for the question:
 1 Naive — a simple, single-topic factual lookup
 2 Hybrid — needs exact terms, names, codes, or numbers
-3 Reranking — needs high precision among many similar passages
+3 Judge filter — needs high precision among many similar passages
 4 Multimodal — about images, figures, charts, or tables
 5 Agentic — a complex, multi-part question needing iterative search
 6 Multi-Agent — broad research spanning many documents
@@ -413,7 +446,7 @@ Prefer the cheapest level that can answer well.
 Reply with ONLY a JSON object: {"level": <1-6>, "reason": "<short>"}"""
 
 LEVELS = {
-    1: naive_rag, 2: hybrid_rag, 3: rerank_rag,
+    1: naive_rag, 2: hybrid_rag, 3: judge_filter_rag,
     4: multimodal_rag, 5: agentic_rag, 6: multiagent_rag,
 }
 
