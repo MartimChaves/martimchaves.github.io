@@ -1,5 +1,8 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Box, Code, Divider, Heading, Image, Link, ListItem, OrderedList, Table, Tbody, Td, Text, Th, Thead, Tr, UnorderedList, useColorModeValue } from '@chakra-ui/react'
@@ -7,6 +10,7 @@ import type { Components } from 'react-markdown'
 import type { CSSProperties } from 'react'
 import InteractivePlot from './InteractivePlot'
 import PopulationGrowth from './PopulationGrowth'
+import Bm25Explorer from './Bm25Explorer'
 import Tangent from './Tangent'
 
 interface CodeProps {
@@ -135,6 +139,9 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       if (!inline && match?.[1] === 'population-growth') {
         return <PopulationGrowth />
       }
+      if (!inline && match?.[1] === 'bm25-explorer') {
+        return <Bm25Explorer />
+      }
       if (!inline && match?.[1] === 'tangent') {
         return <Tangent source={String(children)} />
       }
@@ -175,7 +182,11 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   }
 
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
+      components={components}
+    >
       {content}
     </ReactMarkdown>
   )
