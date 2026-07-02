@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Heading, Link, Tag, Text } from '@chakra-ui/react'
+import { Box, Divider, Flex, Heading, Image, Link, Tag, Text } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { TECH_POSTS } from '../utils/posts'
 import CalButton from '../components/CalButton'
@@ -16,7 +16,19 @@ export default function Home() {
   return (
     <Box pb={8}>
       {/* Hero */}
-      <Box mb={14}>
+      <Flex mb={14} direction={{ base: 'column', md: 'row' }} align="center" gap={{ base: 6, md: 12 }}>
+        <Image
+          src="/images/martim_chaves_home.jpg"
+          alt="Martim Chaves"
+          boxSize={{ base: '150px', md: '190px' }}
+          borderRadius="full"
+          objectFit="cover"
+          flexShrink={0}
+          order={{ base: 0, md: 1 }}
+          border="1px solid"
+          borderColor="page.border"
+        />
+        <Box flex="1" w="full" order={{ base: 1, md: 0 }}>
         <Heading as="h1" fontSize={{ base: '3xl', md: '4xl' }} fontWeight="700" mb={4} lineHeight="1.15" letterSpacing="-0.03em" color="page.text">
           AI Engineering &<br />Consulting
         </Heading>
@@ -58,7 +70,8 @@ export default function Home() {
             GitHub
           </Link>
         </Flex>
-      </Box>
+        </Box>
+      </Flex>
 
       <Divider borderColor="page.border" mb={12} />
 

@@ -182,12 +182,25 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   }
 
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeKatex]}
-      components={components}
+    <Box
+      sx={{
+        // Display equations ($$...$$) can be wider than the screen on mobile;
+        // let them scroll horizontally instead of overflowing the layout.
+        '.katex-display': {
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          paddingBottom: '0.5rem',
+          maxWidth: '100%',
+        },
+      }}
     >
-      {content}
-    </ReactMarkdown>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={components}
+      >
+        {content}
+      </ReactMarkdown>
+    </Box>
   )
 }
