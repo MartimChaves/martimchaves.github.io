@@ -1513,7 +1513,7 @@ This is where PyLate comes in - it's a library that makes working with late inte
 
 Whether the accuracy gain is worth the extra compute depends on your use case. For high-stakes retrieval where missing a relevant document is costly, it usually is.
 `,_ee=`---
-title: "Seven Levels of RAG on Top of RAGBandit"
+title: "Seven Levels of RAG"
 date: "2026-06-28"
 description: "An example of building RAG on RAGBandit, from a naive baseline up to a smart router, where each level is a single file you can copy."
 draft: false
@@ -1522,7 +1522,7 @@ slug: "ragbandit-rag"
 type: "tech"
 ---
 
-A while back errybody was saying that "RAG is dead". But RAG is fundamentally just an idea - add relevant information to the LLM's context. There are a lot of ways to do this, some better than others, depending on the circumstances. The goal of this post is to explore different types of RAG, from a very simple approach (classic, naive RAG), to a more complex setup with multiple agents and a smart router. I'll be using the RAGBandit API to handle the retrieval, so that we can focus on the augmented generation part.
+A while back errybody was saying that "RAG is dead". But RAG is fundamentally just an idea - add relevant information to the LLM's context. There are a lot of ways to do this, some better than others, depending on the circumstances. The goal of this post is to explore different types of RAG, from a very simple approach (classic, naive RAG), to a more complex setup with multiple agents and a smart router. I'll be using the RAGBandit API to handle the retrieval, so that we can focus on the augmented generation part. Along the way there's copy-pasteable code, live demos, and even an interactive widget for getting a feel for BM25!
 
 You can find the code from this post [here](https://github.com/MartimChaves/ragbandit-rag). Each level is roughly one file you can copy and run. The snippets below are trimmed-down versions to keep things readable. The repo has a frontend that you can run and use to play around with all of the different levels.
 
