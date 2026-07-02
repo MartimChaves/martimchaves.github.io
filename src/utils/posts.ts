@@ -1,3 +1,6 @@
+import logisticRegressionContent from '../posts/logistic-regression.md?raw'
+import neuralNetworksContent from '../posts/neural-networks.md?raw'
+import residualsAndRnnsContent from '../posts/residuals-and-rnns.md?raw'
 import beirContent from '../posts/beir_freshstack.md?raw'
 import chronicaContent from '../posts/cronica-de-uma-morte.md?raw'
 import llmEvalsContent from '../posts/llm_evals.md?raw'
@@ -5,6 +8,7 @@ import mcpContent from '../posts/mcp.md?raw'
 import newPostContent from '../posts/new-post.md?raw'
 import promptrieverContent from '../posts/promptriever.md?raw'
 import pylateContent from '../posts/pylate.md?raw'
+import ragbanditRagContent from '../posts/ragbandit-rag.md?raw'
 import rank1Content from '../posts/RANK1.md?raw'
 import representationsContent from '../posts/representations_of_data.md?raw'
 import smolInvoiceContent from '../posts/smol-invoice-agent.md?raw'
@@ -94,6 +98,9 @@ const EXTERNAL_POSTS: Post[] = [
 ]
 
 export const ALL_POSTS: Post[] = [
+  makePost(logisticRegressionContent),
+  makePost(neuralNetworksContent),
+  makePost(residualsAndRnnsContent),
   makePost(beirContent),
   makePost(chronicaContent),
   makePost(llmEvalsContent),
@@ -101,6 +108,7 @@ export const ALL_POSTS: Post[] = [
   makePost(newPostContent),
   makePost(promptrieverContent),
   makePost(pylateContent),
+  makePost(ragbanditRagContent),
   makePost(rank1Content),
   makePost(representationsContent),
   makePost(smolInvoiceContent),

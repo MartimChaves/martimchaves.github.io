@@ -1,19 +1,54 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Box, Code, Divider, Heading, Image, Link, ListItem, OrderedList, Table, Tbody, Td, Text, Th, Thead, Tr, UnorderedList, useColorModeValue } from '@chakra-ui/react'
 import type { Components } from 'react-markdown'
 import type { CSSProperties } from 'react'
+import InteractivePlot from './InteractivePlot'
+import PopulationGrowth from './PopulationGrowth'
+import Bm25Explorer from './Bm25Explorer'
+import Tangent from './Tangent'
 
 interface CodeProps {
   inline?: boolean
   className?: string
   children?: React.ReactNode
+  node?: { data?: { meta?: string | null } }
 }
 
 interface MarkdownRendererProps {
   content: string
+}
+
+// Parse a fence meta string like `xMin=-5 xMax=5 yMin=-1 yMax=2 samples=2000`
+// into numeric props for InteractivePlot. Unknown keys are ignored.
+const PLOT_OPTION_KEYS = [
+  'xMin',
+  'xMax',
+  'yMin',
+  'yMax',
+  'samples',
+  'tMin',
+  'tMax',
+] as const
+
+function parsePlotOptions(meta?: string | null): Record<string, number> {
+  const opts: Record<string, number> = {}
+  if (!meta) return opts
+  for (const token of meta.trim().split(/\s+/)) {
+    const eq = token.indexOf('=')
+    if (eq === -1) continue
+    const key = token.slice(0, eq)
+    const value = Number(token.slice(eq + 1))
+    if ((PLOT_OPTION_KEYS as readonly string[]).includes(key) && Number.isFinite(value)) {
+      opts[key] = value
+    }
+  }
+  return opts
 }
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
@@ -91,8 +126,25 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     tr: ({ children }) => <Tr>{children}</Tr>,
     th: ({ children }) => <Th color="page.text">{children}</Th>,
     td: ({ children }) => <Td color="page.text">{children}</Td>,
-    code: ({ inline, className, children }: CodeProps) => {
-      const match = /language-(\w+)/.exec(className ?? '')
+    code: ({ inline, className, children, node }: CodeProps) => {
+      const match = /language-([\w-]+)/.exec(className ?? '')
+      if (!inline && match?.[1] === 'interactive-plot') {
+        return (
+          <InteractivePlot
+            defaultExpr={String(children).replace(/\n$/, '')}
+            {...parsePlotOptions(node?.data?.meta)}
+          />
+        )
+      }
+      if (!inline && match?.[1] === 'population-growth') {
+        return <PopulationGrowth />
+      }
+      if (!inline && match?.[1] === 'bm25-explorer') {
+        return <Bm25Explorer />
+      }
+      if (!inline && match?.[1] === 'tangent') {
+        return <Tangent source={String(children)} />
+      }
       if (!inline && (match || String(children).includes('\n'))) {
         return (
           <Box my={5} fontSize="sm" borderRadius="md" overflow="hidden" border="1px solid" borderColor="page.border">
@@ -130,7 +182,11 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   }
 
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
+      components={components}
+    >
       {content}
     </ReactMarkdown>
   )
