@@ -63,12 +63,12 @@ For disclosure, I built RAGBandit.
 
 Here's a summary list of the different levels of RAG that we'll be approaching:
 
-- Naive: the simplest form, vector search, add the chunks to the context besides the inital prompt query, let the LLM answer.
+- Naive: the simplest form, vector search, add the chunks to the context besides the initial prompt query, let the LLM answer.
 - Hybrid: do keyword search (i.e. keywords have to match between the query and the documents) and join the results of that with the vector search results. Useful when exact matches are needed (like when referencing acronyms).
 - Filtering with LLM-as-judge: wait for the chunk evaluation to complete (which takes a bit), and use only the chunks that were considered relevant.
 - Multimodal: if there are images attached to chunks, send them to a vision model for extra context, in case the answer is in the image.
 - Agentic: the LLM drives its own search loop with five tools at its disposal: `search` (query the collection), `rephrase_query` (rewrite a query via sub-questions, HyDE, or step-back), `evaluate_retrieval` (judge whether the evidence so far is sufficient, ambiguous, or insufficient), `critique_draft` (check a draft answer for unsupported claims), and `finish` (submit the final answer). It can break down the query, run several searches, and retry when the results are not good enough.
-- Multi-agent: similar to the agentic level, but with specialist agents for search, keywords, documents, and vision, plus a grounding check on every claim.
+- Multi-agent: similar to the agentic level, but with specialist agents for search, keywords, and vision, plus a grounding check on every claim.
 - Smart router: pick the right level for each question.
 
 Every snippet below reuses the search `client` from above, plus two small helpers: one to turn chunks into a numbered context string, and one to call an LLM. I'm using Claude here, but the LLM layer is swappable - you can use your LLM provider of choice.
@@ -128,7 +128,7 @@ def tokenize(text):
 
 def all_chunks(client):
     """Every chunk in the dataset - the corpus BM25 searches over.
-    We walk from the dataset ID, to the embedding resutls, to the parent chunking results to get the chunks."""
+    We walk from the dataset ID, to the embedding results, to the parent chunking results to get the chunks."""
     members = requests.get(
         f"{client.base_url}/datasets/{client.dataset_id}/members",
         headers=client.headers,
@@ -153,9 +153,9 @@ def all_chunks(client):
     return corpus
 ```
 
-With the corpus in hand, hybrid is: vector search, an independent BM25 pass over everything, union (i.e. a list with both the vector search chunks and keyword scores chunks), fuse.
+With the corpus in hand, hybrid is: vector search, an independent BM25 pass over everything, union (i.e. a list with both the vector search chunks and keyword-scored chunks), fuse.
 
-We fuse the chunks using reciprocal rank fusion. This means that for each chunk ID in both of the search results, we score them based on where in the list they show up, and we add the scores if they show up in both of the lists. This means that chunks high up in each list should make the cut, as well as chunks that are in both lists, even if they didn't score very high. `k` is a smoothing factor - the higher it is the less relevant the difference is between a chunk that appears first, and a chunk that appears last.
+We fuse the chunks using reciprocal rank fusion. This means that for each chunk ID that shows up in the search results, we score them based on where in the list they show up, and we add the scores if they show up in both of the lists. This means that chunks high up in each list should make the cut, as well as chunks that are in both lists, even if they didn't score very high. `k` is a smoothing factor - the higher it is the less relevant the difference is between a chunk that appears first, and a chunk that appears last.
 
 ```python
 def reciprocal_rank_fusion(rankings, k=60):
@@ -167,7 +167,7 @@ def reciprocal_rank_fusion(rankings, k=60):
     return scores
 ```
 
-Now we can implement the hybrid RAG function. Note that there are fundamentally two searches: one keyword, and one vector. Even if you run them in parallel, this should take longer, but might yield better results.
+Now we can implement the hybrid RAG function. Note that there are fundamentally two searches: one keyword, and one vector. Even if you run them in parallel, this should take longer than a naive RAG setup, but might yield better results.
 
 ```python
 def hybrid_rag(client, question, top_k=5):
@@ -284,7 +284,7 @@ def judge_filter_rag(client, question, top_k=5):
     return ask_llm(f"Context:\n{context}\n\nQuestion: {question}")
 ```
 
-LLM-as-judge is a tool that we can use - but, we have to use this responsibly. Generally speaking, an LLM won't have the same knowledge as a domain expertise, so, unless you're aligning the LLM with one (either by prompt engineering or fine tuning), we should expect the LLM-as-judge to be flawed. So, it's not useful as a definitive scorer, but more of as a general guide.
+LLM-as-judge is a tool that we can use - but, we have to use this responsibly. Generally speaking, an LLM won't have the same knowledge as a domain expert, so, unless you're aligning the LLM with one (either by prompt engineering or fine tuning), we should expect the LLM-as-judge to be flawed. So, it's not useful as a definitive scorer, but more of as a general guide.
 
 One thing worth being precise about: this *filters* chunks (drops the ones the judge rejects) but it doesn't *reorder* them - the survivors keep their vector-search ranking. True reranking is a related but distinct idea, and a natural next step here. You run every candidate through a reranker - a model that takes the query and chunk together and produces a relevance score - and then sort by that score. Because it looks at the pair jointly (instead of comparing two independent embeddings) it can catch nuance the vector search misses, and it's usually fast and cheap. RAGBandit doesn't ship a dedicated reranker today, so the LLM-as-judge is our stand-in for the same goal of higher-precision context - maybe something to add in the future!
 
@@ -375,7 +375,6 @@ def agentic_rag(client, question, max_iterations=5):
 
 *Agentic RAG working through its search loop. Heads up: this one takes a while to finish in real time - it runs several searches back to back, so the clip above is sped up roughly 10x.*
 
-
 ## Multi-agent RAG
 
 Multi-agent RAG is agentic RAG with a boost: instead of using just one agent, we use different specialized agents. By specialized agents, we mean agents that have a single, smaller task, with a specific system prompt, and specific tools.
@@ -443,7 +442,7 @@ def multiagent_rag(client, question):
 
 There's one thing that's tricky with the multi-agent RAG setup - there are a lot of calls, a lot of parallel calls, and it can be hard to debug! If you'd like to have some sort of way to control how complex the approach should be to answering a query, you can try a smart router. Put simply, we're considering a smart router another LLM call that decides which of the RAG approaches to use.
 
-You may ask, but doesn't the multi-agent RAG already sort of do that? Well, it does, but a smart router can be cheaper, and it works especially well if the vast majority of your queries don't need much more than vector search or hybrid RAG. The multi-agent setup can have an inclination to digging deeper, spending more tokens, making more checks, and with a smart router, you can just focus on the task of making sure it's choosing the appropriate level of complexity.
+You may ask, but doesn't the multi-agent RAG already sort of do that? Well, it does, but a smart router can be cheaper, and it works especially well if the vast majority of your queries don't need much more than vector search or hybrid RAG. The multi-agent setup can have an inclination to dig deeper, spending more tokens, making more checks, and with a smart router, you can just focus on the task of making sure it's choosing the appropriate level of complexity.
 
 Of course, the smart router can also fail, and pick a route that's too simple, producing an underwhelming answer. This is a trade-off that we have to make and improve with time.
 
