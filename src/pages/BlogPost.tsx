@@ -1,7 +1,10 @@
+import { useEffect } from 'react'
 import { Box, Flex, Heading, Link, Tag, Text } from '@chakra-ui/react'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { getPostBySlug } from '../utils/posts'
 import MarkdownRenderer from '../components/MarkdownRenderer'
+
+const DEFAULT_TITLE = 'Martim Chaves | AI Engineer & Consultant'
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr)
@@ -11,6 +14,13 @@ function formatDate(dateStr: string): string {
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>()
   const post = slug ? getPostBySlug(slug) : undefined
+
+  useEffect(() => {
+    document.title = post ? `Martim Chaves | ${post.title}` : DEFAULT_TITLE
+    return () => {
+      document.title = DEFAULT_TITLE
+    }
+  }, [post])
 
   if (!post) {
     return (
