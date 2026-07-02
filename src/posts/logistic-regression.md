@@ -2,7 +2,7 @@
 title: "Part 1: Logistic Regression"
 date: "2026-04-22"
 description: "The simplest learnable function — and why all the pieces you need are already here"
-draft: false
+draft: true
 tags: ["Reinventing Code Agents", "ML"]
 slug: "logistic-regression"
 type: "tech"
