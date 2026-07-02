@@ -2,7 +2,7 @@
 title: "Part 2: Neural Networks"
 date: "2026-04-23"
 description: "Stack two layers, solve XOR, and discover why backpropagation is just the chain rule"
-draft: false
+draft: true
 tags: ["Reinventing Code Agents", "ML"]
 slug: "neural-networks"
 type: "tech"

@@ -2,7 +2,7 @@
 title: "Part 3: Residual Connections and Sequence Models"
 date: "2026-04-24"
 description: "Fix vanishing gradients with skip connections, then learn to process sequences with RNNs and LSTMs"
-draft: false
+draft: true
 tags: ["Reinventing Code Agents", "ML"]
 slug: "residuals-and-rnns"
 type: "tech"
