@@ -10,6 +10,8 @@ type: "tech"
 
 A while back errybody was saying that "RAG is dead". But RAG is fundamentally just an idea - add relevant information to the LLM's context. There are a lot of ways to do this, some better than others, depending on the circumstances. The goal of this post is to explore different types of RAG, from a very simple approach (classic, naive RAG), to a more complex setup with multiple agents and a smart router. I'll be using the RAGBandit API to handle the retrieval, so that we can focus on the augmented generation part.
 
+You can find the code from this post [here](https://github.com/MartimChaves/ragbandit-rag). Each level is roughly one file you can copy and run. The snippets below are trimmed-down versions to keep things readable. The repo has a frontend that you can run and use to play around with all of the different levels.
+
 ````tangent
 Using RAGBandit for retrieval
 
@@ -53,6 +55,8 @@ for chunk in client.search("How does reranking work?"):
 We can loop over the search results to check out all of the chunks returned. All of the levels in this post start from a `client.search(...)` call.
 
 > The version in the repo uses `httpx` so it can fire several searches concurrently (the agentic levels lean on that), and it wraps each result in a small dataclass.
+
+For disclosure, I built RAGBandit.
 ````
 
 ## The different levels of RAG
@@ -194,6 +198,10 @@ def hybrid_rag(client, question, top_k=5):
     context = format_context([by_id[cid] for cid in best_ids])
     return ask_llm(f"Context:\n{context}\n\nQuestion: {question}")
 ```
+
+![Hybrid RAG answering a question in the RAGBandit RAG app](/images/ragbandit-rag/hybrid.gif)
+
+*Hybrid RAG answering a sinkhole coverage question (sped up).*
 
 ````tangent
 So how does BM25 actually score a chunk?
@@ -363,6 +371,11 @@ def agentic_rag(client, question, max_iterations=5):
     return "Ran out of iterations."
 ```
 
+![Agentic RAG running its search loop in the RAGBandit RAG app](/images/ragbandit-rag/agentic.gif)
+
+*Agentic RAG working through its search loop. Heads up: this one takes a while to finish in real time - it runs several searches back to back, so the clip above is sped up roughly 10x.*
+
+
 ## Multi-agent RAG
 
 Multi-agent RAG is agentic RAG with a boost: instead of using just one agent, we use different specialized agents. By specialized agents, we mean agents that have a single, smaller task, with a specific system prompt, and specific tools.
@@ -428,20 +441,24 @@ def multiagent_rag(client, question):
 
 ## Smart router
 
-- The expensive levels are wasted on easy questions. Spend one cheap LLM call to pick the right level first.
-- The router classifies the question and returns a level number; you dispatch to that pipeline.
-- Cheapest level that can answer well wins, so most questions never touch the heavy machinery.
+There's one thing that's tricky with the multi-agent RAG setup - there are a lot of calls, a lot of parallel calls, and it can be hard to debug! If you'd like to have some sort of way to control how complex the approach should be to answering a query, you can try a smart router. Put simply, we're considering a smart router another LLM call that decides which of the RAG approaches to use.
+
+You may ask, but doesn't the multi-agent RAG already sort of do that? Well, it does, but a smart router can be cheaper, and it works especially well if the vast majority of your queries don't need much more than vector search or hybrid RAG. The multi-agent setup can have an inclination to digging deeper, spending more tokens, making more checks, and with a smart router, you can just focus on the task of making sure it's choosing the appropriate level of complexity.
+
+Of course, the smart router can also fail, and pick a route that's too simple, producing an underwhelming answer. This is a trade-off that we have to make and improve with time.
+
+Here's a simple setup for a smart router:
 
 ```python
 import json
 
 ROUTER_SYSTEM = """Pick exactly ONE level for the question:
-1 Naive — a simple, single-topic factual lookup
-2 Hybrid — needs exact terms, names, codes, or numbers
-3 Judge filter — needs high precision among many similar passages
-4 Multimodal — about images, figures, charts, or tables
-5 Agentic — a complex, multi-part question needing iterative search
-6 Multi-Agent — broad research spanning many documents
+1 Naive: a simple, single-topic factual lookup
+2 Hybrid: needs exact terms, names, codes, or numbers
+3 Judge filter: needs high precision among many similar passages
+4 Multimodal: about images, figures, charts, or tables
+5 Agentic: a complex, multi-part question needing iterative search
+6 Multi-Agent: broad research spanning many documents
 Prefer the cheapest level that can answer well.
 Reply with ONLY a JSON object: {"level": <1-6>, "reason": "<short>"}"""
 
@@ -456,6 +473,16 @@ def router_rag(client, question):
     print(f"Routing to level {level}: {choice['reason']}")
     return LEVELS[level](client, question)
 ```
+
+## Ok, but which one of these should I use?
+
+If you're just starting off, I'd go with the hybrid RAG. Sometimes that's all you need! Using RAGBandit to tune the vector search, plus using keyword search to deal with acronyms or words/expressions that the embedding model used doesn't really know about, can be just what you need.
+
+But as you're working on your RAG system, I'd make it a priority to set up some sort of evaluation system for the generation part - since evaluating the retrieval part can be done with RAGBandit. The simplest way to do this is adding a thumbs up/down to your answers - this way you're getting direct feedback from your users.
+
+Another way, is having a domain expert craft a dataset of questions, and periodically rate the answers of your RAG system as good or bad with feedback. Over time, as you iterate on your RAG system, the percentage of good responses should go up. Maybe you can experiment with a model that selects keywords from the query for example. Or you can start adding judge filtering for more complex queries.
+
+Also, keep an eye out for the cost - the best system is the one that is good enough and costs the least! Best of luck in your RAG endeavours!
 
 ## Links
 
