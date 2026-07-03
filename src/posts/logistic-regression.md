@@ -1,5 +1,5 @@
 ---
-title: "Part 1: Logistic Regression"
+title: "Reinventing Code Agent: Part 1 - Reinventing Logistic Regression"
 date: "2026-04-22"
 description: "The simplest learnable function — and why all the pieces you need are already here"
 draft: true
@@ -47,7 +47,118 @@ This seemingly simple function is actually quite powerful, because it allows us 
 
 ### The logistic function and probabilites
 
-The logistic function was never meant to be used for probabilities, but by the end of the 19th century and early 20th century, S-shaped curves were all over the place. In chemistry, certain reactions could be represented by an S-curve. The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains, also found S-curves. The logistic function was a great fit for all of these phenomena.
+The logistic function was never meant to be used for probabilities, but by the end of the 19th century and early 20th century, S-shaped curves were all over the place. In chemistry, certain reactions could be represented by an S-curve (autocatalytic reactions). The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains, also found S-curves. The logistic function was a great fit for all of these phenomena. It was found in situations where growth of something depended on that something but it eventually had to reach a limit. So, I guess you could say, the logistic function was in the air.
+
+At the same time, a revolution in medicine was happening. For a long time, there was little standardization in the amounts of remedies to administer, and doctors were mostly relying on experience. But medicine, along with everything else, was going industrial. Drugs were no longer created and administered *ad hoc* by doctors, they came in bottles and boxes, and they had to have a potency label. So, researchers studying the effects of these drugs wanted to standardize dosages. How much should be enough, and how much is definitely too much? 
+
+Researchers were giving different doses of a drug to lab subjects and seeing whether or not each one responded. Individually, the outcome was binary: the treatment either worked or it didn't. Across a population, however, something interesting emerged. At very low doses, almost none of the subjects responded. At very high doses, almost all of them did. In between, the fraction of subjects that responded steadily increased with the dose. Sound familiar? Researchers were once again looking at an S-shaped curve. An S-curve that would tell them the relation between a dose and the fraction, the probability, of individuals responding.
+
+So we're in the 1920s/1930s, and we need an S-curve to describe the impact of a dose of a certain drug. Researchers wanted to compare different drugs, see how they affected people differently, to better determine the right dose, and which one was best. Which one had less side effects, and so on. They wanted to model the data, with a function... A function that could convert a dose into a probability of response.
+
+Now, a caveat: there actually were many different functions that researchers were experimenting with. Over time, the logistic function won. And for a good reason! It was, mathematically, very easy to work with. I'm not sure if Pierre realized this when he was playing around with the logistic function to model population, but its inverse turns out to be simple. If we consider $p$ to be the probability, and $d$ the dose, applying the logistic function we get:
+
+$$
+p = \frac{1}{1 + e^{-d}}
+$$
+
+Now, what if we want to go *backwards*? I.e. what if we want to know the dose that will get us a certain probability of success? Let's work through it. First, multiply both sides by $(1 + e^{-d})$:
+
+$$
+p \cdot (1 + e^{-d}) = 1
+$$
+
+Divide both sides by $p$:
+
+$$
+1 + e^{-d} = \frac{1}{p}
+$$
+
+Subtract $1$ from both sides:
+
+$$
+e^{-d} = \frac{1}{p} - 1 = \frac{1}{p} - \frac{p}{p} = \frac{1 - p}{p}
+$$
+
+Take the natural log of both sides:
+
+$$
+-d = \ln\!\left(\frac{1-p}{p}\right)
+$$
+
+And finally, multiply by $-1$ (which flips the fraction inside the log):
+
+$$
+d = \ln\!\left(\frac{p}{1-p}\right)
+$$
+
+````tangent
+Why does multiplying by $-1$ flip the fraction inside the $\ln$?
+
+First: why is $a^{-1} = \frac{1}{a}$. There's a pattern when you decrease the exponent by one. Using $a = 2$:
+
+$$
+2^3 = 8 \quad \rightarrow \quad 2^2 = 4 = \frac{8}{2} \quad \rightarrow \quad 2^1 = 2 = \frac{4}{2} \quad \rightarrow \quad 2^0 = 1 = \frac{2}{2}
+$$
+
+Every step down divides by $2$. We continue with the pattern after $0$:
+
+$$
+2^{-1} = \frac{1}{2} \quad \rightarrow \quad 2^{-2} = \frac{1}{4} \quad \rightarrow \quad 2^{-3} = \frac{1}{8}
+$$
+
+So $a^{-1}$ is just what you get when you keep dividing; it's $\frac{1}{a}$.
+
+Second: why $\ln(a^b) = b \cdot \ln(a)$. This follows from the fact that logarithms turn multiplication into addition. But why do they do that? It comes from how exponents work. When you multiply two powers of the same base, you add the exponents:
+
+$$
+e^3 \cdot e^2 = (e \cdot e \cdot e) \cdot (e \cdot e) = e^{5} = e^{3+2}
+$$
+
+Now, $\ln$ is just the question "e to what power gives me this?" If $\ln(x) = m$ and $\ln(y) = n$, that means $e^m = x$ and $e^n = y$. So:
+
+$$
+x \cdot y = e^m \cdot e^n = e^{m+n}
+$$
+
+And asking "e to what power gives me $x \cdot y$?" gives us $m + n$, which is $\ln(x) + \ln(y)$.
+
+If we apply the logarithm to $x \cdot y$ we get $\ln(x \cdot y) = \ln(e^{m+n}) = m + n = \ln(x) + \ln(y)$. So, multiplication on the inside became addition on the outside.
+
+With that in hand: $\ln(a \cdot a) = \ln(a) + \ln(a)$. But $a \cdot a$ is just $a^2$, so:
+
+$$
+\ln(a^2) = \ln(a) + \ln(a) = 2 \cdot \ln(a)
+$$
+
+And $a \cdot a \cdot a = a^3$, so $\ln(a^3) = \ln(a) + \ln(a) + \ln(a) = 3 \cdot \ln(a)$. In general, $\ln(a^b) = b \cdot \ln(a)$.
+
+Now plug in $b = -1$. We get $\ln(a^{-1}) = -1 \cdot \ln(a) = -\ln(a)$. And since we just showed $a^{-1} = \frac{1}{a}$:
+
+$$
+\ln\!\left(\frac{1}{a}\right) = -\ln(a)
+$$
+
+Negating a log flips the thing inside. Which gives us our last step:
+
+$$
+-\ln\!\left(\frac{1-p}{p}\right) = \ln\!\left(\frac{p}{1-p}\right)
+$$
+````
+
+You might be familiar with this function! It's none other than the log of the odds - the odds being `p / (1 - p)`! This is a pause and ponder moment, it's one of those moments where math gets a little bit religious. This bit of math had already been know for centuries all over the world, especially by gamblers.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### What it means to learn
 

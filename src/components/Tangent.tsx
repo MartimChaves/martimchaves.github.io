@@ -70,9 +70,9 @@ export default function Tangent({ source }: TangentProps) {
         >
           Tangent
         </Text>
-        <Text as="span" fontSize="sm" fontWeight="semibold">
-          {title}
-        </Text>
+        <Box as="span" fontSize="sm" fontWeight="semibold" sx={{ p: { display: 'inline', m: 0 } }}>
+          <MarkdownRenderer content={title} />
+        </Box>
       </Flex>
 
       <Collapse in={open} animateOpacity>
