@@ -421,7 +421,7 @@ You can play around with the value of the growth rate to increase or decrease th
 
 This seemingly simple function is actually quite powerful, because it allows us to convert any number to a value between 0 and 1 - and this, it turns out, came in really handy in the realm of probabilities.
 
-### The logistic function and probabilites
+### The logistic function and probabilities
 
 The logistic function was never meant to be used for probabilities, but by the end of the 19th century and early 20th century, S-shaped curves were all over the place. In chemistry, certain reactions could be represented by an S-curve (autocatalytic reactions). The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains, also found S-curves. The logistic function was a great fit for all of these phenomena. It was found in situations where growth of something depended on that something but it eventually had to reach a limit. So, I guess you could say, the logistic function was in the air.
 
@@ -431,13 +431,22 @@ Researchers were giving different doses of a drug to lab subjects and seeing whe
 
 So we're in the 1920s/1930s, and we need an S-curve to describe the impact of a dose of a certain drug. Researchers wanted to compare different drugs, see how they affected people differently, to better determine the right dose, and which one was best. Which one had less side effects, and so on. They wanted to model the data, with a function... A function that could convert a dose into a probability of response.
 
-Now, a caveat: there actually were many different functions that researchers were experimenting with. Over time, the logistic function won. And for a good reason! It was, mathematically, very easy to work with. I'm not sure if Pierre realized this when he was playing around with the logistic function to model population, but its inverse turns out to be simple. If we consider $p$ to be the probability, and $d$ the dose, applying the logistic function we get:
+Now, a caveat: there actually were many different functions that researchers were experimenting with. Over time, the logistic function won. And for a good reason! It was, mathematically, very easy to work with, especially because of its inverse. I'm not sure if Pierre realized this when he was playing around with the logistic function to model population, but its inverse turns out to be quite simple. If we consider $p$ to be the probability, and $d$ the dose, applying the logistic function we get:
 
 $$
 p = \\frac{1}{1 + e^{-d}}
 $$
 
-Now, what if we want to go *backwards*? I.e. what if we want to know the dose that will get us a certain probability of success? Let's work through it. First, multiply both sides by $(1 + e^{-d})$:
+Now, what if we want to go *backwards*? I.e. what if we want to know the dose that will get us a certain probability of success (i.e. the inverse)? Then we get:
+
+$$
+d = \\ln\\!\\left(\\frac{p}{1-p}\\right)
+$$
+
+\`\`\`\`\`tangent
+How do we get from $p = \\frac{1}{1 + e^{-d}}$ to $d = \\ln\\!\\left(\\frac{p}{1-p}\\right)$?
+
+First, multiply both sides by $(1 + e^{-d})$:
 
 $$
 p \\cdot (1 + e^{-d}) = 1
@@ -520,20 +529,29 @@ $$
 -\\ln\\!\\left(\\frac{1-p}{p}\\right) = \\ln\\!\\left(\\frac{p}{1-p}\\right)
 $$
 \`\`\`\`
+\`\`\`\`\`
 
-You might be familiar with this function! It's none other than the log of the odds - the odds being \`p / (1 - p)\`! This is a pause and ponder moment, it's one of those moments where math gets a little bit religious. This bit of math had already been know for centuries all over the world, especially by gamblers.
+You might be familiar with this function! It's none other than the log of the odds, or the logit function! Researchers were familiar with it, and it allowed them to turn the tricky S-curve (we're in the 1920s, there are no computers or graphing calculators), into a linear function - $d$.
 
+Now, it's important to make an adjustment - each drug had a specific curve, so really we're looking at:
+$$
+\\alpha + \\beta d = \\ln\\!\\left(\\frac{p}{1-p}\\right)
+$$
 
+This is awesome! Because instead of having to do fancy maths and graph work, researchers could describe a drug in a linear way.
 
+\`\`\`\`tangent
+What are odds? And why use the log of the odds?
 
+The general idea of odds has been around for a long time. The word itself hints at its meaning - something unequal. If you happened to be in ancient Rome, watching a chariot race, you might've turned to the person beside you and said: "I'll give you two coins if Aurelius wins, you'll give me one coin if Romulus wins!". You confidently expect Aurelius to win. And in that unequalness, there's an implicit ratio - you think the likelihood of Aurelius winning is twice as large as the one of Romulus winning. In other words, if they were to race three times, Aurelius should win twice, while Romulus should only win once!
 
+In simple terms, when stating the odds of something, we're saying how often we'll win ($W$) versus how often we'll lose ($L$) - and we represent it like this: $W$:$L$. Often, one of those numbers is set to 1 (as in simplifying a fraction), so we'll set it to $\\frac{W}{L}$:$1$. This is a bit different from a probability. If we want to know the probability of winning, we can calculate it with the formula $\\frac{W}{W+L}$, or $\\frac{W/L}{W/L+1}$. So, let's say $X = \\frac{W}{L}$. This means that $P = \\frac{X}{X+1}$ - if we solve for $X$, we get $X = \\frac{P}{1-P}$ - i.e. the odds function we've seen before.
 
+There is one annoying thing about odds though - they're not symmetrical. If winning is twice as likely, then the odds are $2$:$1$. If it's half as likely, the odds are $0.5$:$1$. If winning is just as likely as losing, then the odds are $1$:$1$. Twice as likely or half as likely feel like they should be equidistant from $1$, but they're not. Plus, odds can go from $0$ to $\\infty$, and an unlikely win is "crammed" into the space between $0$ and $1$, while a likely win can go from $1$ to $\\infty$.
 
+A way to "solve" this is by taking the log of the odds! The log of the space between $0$ and $1$ is as "large" as the log between the space of $1$ and $\\infty$. And, it's also symmetrical around the value $1$ - $\\ln(0.5) \\approx -0.69$, and $\\ln(2) \\approx 0.69$. So, now we get symmetry.
 
-
-
-
-
+\`\`\`\`
 
 
 ### What it means to learn
