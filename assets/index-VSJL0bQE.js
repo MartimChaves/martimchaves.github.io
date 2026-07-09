@@ -423,15 +423,17 @@ This seemingly simple function is actually quite powerful, because it allows us 
 
 ### The logistic function and probabilities
 
-The logistic function was never meant to be used for probabilities, but by the end of the 19th century and early 20th century, S-shaped curves were all over the place. In chemistry, certain reactions could be represented by an S-curve (autocatalytic reactions). The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains, also found S-curves. The logistic function was a great fit for all of these phenomena. It was found in situations where growth of something depended on that something but it eventually had to reach a limit. So, I guess you could say, the logistic function was in the air.
+The logistic function was never meant to be used for probabilities, but by the end of the 19th century and early 20th century, S-shaped curves, like the logistic function, were all over the place. In chemistry, certain reactions could be represented by an S-curve (autocatalytic reactions). The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains, also found S-curves. The logistic function was a great fit for all of these phenomena. It was found in situations where growth of something depended on that something but it eventually had to reach a limit. So, I guess you could say, the logistic function was in the air.
 
 At the same time, a revolution in medicine was happening. For a long time, there was little standardization in the amounts of remedies to administer, and doctors were mostly relying on experience. But medicine, along with everything else, was going industrial. Drugs were no longer created and administered *ad hoc* by doctors, they came in bottles and boxes, and they had to have a potency label. So, researchers studying the effects of these drugs wanted to standardize dosages. How much should be enough, and how much is definitely too much? 
 
-Researchers were giving different doses of a drug to lab subjects and seeing whether or not each one responded. Individually, the outcome was binary: the treatment either worked or it didn't. Across a population, however, something interesting emerged. At very low doses, almost none of the subjects responded. At very high doses, almost all of them did. In between, the fraction of subjects that responded steadily increased with the dose. Sound familiar? Researchers were once again looking at an S-shaped curve. An S-curve that would tell them the relation between a dose and the fraction, the probability, of individuals responding.
+Researchers were giving different doses of a drug to lab subjects and seeing whether or not each one responded. Individually, the outcome was binary: the treatment either worked or it didn't. Across a population, however, something interesting emerged. At very low doses, almost none of the subjects responded. At very high doses, almost all of them did. In between, the **fraction** of subjects that responded steadily increased with the dose. Sound familiar? Researchers were once again looking at an S-shaped curve. An S-curve that would tell them the relation between a dose and the fraction, the probability, of individuals responding.
 
 So we're in the 1920s/1930s, and we need an S-curve to describe the impact of a dose of a certain drug. Researchers wanted to compare different drugs, see how they affected people differently, to better determine the right dose, and which one was best. Which one had less side effects, and so on. They wanted to model the data, with a function... A function that could convert a dose into a probability of response.
 
-Now, a caveat: there actually were many different functions that researchers were experimenting with. Over time, the logistic function won. And for a good reason! It was, mathematically, very easy to work with, especially because of its inverse. I'm not sure if Pierre realized this when he was playing around with the logistic function to model population, but its inverse turns out to be quite simple. If we consider $p$ to be the probability, and $d$ the dose, applying the logistic function we get:
+Now, a caveat: there actually were many different functions that researchers were experimenting with. Spoiler alert, over time, the logistic function won. Finally, the logistic function became the function used to convert doses to probabilities.
+
+But why did the logistic function win? For a good reason! It was, mathematically, very easy to work with, especially because of its inverse. I'm not sure if Pierre realized this when he was playing around with the logistic function to model population, but its inverse turns out to be quite simple. If we consider $p$ to be the probability, and $d$ the dose, applying the logistic function we get:
 
 $$
 p = \\frac{1}{1 + e^{-d}}
@@ -531,9 +533,9 @@ $$
 \`\`\`\`
 \`\`\`\`\`
 
-You might be familiar with this function! It's none other than the log of the odds, or the logit function! Researchers were familiar with it, and it allowed them to turn the tricky S-curve (we're in the 1920s, there are no computers or graphing calculators), into a linear function - $d$.
+You might be familiar with this function! It's none other than the log of the odds, or the logit function! Researchers were familiar with it, and it allowed them to turn the tricky S-curve (we're in the 1920s, there are no computers or graphing calculators), into a linear function - $d$. Just to be more rigurous, $d$ alone would mean the same function for every drug, treatment, or whatever it is that had an S-curve response that researchers were studying - to be more accurate, we're really talking about $\\beta d + \\alpha$.
 
-Now, it's important to make an adjustment - each drug had a specific curve, so really we're looking at:
+Each drug had a specific curve, so really we're looking at:
 $$
 \\alpha + \\beta d = \\ln\\!\\left(\\frac{p}{1-p}\\right)
 $$
