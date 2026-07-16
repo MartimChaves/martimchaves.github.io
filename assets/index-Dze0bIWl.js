@@ -376,7 +376,7 @@ Error generating stack: `+x.message+`
  * @license MIT
  */function ax(){return ax=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e},ax.apply(this,arguments)}function lee(e,t){if(e==null)return{};var n={},r=Object.keys(e),a,i;for(i=0;i<r.length;i++)a=r[i],!(t.indexOf(a)>=0)&&(n[a]=e[a]);return n}function uee(e){return!!(e.metaKey||e.altKey||e.ctrlKey||e.shiftKey)}function cee(e,t){return e.button===0&&(!t||t==="_self")&&!uee(e)}const dee=["onClick","relative","reloadDocument","replace","state","target","to","preventScrollReset","viewTransition"],pee="6";try{window.__reactRouterVersion=pee}catch{}const fee="startTransition",C3=yw[fee];function hee(e){let{basename:t,children:n,future:r,window:a}=e,i=F.useRef();i.current==null&&(i.current=hJ({window:a,v5Compat:!0}));let s=i.current,[u,c]=F.useState({action:s.action,location:s.location}),{v7_startTransition:d}=r||{},f=F.useCallback(h=>{d&&C3?C3(()=>c(h)):c(h)},[c,d]);return F.useLayoutEffect(()=>s.listen(f),[s,f]),F.useEffect(()=>iee(r),[r]),F.createElement(oee,{basename:t,children:n,location:u.location,navigationType:u.action,navigator:s,future:r})}const mee=typeof window<"u"&&typeof window.document<"u"&&typeof window.document.createElement<"u",gee=/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i,ss=F.forwardRef(function(t,n){let{onClick:r,relative:a,reloadDocument:i,replace:s,state:u,target:c,to:d,preventScrollReset:f,viewTransition:h}=t,g=lee(t,dee),{basename:b}=F.useContext(ds),S,w=!1;if(typeof d=="string"&&gee.test(d)&&(S=d,mee))try{let _=new URL(window.location.href),D=d.startsWith("//")?new URL(_.protocol+d):new URL(d),I=K2(D.pathname,b);D.origin===_.origin&&I!=null?d=I+D.search+D.hash:w=!0}catch{}let k=jJ(d,{relative:a}),A=bee(d,{replace:s,state:u,target:c,preventScrollReset:f,relative:a,viewTransition:h});function T(_){r&&r(_),_.defaultPrevented||A(_)}return F.createElement("a",ax({},g,{href:S||k,onClick:w||i?r:T,ref:n,target:c}))});var R3;(function(e){e.UseScrollRestoration="useScrollRestoration",e.UseSubmit="useSubmit",e.UseSubmitFetcher="useSubmitFetcher",e.UseFetcher="useFetcher",e.useViewTransitionState="useViewTransitionState"})(R3||(R3={}));var I3;(function(e){e.UseFetcher="useFetcher",e.UseFetchers="useFetchers",e.UseScrollRestoration="useScrollRestoration"})(I3||(I3={}));function bee(e,t){let{target:n,replace:r,state:a,preventScrollReset:i,relative:s,viewTransition:u}=t===void 0?{}:t,c=qJ(),d=Yc(),f=XO(e,{relative:s});return F.useCallback(h=>{if(cee(h,n)){h.preventDefault();let g=r!==void 0?r:yf(d)===yf(f);c(e,{replace:g,state:a,preventScrollReset:i,relative:s,viewTransition:u})}},[d,c,f,r,a,n,e,i,s,u])}function yee(){return C.jsxs("svg",{width:"16",height:"16",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round",children:[C.jsx("circle",{cx:"12",cy:"12",r:"5"}),C.jsx("line",{x1:"12",y1:"1",x2:"12",y2:"3"}),C.jsx("line",{x1:"12",y1:"21",x2:"12",y2:"23"}),C.jsx("line",{x1:"4.22",y1:"4.22",x2:"5.64",y2:"5.64"}),C.jsx("line",{x1:"18.36",y1:"18.36",x2:"19.78",y2:"19.78"}),C.jsx("line",{x1:"1",y1:"12",x2:"3",y2:"12"}),C.jsx("line",{x1:"21",y1:"12",x2:"23",y2:"12"}),C.jsx("line",{x1:"4.22",y1:"19.78",x2:"5.64",y2:"18.36"}),C.jsx("line",{x1:"18.36",y1:"5.64",x2:"19.78",y2:"4.22"})]})}function vee(){return C.jsx("svg",{width:"16",height:"16",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round",children:C.jsx("path",{d:"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"})})}function See(){const e=Yc(),{colorMode:t,toggleColorMode:n}=$c(),r=t==="dark",a=(i,s)=>{const u=e.hash===`#${i}`||i==="/"&&e.hash==="";return C.jsx(ar,{as:ss,to:i,fontSize:"sm",fontWeight:"500",color:u?"page.text":"page.textSecondary",textDecoration:"none",letterSpacing:"0.01em",_hover:{color:"page.text",textDecoration:"none"},children:s})};return C.jsx(Le,{as:"header",borderBottom:"1px solid",borderColor:"page.border",bg:"page.bg",children:C.jsxs(Et,{maxW:"760px",mx:"auto",px:{base:5,md:8},py:4,justify:"space-between",align:"center",children:[C.jsxs(ar,{as:ss,to:"/",textDecoration:"none",_hover:{textDecoration:"none"},children:[C.jsx(st,{fontWeight:"700",fontSize:"md",color:"page.text",letterSpacing:"-0.01em",children:"Martim Chaves"}),C.jsx(st,{fontSize:"xs",color:"page.textSecondary",fontWeight:"400",children:"AI Engineer & Consultant"})]}),C.jsxs(Et,{align:"center",gap:6,children:[C.jsxs(Le,{as:"nav",display:"flex",gap:6,children:[a("/","Home"),a("/blog","Writing")]}),C.jsx(EO,{"aria-label":r?"Switch to light mode":"Switch to dark mode",icon:r?C.jsx(yee,{}):C.jsx(vee,{}),onClick:n,variant:"ghost",size:"sm",color:"page.textSecondary",_hover:{color:"page.text",bg:"page.surface"}})]})]})})}function wee(){return C.jsx(Le,{as:"footer",mt:20,py:8,borderTop:"1px solid",borderColor:"page.border",children:C.jsxs(Et,{maxW:"760px",mx:"auto",px:{base:5,md:8},justify:"space-between",align:"center",flexWrap:"wrap",gap:3,children:[C.jsxs(st,{fontSize:"sm",color:"page.textSecondary",children:["© ",new Date().getFullYear()," Martim Chaves"]}),C.jsxs(Et,{gap:5,children:[C.jsx(ar,{href:"https://github.com/MartimChaves",isExternal:!0,fontSize:"sm",color:"page.textSecondary",_hover:{color:"page.text"},children:"GitHub"}),C.jsx(ar,{href:"mailto:martim.chaves@pm.me",fontSize:"sm",color:"page.textSecondary",_hover:{color:"page.text"},children:"Email"})]})]})})}function xee({children:e}){return C.jsxs(Le,{minH:"100vh",display:"flex",flexDirection:"column",bg:"page.bg",children:[C.jsx(See,{}),C.jsx(Le,{as:"main",flex:"1",maxW:"760px",mx:"auto",px:{base:5,md:8},w:"100%",pt:12,pb:8,children:e}),C.jsx(wee,{})]})}const kee=`---
 title: "Reinventing Code Agent: Part 1 - Reinventing Logistic Regression"
-date: "2026-04-22"
+date: "2026-07-16"
 description: "The simplest learnable function — and why all the pieces you need are already here"
 draft: true
 tags: ["Reinventing Code Agents", "ML"]
@@ -533,14 +533,8 @@ $$
 \`\`\`\`
 \`\`\`\`\`
 
-You might be familiar with this function! It's none other than the log of the odds, or the logit function! Researchers were familiar with it, and it allowed them to turn the tricky S-curve (we're in the 1920s, there are no computers or graphing calculators), into a linear function - $d$. Just to be more rigurous, $d$ alone would mean the same function for every drug, treatment, or whatever it is that had an S-curve response that researchers were studying - to be more accurate, we're really talking about $\\beta d + \\alpha$.
+You might be familiar with this function! It's none other than the log of the odds, or the logit function!
 
-Each drug had a specific curve, so really we're looking at:
-$$
-\\alpha + \\beta d = \\ln\\!\\left(\\frac{p}{1-p}\\right)
-$$
-
-This is awesome! Because instead of having to do fancy maths and graph work, researchers could describe a drug in a linear way.
 
 \`\`\`\`tangent
 What are odds? And why use the log of the odds?
@@ -555,6 +549,64 @@ A way to "solve" this is by taking the log of the odds! The log of the space bet
 
 \`\`\`\`
 
+At the time, and even today, researchers had an intuition for what the log of odds meant, or for comparing two different log of the odds. In the same way that you and I have an intuitive idea of what 1.5 meters means (or 5 feet if you're used to imperial unites), researchers had an intuitive idea of what the log of odds meant, or what does it mean for a drug A to have a log of odds 1.7 response when the dose was 2 miligrams, versus the drug B having a log of odds response of 2.5 for the same dosage, for example. A log-odds of 0 means a 1:1 odds, even odds. Each unit of log-odds roughly triples the odds (since e is around 2.7). For the drug A (1.7) vs drug B (2.5) example, drug B has around twice the odds of being effective, when compared to drug A, since the difference of the log-odds is 0.8. So for every two subjects that don't respond to drug A, one of them would have responded to drug B.
+
+Researchers being familiar with it was great, but there was something else that really mattered as well - now, instead of using the raw probability data, researchers could apply the log of odds transformation to the raw probability data, and this meant that they could model the relationship between probability and dosage in a linear way!
+
+Now, we actually have to make a slight correction. $d = \\text{p}$ is one function, the same as $x = y$, so we need to add parameters so that we can describe each and every one of the different drugs, or different phenomena that we're studying. So, really, we're dealing with $\\beta d + \\alpha$.
+
+So, summarizing, we're looking at:
+$$
+\\alpha + \\beta d = \\ln\\!\\left(\\frac{p}{1-p}\\right)
+$$
+
+You might be confused with the $\\ln\\!\\left(\\frac{p}{1-p}\\right)$ - but remember, this really is just there to remind us that we're applying the log odds transformation to the raw probability data.
+
+If we were to consider the following:
+$$
+p^* = \\ln\\!\\left(\\frac{p}{1-p}\\right)
+$$
+
+Then, we can write:
+
+$$
+p^* = \\alpha + \\beta d
+$$
+
+Cool, right? Instead of having to deal with this:
+
+\`\`\`interactive-plot xMin=-1 xMax=8 yMin=-0.1 yMax=1.1
+1/(1 + exp(-(-3 + x)))
+\`\`\`
+Fig. 4 - Dose vs. probability of response: an S-curve.
+
+We can actually work with this:
+
+\`\`\`interactive-plot xMin=-1 xMax=8 yMin=-5 yMax=5
+-3 + x
+\`\`\`
+Fig. 5 - Dose vs. log-odds of response: a straight line.
+
+It's the same data! And we're still capturing the relationship between the dose and probability. At the core, we're using the logistic function, but we can manipulate it so that it's easier to understand. $\\alpha$ tells us where the line crosses zero, and this is the dose at which we have a 50/50 chance of response. $\\beta$ is the slope, and it tells us how sharply the response changes with the dose. Remember, we're in the 1920s, there are no computers or graphing calculators! Getting these two numbers from a straight line is something that we can do with a ruler and a pencil!
+
+### From the logistic function to logistic regression
+
+- 1930s: logistic function used for dose-response, single input, fitting done graphically (ruler and pencil)
+- 1940s: researchers realize a drug's effect depends on more than just dose — age, weight, prior conditions, etc.
+- The equation just gets more terms: p* = a + b1 * dose + b2 * age + b3 * weight + ... - still linear, just more dimensions
+- But now you can't fit it with a ruler anymore - too many parameters to eyeball
+- 1958: David Cox formalizes logistic regression for multiple predictors. Early computers are just becoming available, making it practical
+- Since we're fitting parameters to data (regression) using the logistic function, this IS logistic regression
+- The name isn't a new invention - it's just what researchers were already doing, now formalized and generalized
+- How do we find the best parameters? Historically: Newton-Raphson (uses second derivatives, converges fast, practical for small datasets on early computers)
+- Modern ML approach (and what we'll use): cross-entropy loss + gradient descent - simpler, only needs first derivatives, scales to massive datasets
+- Once you see the setup as "linear combination -> logistic function -> probability," there's nothing dose-specific about it - inputs could be word counts (spam), pixel values (images), symptoms (diagnosis). The logistic function doesn't care what the inputs mean
+- This is where dose-response analysis becomes classic machine learning
+
+to-do:
+- change previous parameters from alfa/beta to bias/weight
+- all functions to latex for consistency
+- source for historical bits
 
 ### What it means to learn
 
