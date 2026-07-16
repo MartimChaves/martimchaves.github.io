@@ -1,6 +1,6 @@
 ---
 title: "Reinventing Code Agent: Part 1 - Reinventing Logistic Regression"
-date: "2026-04-22"
+date: "2026-07-16"
 description: "The simplest learnable function — and why all the pieces you need are already here"
 draft: true
 tags: ["Reinventing Code Agents", "ML"]
@@ -157,14 +157,8 @@ $$
 ````
 `````
 
-You might be familiar with this function! It's none other than the log of the odds, or the logit function! Researchers were familiar with it, and it allowed them to turn the tricky S-curve (we're in the 1920s, there are no computers or graphing calculators), into a linear function - $d$. Just to be more rigurous, $d$ alone would mean the same function for every drug, treatment, or whatever it is that had an S-curve response that researchers were studying - to be more accurate, we're really talking about $\beta d + \alpha$.
+You might be familiar with this function! It's none other than the log of the odds, or the logit function!
 
-Each drug had a specific curve, so really we're looking at:
-$$
-\alpha + \beta d = \ln\!\left(\frac{p}{1-p}\right)
-$$
-
-This is awesome! Because instead of having to do fancy maths and graph work, researchers could describe a drug in a linear way.
 
 ````tangent
 What are odds? And why use the log of the odds?
@@ -179,6 +173,64 @@ A way to "solve" this is by taking the log of the odds! The log of the space bet
 
 ````
 
+At the time, and even today, researchers had an intuition for what the log of odds meant, or for comparing two different log of the odds. In the same way that you and I have an intuitive idea of what 1.5 meters means (or 5 feet if you're used to imperial unites), researchers had an intuitive idea of what the log of odds meant, or what does it mean for a drug A to have a log of odds 1.7 response when the dose was 2 miligrams, versus the drug B having a log of odds response of 2.5 for the same dosage, for example. A log-odds of 0 means a 1:1 odds, even odds. Each unit of log-odds roughly triples the odds (since e is around 2.7). For the drug A (1.7) vs drug B (2.5) example, drug B has around twice the odds of being effective, when compared to drug A, since the difference of the log-odds is 0.8. So for every two subjects that don't respond to drug A, one of them would have responded to drug B.
+
+Researchers being familiar with it was great, but there was something else that really mattered as well - now, instead of using the raw probability data, researchers could apply the log of odds transformation to the raw probability data, and this meant that they could model the relationship between probability and dosage in a linear way!
+
+Now, we actually have to make a slight correction. $d = \text{p}$ is one function, the same as $x = y$, so we need to add parameters so that we can describe each and every one of the different drugs, or different phenomena that we're studying. So, really, we're dealing with $\beta d + \alpha$.
+
+So, summarizing, we're looking at:
+$$
+\alpha + \beta d = \ln\!\left(\frac{p}{1-p}\right)
+$$
+
+You might be confused with the $\ln\!\left(\frac{p}{1-p}\right)$ - but remember, this really is just there to remind us that we're applying the log odds transformation to the raw probability data.
+
+If we were to consider the following:
+$$
+p^* = \ln\!\left(\frac{p}{1-p}\right)
+$$
+
+Then, we can write:
+
+$$
+p^* = \alpha + \beta d
+$$
+
+Cool, right? Instead of having to deal with this:
+
+```interactive-plot xMin=-1 xMax=8 yMin=-0.1 yMax=1.1
+1/(1 + exp(-(-3 + x)))
+```
+Fig. 4 - Dose vs. probability of response: an S-curve.
+
+We can actually work with this:
+
+```interactive-plot xMin=-1 xMax=8 yMin=-5 yMax=5
+-3 + x
+```
+Fig. 5 - Dose vs. log-odds of response: a straight line.
+
+It's the same data! And we're still capturing the relationship between the dose and probability. At the core, we're using the logistic function, but we can manipulate it so that it's easier to understand. $\alpha$ tells us where the line crosses zero, and this is the dose at which we have a 50/50 chance of response. $\beta$ is the slope, and it tells us how sharply the response changes with the dose. Remember, we're in the 1920s, there are no computers or graphing calculators! Getting these two numbers from a straight line is something that we can do with a ruler and a pencil!
+
+### From the logistic function to logistic regression
+
+- 1930s: logistic function used for dose-response, single input, fitting done graphically (ruler and pencil)
+- 1940s: researchers realize a drug's effect depends on more than just dose — age, weight, prior conditions, etc.
+- The equation just gets more terms: p* = a + b1 * dose + b2 * age + b3 * weight + ... - still linear, just more dimensions
+- But now you can't fit it with a ruler anymore - too many parameters to eyeball
+- 1958: David Cox formalizes logistic regression for multiple predictors. Early computers are just becoming available, making it practical
+- Since we're fitting parameters to data (regression) using the logistic function, this IS logistic regression
+- The name isn't a new invention - it's just what researchers were already doing, now formalized and generalized
+- How do we find the best parameters? Historically: Newton-Raphson (uses second derivatives, converges fast, practical for small datasets on early computers)
+- Modern ML approach (and what we'll use): cross-entropy loss + gradient descent - simpler, only needs first derivatives, scales to massive datasets
+- Once you see the setup as "linear combination -> logistic function -> probability," there's nothing dose-specific about it - inputs could be word counts (spam), pixel values (images), symptoms (diagnosis). The logistic function doesn't care what the inputs mean
+- This is where dose-response analysis becomes classic machine learning
+
+to-do:
+- change previous parameters from alfa/beta to bias/weight
+- all functions to latex for consistency
+- source for historical bits
 
 ### What it means to learn
 
