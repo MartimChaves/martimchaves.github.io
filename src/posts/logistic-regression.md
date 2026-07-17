@@ -215,24 +215,49 @@ It's the same data! And we're still capturing the relationship between the dose 
 
 ### From the logistic function to logistic regression
 
-When the 1940s came around, researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age and weight. This meant that the equation would have more terms, but it would still be linear - a linear equation being one that is the *sum* of different terms.
+When the 1940s came around, researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age and weight. This meant that the equation would have more terms.
 
-Essentially, instead of calculating the log of the odds using just the dosage, they'd also be using age and weight, and so, we get this:
+There was one key difference though - now we have a lot more variables, so making groups gets tricky. Before, we could aggregate around dosages (2mg, 2.5mg, 3mg, ...), but since each subject is a unique combination of dose, age, and weight, we're better off just using the individual data points, instead of aggregating. And since we're using the individual data points, instead of calculating probabilities, we can look at the subject's response as something binary - did they respond or not? Instead of using $p$, we'll be using $y$.
+
+So, now, we get something like this:
 
 $$
-p^* = a + b_1 \cdot \text{dose} + b_2 \cdot \text{age} + b_3 \cdot \text{weight}
+y = \frac{1}{1 + e^{-(a + b_1 \cdot \text{dose} + b_2 \cdot \text{age} + b_3 \cdot \text{weight})}}
 $$
 
-Reminder - we **have** the fundamental data. This is, we know what $p^*$ should be for a given dose, age, and weight - what we need to know is $a$, $b_1$, $b_2$, and $b_3$. If you think about it, these 4 parameters are essentially the descriptors of a drug.
+Reminder - we **have** the fundamental data. This is, we know what $y$ should be for a given dose, age, and weight - what we need to know is $a$, $b_1$, $b_2$, and $b_3$. If you think about it, these 4 parameters are essentially the descriptors of a drug.
 
-This isn't really something that we can do with a ruler and pencil anymore, but, lucky for us, there are other ways to get to those numbers. Figuring out those numbers in fancier words is "fitting the parameters to the data" - a.k.a. **regression**. Since we're doing regression using the logistic function, this IS logistic regression! We have arrived! But then, how do we exactly fit those numbers?
+This isn't really something that we can do with a ruler and pencil anymore. But, lucky for us, there are other ways to get those parameteres. Figuring them out is what we call "fitting the parameters to the data" - a.k.a. **regression**. Since we're doing regression using the logistic function, this IS logistic regression! We have arrived!
 
-There are many different ways of doing that, some of them involving more or less complex calculations - and in the early 1960s, computers are just becoming available, which made this process much easier, and thus more popular. Historically, the most common method was the **Newton-Raphson method**, but it's a bit tricky, so it has fallen out of style. Nowadays, and this is the method that we'll be exploring, we use something called **gradient descent**. And to use gradient descent, we first have to talk about **loss functions**.
+But then, how do we exactly fit those parameters?
+
+There are many different ways of doing that, some of them involving more or less complex calculations - and in the early 1960s, computers were just becoming available, which made this process much easier, and thus more popular. Historically, the most common method was the **Newton-Raphson method**, but it's a bit tricky, so it has fallen out of style. Nowadays, and this is the method that we'll be exploring, we use something called **gradient descent**. And to use gradient descent, we first have to talk about **loss functions**.
 
 #### Loss functions? I'm at a loss here...
 
-Loss is a word we use to mean difference - the difference between the expected result and the actual result. Remember, for a certain dose, age, and weight, we **know** what $p^*$ should be, we got that from real world data. Hold on, but what does actual result mean? We get that by choosing random values for our parameters, $a$, $b_1$, $b_2$, and $b_3$. By assigning values to them, we can calculate $p^*$ for that specific dose, age, and weight, and compare it with the real value. Let's say that...
+So, for a certain subject, with a specific dose, age, and weight, we **know** what $y$ should be, we got that from real world data.
 
+Now, what we're trying to do is **find** the parameters $a$, $b_1$, $b_2$, and $b_3$. This way, we can build out a function that matches the real world data, that **describes** the data. From there, we can use the values of these parameters as descriptors of the drug, and compare it to other drugs. To get fancy, we can "model" the drug.
+
+To get started, we actually assign random values to the parameters. Then, we can calculate a "temporary $y$" for each data point - we'll use $\hat{y}$ to represent that value. This $\hat{y}$ is going to be different from the real value, because we're using random parameters. So, now we have two different "$y$s": the real expected value, the one we got from real data - $y$ - and the value that we get from our function with randomly initialized parameters - $\hat{y}$. To distinguish between these two, we'll be using the term "label" for the real value $y$, and we'll be using the term "prediction" for the value that we get from our function $\hat{y}$. We use "label" as in the true label, the real value. We use prediction because, later on, we'll use the function with the appropriate parameters (parameters that fit the data), to predict values for data points with doses, ages, and weights that we haven't measured yet.
+
+Loss is a word we use to mean **difference** - the difference between the label and the prediction. The smaller the difference, the better! The smaller the difference, the more accurate our function is, which is what we want. The simplest loss function is just: $L = y - \hat{y}$. That's it. But the thing with that loss function, is that it can be negative. This is a problem if we're averaging out the losses for different subjects, because then positive and negative losses can cancel each other out, giving us an overall false sense of accuracy.
+
+So, we can ask ourselves, what would be a good loss function that would work with logistic regression? A good way to think about this is by asking how big the loss should be?
+
+Say that a subject responded, so $y=1$. If our prediction is $\hat{y}=0.9$, then the loss should be small. If our prediction is $\hat{y}=0.1$, then the loss should be big. If our prediction is $\hat{y}=0.01$, then the loss should be really big, and ideally much larger than the loss when $\hat{y}=0.1$ - because this way, we're punishing very confident errors. We can try the log of the prediction. $ln(1) = 0$, which is perfect, since if $y=1$ and $\hat{y}=1$, then the loss should be 0. Then, $ln(0.9) = -0.105$, $ln(0.1) = -2.303$, $ln(0.01) = -4.605$. Notice how the more wrong the prediction is, the bigger the absolute value of the loss is. The only issue is that it's negative, but we can deal with this by just multiplying it by $-1$. So, when $y=1$ we can calculate the loss by using $-ln(\hat{y})$.
+
+What if a subject did not respond, so $y=0$? Then, similar to before but in a symmetric way, the loss should be small when $\hat{y}=0.1$, big when $\hat{y}=0.9$, and really big when $\hat{y}=0.99$. We can try using the log again, but we have to be careful - we need to use the log of $1-\hat{y}$ instead of $\hat{y}$. For example, if we predict 0.9, $-ln(1-0.9) = -ln(0.1) = 2.303$. Then, $-ln(1-0.99) = -ln(0.01) = 4.605$. So, again, the more wrong the prediction, the bigger the loss. Then, $-ln(1-0.1) = -ln(0.9) = 0.105$, $-ln(1-0.01) = -ln(0.99) = 0.010$, so the more correct the prediction, the faster the loss gets to zero.
+
+Great, so now we just have to combine these two different functions, so that when $y=1$ we use $-ln(\hat{y})$ and when $y=0$ we use $-ln(1-\hat{y})$. We can do this by using the following formula:
+
+$$
+L = y \cdot -\ln(\hat{y}) + (1-y) \cdot -\ln(1-\hat{y})
+$$
+
+Note that the label determines what gets used: if $y=1$, then $(1-y)=0$, so only the first term is used; if $y=0$, then $(1-y)=1$, so only the second term is used.
+
+By the way, this is called the cross-entropy loss. This comes from information theory, and honestly it would be going down a rabbit-hole explaining why it's called that. But now that we reinvented loss functions, more specifically the cross-entropy loss function, we can move on to the next key step, which is **gradient descent**.
 
 #### Down with the gradient!
 
