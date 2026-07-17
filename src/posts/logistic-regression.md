@@ -215,6 +215,34 @@ It's the same data! And we're still capturing the relationship between the dose 
 
 ### From the logistic function to logistic regression
 
+When the 1940s came around, researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age and weight. This meant that the equation would have more terms, but it would still be linear - a linear equation being one that is the *sum* of different terms.
+
+Essentially, instead of calculating the log of the odds using just the dosage, they'd also be using age and weight, and so, we get this:
+
+$$
+p^* = a + b_1 \cdot \text{dose} + b_2 \cdot \text{age} + b_3 \cdot \text{weight}
+$$
+
+Reminder - we **have** the fundamental data. This is, we know what $p^*$ should be for a given dose, age, and weight - what we need to know is $a$, $b_1$, $b_2$, and $b_3$. If you think about it, these 4 parameters are essentially the descriptors of a drug.
+
+This isn't really something that we can do with a ruler and pencil anymore, but, lucky for us, there are other ways to get to those numbers. Figuring out those numbers in fancier words is "fitting the parameters to the data" - a.k.a. **regression**. Since we're doing regression using the logistic function, this IS logistic regression! We have arrived! But then, how do we exactly fit those numbers?
+
+There are many different ways of doing that, some of them involving more or less complex calculations - and in the early 1960s, computers are just becoming available, which made this process much easier, and thus more popular. Historically, the most common method was the **Newton-Raphson method**, but it's a bit tricky, so it has fallen out of style. Nowadays, and this is the method that we'll be exploring, we use something called **gradient descent**. And to use gradient descent, we first have to talk about **loss functions**.
+
+#### Loss functions? I'm at a loss here...
+
+Loss is a word we use to mean difference - the difference between the expected result and the actual result. Remember, for a certain dose, age, and weight, we **know** what $p^*$ should be, we got that from real world data. Hold on, but what does actual result mean? We get that by choosing random values for our parameters, $a$, $b_1$, $b_2$, and $b_3$. By assigning values to them, we can calculate $p^*$ for that specific dose, age, and weight, and compare it with the real value. Let's say that...
+
+
+#### Down with the gradient!
+
+So, first of all, what is the gradient? The gradient tells you how to change the parameters so that the calculated outcome is furthest away from the real outcome.
+
+"The gradient is the direction of steepest ascent of a function."
+
+Yikes.
+ 
+
 - 1930s: logistic function used for dose-response, single input, fitting done graphically (ruler and pencil)
 - 1940s: researchers realize a drug's effect depends on more than just dose — age, weight, prior conditions, etc.
 - The equation just gets more terms: p* = a + b1 * dose + b2 * age + b3 * weight + ... - still linear, just more dimensions
