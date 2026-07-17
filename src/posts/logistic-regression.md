@@ -1,16 +1,12 @@
 ---
-title: "Reinventing Code Agent: Part 1 - Reinventing Logistic Regression"
+title: "Reinventing Logistic Regression"
 date: "2026-07-16"
-description: "The simplest learnable function — and why all the pieces you need are already here"
+description: "From 19th century population modeling to gradient descent"
 draft: true
-tags: ["Reinventing Code Agents", "ML"]
+tags: ["ML","Python","AI"]
 slug: "logistic-regression"
 type: "tech"
 ---
-
-Let's reinvent coding agents, like claude code, codex, and mistral vibe. We're considering a coding agent a bit of code that uses an LLM to write code, run it, and improve it.
-
-The beginning of something is subjective, here we're going with the logistic function.
 
 In mid 19th century, in Belgium, there was Pierre Verhulst. In that time, people were worried about famine and chaos. A few years before, Malthus said that population would grow exponentially, while food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, chaos. These crisis would slow down population growth, even heavily reduce it, maybe even leading to some sort of equilibrium.
 
@@ -257,28 +253,18 @@ $$
 
 Note that the label determines what gets used: if $y=1$, then $(1-y)=0$, so only the first term is used; if $y=0$, then $(1-y)=1$, so only the second term is used.
 
-By the way, this is called the cross-entropy loss. This comes from information theory, and honestly it would be going down a rabbit-hole explaining why it's called that. But now that we reinvented loss functions, more specifically the cross-entropy loss function, we can move on to the next key step, which is **gradient descent**.
+By the way, this is called the cross-entropy loss. This comes from information theory, and honestly we would be going down a rabbit-hole to understand why it's called that. But now that we reinvented loss functions, more specifically the cross-entropy loss function, we can move on to the next key step, which is **gradient descent**.
 
 #### Down with the gradient!
 
-So, first of all, what is the gradient? The gradient tells you how to change the parameters so that the calculated outcome is furthest away from the real outcome.
+So, we initialized our function with random parameters, and we calculated the loss for one of our subjects. How do we go from that, and change our parameters so that the prediction is the same as the label?
 
-"The gradient is the direction of steepest ascent of a function."
+We could try manually tweaking the parameters. For each subject, we can choose new parameters that would get us a perfect prediction. But then, we would probably be choosing completely different parameters for each subject, and we would be no closer to finding the optimal parameters for all subjects.
 
-Yikes.
- 
+So, instead of making big changes, we can try and make a small change to each of the parameters, for each subject. We can add or subtract a small value to each parameter, so that the loss decreases - just a nudge - and hopefully we'll find values for the parameters that work for all of the subjects. But trying out different nudges would be a bit random and very time consuming. What if, we try to relate the loss to the parameters? Say, a function where the loss depends on the parameters.
 
-- 1930s: logistic function used for dose-response, single input, fitting done graphically (ruler and pencil)
-- 1940s: researchers realize a drug's effect depends on more than just dose — age, weight, prior conditions, etc.
-- The equation just gets more terms: p* = a + b1 * dose + b2 * age + b3 * weight + ... - still linear, just more dimensions
-- But now you can't fit it with a ruler anymore - too many parameters to eyeball
-- 1958: David Cox formalizes logistic regression for multiple predictors. Early computers are just becoming available, making it practical
-- Since we're fitting parameters to data (regression) using the logistic function, this IS logistic regression
-- The name isn't a new invention - it's just what researchers were already doing, now formalized and generalized
-- How do we find the best parameters? Historically: Newton-Raphson (uses second derivatives, converges fast, practical for small datasets on early computers)
-- Modern ML approach (and what we'll use): cross-entropy loss + gradient descent - simpler, only needs first derivatives, scales to massive datasets
-- Once you see the setup as "linear combination -> logistic function -> probability," there's nothing dose-specific about it - inputs could be word counts (spam), pixel values (images), symptoms (diagnosis). The logistic function doesn't care what the inputs mean
-- This is where dose-response analysis becomes classic machine learning
+Well, we can do that! Remember that $L$ depends on $\hat{y}$. And, $\hat{y}$ depends on the parameters. So, we **can** write $L$ as a function of the parameters. And if we can write $L$ as a function of the parameters, we can calculate the **derivative** of $L$ with respect to each parameter. This derivative tells us how much the loss will change if we change the parameter by a small amount. And it turns out, we can actually calculate what that nudge should be using derivatives!
+
 
 to-do:
 - change previous parameters from alfa/beta to bias/weight
