@@ -66,7 +66,7 @@ d = \ln\!\left(\frac{p}{1-p}\right)
 $$
 
 `````tangent
-How do we get from $p = \frac{1}{1 + e^{-d}}$ to $d = \ln\!\left(\frac{p}{1-p}\right)$?
+How do we go from $p = \frac{1}{1 + e^{-d}}$ to $d = \ln\!\left(\frac{p}{1-p}\right)$?
 
 First, multiply both sides by $(1 + e^{-d})$:
 
@@ -169,11 +169,13 @@ A way to "solve" this is by taking the log of the odds! The log of the space bet
 
 ````
 
-At the time, and even today, researchers had an intuition for what the log of odds meant, or for comparing two different log of the odds. In the same way that you and I have an intuitive idea of what 1.5 meters means (or 5 feet if you're used to imperial unites), researchers had an intuitive idea of what the log of odds meant, or what does it mean for a drug A to have a log of odds 1.7 response when the dose was 2 miligrams, versus the drug B having a log of odds response of 2.5 for the same dosage, for example. A log-odds of 0 means a 1:1 odds, even odds. Each unit of log-odds roughly triples the odds (since e is around 2.7). For the drug A (1.7) vs drug B (2.5) example, drug B has around twice the odds of being effective, when compared to drug A, since the difference of the log-odds is 0.8. So for every two subjects that don't respond to drug A, one of them would have responded to drug B.
+At the time, and even today, researchers had an intuition for what the log of odds meant, or for comparing two different log of the odds. In the same way that you and I have an intuitive idea of what 1.5 meters means (or 5 feet if you're used to imperial unites), researchers had an intuitive idea of what the log of odds meant.
 
-Researchers being familiar with it was great, but there was something else that really mattered as well - now, instead of using the raw probability data, researchers could apply the log of odds transformation to the raw probability data, and this meant that they could model the relationship between probability and dosage in a linear way!
+For example, consider drug A and drug B. Drug A has a log of odds 1.7 response when the dose is 2 miligrams. Drug B has a log of odds response of 2.5 for the same dosage. A log-odds of 0 means a 1:1 odds, even odds. Each unit of log-odds roughly triples the odds (since $e$ is around 2.7). Since the difference of the log-odds is 0.8, drug B has around twice the odds of being effective, when compared to drug A. So for every two subjects that don't respond to drug A, one of them would have responded to drug B.
 
-Now, we actually have to make a slight correction. $d = \text{p}$ is one function, the same as $x = y$, so we need to add parameters so that we can describe each and every one of the different drugs, or different phenomena that we're studying. So, really, we're dealing with $\beta d + \alpha$.
+Researchers being familiar with it was great, but there was something else that really mattered as well - instead of using the raw probability data, researchers could apply the log of odds transformation to the raw probability data. This meant that they could model the relationship between probability (viewed as log of odds) and dosage in a linear way!
+
+At this point, we actually have to make a slight correction. $d = \text{p}$ is one function, the same as $x = y$, so we need to add parameters so that we can describe each of the different drugs. So, really, we're dealing with $\beta d + \alpha$.
 
 So, summarizing, we're looking at:
 $$
@@ -182,7 +184,7 @@ $$
 
 You might be confused with the $\ln\!\left(\frac{p}{1-p}\right)$ - but remember, this really is just there to remind us that we're applying the log odds transformation to the raw probability data.
 
-If we were to consider the following:
+If we consider the following:
 $$
 p^* = \ln\!\left(\frac{p}{1-p}\right)
 $$
@@ -207,41 +209,43 @@ We can actually work with this:
 ```
 Fig. 5 - Dose vs. log-odds of response: a straight line.
 
-It's the same data! And we're still capturing the relationship between the dose and probability. At the core, we're using the logistic function, but we can manipulate it so that it's easier to understand. $\alpha$ tells us where the line crosses zero, and this is the dose at which we have a 50/50 chance of response. $\beta$ is the slope, and it tells us how sharply the response changes with the dose. Remember, we're in the 1920s, there are no computers or graphing calculators! Getting these two numbers from a straight line is something that we can do with a ruler and a pencil!
+It's the same data! And we're still capturing the relationship between the dose and (a transformed) probability. At the core, we're using the logistic function, but we can manipulate it so that it's easier to understand. $\alpha$ tells us where the line crosses zero, and this is the dose at which we have a 50/50 chance of response. $\beta$ is the slope, and it tells us how sharply the response changes with the dose. Remember, we're in the 1920s, there are no computers or graphing calculators, and getting these two numbers from a straight line is something that we can do with a ruler and a pencil!
 
 ### From the logistic function to logistic regression
 
-When the 1940s came around, researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age and weight. This meant that the equation would have more terms.
+When the 1940s came around, researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age. This meant that the equation would have more terms.
 
-There was one key difference though - now we have a lot more variables, so making groups gets tricky. Before, we could aggregate around dosages (2mg, 2.5mg, 3mg, ...), but since each subject is a unique combination of dose, age, and weight, we're better off just using the individual data points, instead of aggregating. And since we're using the individual data points, instead of calculating probabilities, we can look at the subject's response as something binary - did they respond or not? Instead of using $p$, we'll be using $y$.
+This lead to one key difference - now we have a lot more variables, so making groups gets tricky. Before, we could aggregate around dosages (2mg, 2.5mg, 3mg, ...), but since each subject is a unique combination of dose and age, we're better off just using the individual data points, instead of aggregating. And since we're using the individual data points, instead of calculating probabilities, we can look at the subject's response as something binary - did they respond or not? Instead of using $p$, we'll be using $y$. If the subject responded, we'll consider $y=1$, otherwise, we'll consider $y=0$.
 
 So, now, we get something like this:
 
 $$
-y = \frac{1}{1 + e^{-(a + b_1 \cdot \text{dose} + b_2 \cdot \text{age} + b_3 \cdot \text{weight})}}
+y = \frac{1}{1 + e^{-(a + b_1 \cdot \text{dose} + b_2 \cdot \text{age})}}
 $$
 
-Reminder - we **have** the fundamental data. This is, we know what $y$ should be for a given dose, age, and weight - what we need to know is $a$, $b_1$, $b_2$, and $b_3$. If you think about it, these 4 parameters are essentially the descriptors of a drug.
+Reminder - we **have** the fundamental data. This is, we know what $y$ should be for a given dose and age - what we need to know is $a$, $b_1$, and $b_2$. If you think about it, these 3 parameters are essentially the descriptors of a drug.
 
-This isn't really something that we can do with a ruler and pencil anymore. But, lucky for us, there are other ways to get those parameteres. Figuring them out is what we call "fitting the parameters to the data" - a.k.a. **regression**. Since we're doing regression using the logistic function, this IS logistic regression! We have arrived!
+This isn't really something that we can do with a ruler and pencil anymore. But, lucky for us, there are other ways to get these parameteres. Figuring them out is what we call "fitting the parameters to the data" - a.k.a. **regression**. Since we're doing regression using the logistic function, this IS logistic regression! We have arrived!
 
-But then, how do we exactly fit those parameters?
+But then, how do we exactly fit these parameters?
 
 There are many different ways of doing that, some of them involving more or less complex calculations - and in the early 1960s, computers were just becoming available, which made this process much easier, and thus more popular. Historically, the most common method was the **Newton-Raphson method**, but it's a bit tricky, so it has fallen out of style. Nowadays, and this is the method that we'll be exploring, we use something called **gradient descent**. And to use gradient descent, we first have to talk about **loss functions**.
 
 #### Loss functions? I'm at a loss here...
 
-So, for a certain subject, with a specific dose, age, and weight, we **know** what $y$ should be, we got that from real world data.
+So, for a certain subject, with a specific dose and age, we **know** what $y$ should be, we got that from real world data.
 
-Now, what we're trying to do is **find** the parameters $a$, $b_1$, $b_2$, and $b_3$. This way, we can build out a function that matches the real world data, that **describes** the data. From there, we can use the values of these parameters as descriptors of the drug, and compare it to other drugs. To get fancy, we can "model" the drug.
+Now, what we're trying to do is **find** the parameters $a$, $b_1$, and $b_2$. This way, we can build out a function that matches the real world data, that **describes** the data. From there, we can use the values of these parameters as descriptors of the drug, and compare it to other drugs. To get fancy, we can "model" the drug.
 
-To get started, we actually assign random values to the parameters. Then, we can calculate a "temporary $y$" for each data point - we'll use $\hat{y}$ to represent that value. This $\hat{y}$ is going to be different from the real value, because we're using random parameters. So, now we have two different "$y$s": the real expected value, the one we got from real data - $y$ - and the value that we get from our function with randomly initialized parameters - $\hat{y}$. To distinguish between these two, we'll be using the term "label" for the real value $y$, and we'll be using the term "prediction" for the value that we get from our function $\hat{y}$. We use "label" as in the true label, the real value. We use prediction because, later on, we'll use the function with the appropriate parameters (parameters that fit the data), to predict values for data points with doses, ages, and weights that we haven't measured yet.
+To get started, we actually assign random values to the parameters. Then, we can calculate a "temporary $y$" for each data point - we'll use $\hat{y}$ to represent that value. This $\hat{y}$ is going to be different from the real value, because we're using random parameters. So, now we have two different "$y$s": the real expected value, the one we got from real data - $y$ - and the value that we get from our function with randomly initialized parameters - $\hat{y}$. To distinguish between these two, we'll be using the term "label" for the real value $y$, and we'll be using the term "prediction" for the value that we get from our function, $\hat{y}$. We use "label" as in the true label, the real value. We use prediction because, later on, we'll use the function with the appropriate parameters (parameters that fit the data), to predict values for data points with doses and ages that we haven't measured yet.
 
 Loss is a word we use to mean **difference** - the difference between the label and the prediction. The smaller the difference, the better! The smaller the difference, the more accurate our function is, which is what we want. The simplest loss function is just: $L = y - \hat{y}$. That's it. But the thing with that loss function, is that it can be negative. This is a problem if we're averaging out the losses for different subjects, because then positive and negative losses can cancel each other out, giving us an overall false sense of accuracy.
 
 So, we can ask ourselves, what would be a good loss function that would work with logistic regression? A good way to think about this is by asking how big the loss should be?
 
-Say that a subject responded, so $y=1$. If our prediction is $\hat{y}=0.9$, then the loss should be small. If our prediction is $\hat{y}=0.1$, then the loss should be big. If our prediction is $\hat{y}=0.01$, then the loss should be really big, and ideally much larger than the loss when $\hat{y}=0.1$ - because this way, we're punishing very confident errors. We can try the log of the prediction. $ln(1) = 0$, which is perfect, since if $y=1$ and $\hat{y}=1$, then the loss should be 0. Then, $ln(0.9) = -0.105$, $ln(0.1) = -2.303$, $ln(0.01) = -4.605$. Notice how the more wrong the prediction is, the bigger the absolute value of the loss is. The only issue is that it's negative, but we can deal with this by just multiplying it by $-1$. So, when $y=1$ we can calculate the loss by using $-ln(\hat{y})$.
+Say that a subject responded, so $y=1$. If our prediction is $\hat{y}=0.9$, then the loss should be small. If our prediction is $\hat{y}=0.1$, then the loss should be big. If our prediction is $\hat{y}=0.01$, then the loss should be really big, and ideally much larger than the loss when $\hat{y}=0.1$ - because this way, we're punishing very confident errors.
+
+To do this, we can use the log of the prediction. $ln(1) = 0$, which is perfect, since if $y=1$ and $\hat{y}=1$, then the loss should be 0. Then, $ln(0.9) = -0.105$, $ln(0.1) = -2.303$, $ln(0.01) = -4.605$. Notice how the more wrong the prediction is, the bigger the absolute value of the loss is. The only issue is that it's negative, but we can deal with this by just multiplying it by $-1$. So, when $y=1$ we can calculate the loss by using $-ln(\hat{y})$.
 
 What if a subject did not respond, so $y=0$? Then, similar to before but in a symmetric way, the loss should be small when $\hat{y}=0.1$, big when $\hat{y}=0.9$, and really big when $\hat{y}=0.99$. We can try using the log again, but we have to be careful - we need to use the log of $1-\hat{y}$ instead of $\hat{y}$. For example, if we predict 0.9, $-ln(1-0.9) = -ln(0.1) = 2.303$. Then, $-ln(1-0.99) = -ln(0.01) = 4.605$. So, again, the more wrong the prediction, the bigger the loss. Then, $-ln(1-0.1) = -ln(0.9) = 0.105$, $-ln(1-0.01) = -ln(0.99) = 0.010$, so the more correct the prediction, the faster the loss gets to zero.
 
@@ -257,13 +261,238 @@ By the way, this is called the cross-entropy loss. This comes from information t
 
 #### Down with the gradient!
 
-So, we initialized our function with random parameters, and we calculated the loss for one of our subjects. How do we go from that, and change our parameters so that the prediction is the same as the label?
+So, we initialized our function with random parameters, and we calculated the loss for one of our subjects. How do we go from that to changing our parameters so that the prediction is the same as the label?
 
-We could try manually tweaking the parameters. For each subject, we can choose new parameters that would get us a perfect prediction. But then, we would probably be choosing completely different parameters for each subject, and we would be no closer to finding the optimal parameters for all subjects.
+We could try manually changing the parameters. For each subject, we can choose new parameters that would get us a perfect prediction. But then, we would probably be choosing completely different parameters for each subject, and we would be no closer to finding the optimal parameters for all subjects.
 
-So, instead of making big changes, we can try and make a small change to each of the parameters, for each subject. We can add or subtract a small value to each parameter, so that the loss decreases - just a nudge - and hopefully we'll find values for the parameters that work for all of the subjects. But trying out different nudges would be a bit random and very time consuming. What if, we try to relate the loss to the parameters? Say, a function where the loss depends on the parameters.
+Let's check out an example. Below you'll find a widget that lets you tune the parameters of the logistic function - essentially letting you manually attempt regression. By default, there are only two subjects, and in each round of tuning the focus is on a single subject. Change the parameters, watch what the prediction is, how it compares to the label, and what the loss is. Once you've found a set of parameters that leads to a low loss for that subject, click proceed. Note that this will actually calculate the predictions and losses for **all** subjects, and the average loss will be ploted below. After this, the focus will be on another subject, and you can try to find a new set of parameters for that subject, and check out how that set of parameters affects the other subjects' losses. The idea is to find parameters that work well for all subjects. Each round of tuning is called a "step". Ideally, as the step count increases, the average loss should decrease - this is how you will know that you are finding parameters that fit the data. You can add more subjects if you'd like!
 
-Well, we can do that! Remember that $L$ depends on $\hat{y}$. And, $\hat{y}$ depends on the parameters. So, we **can** write $L$ as a function of the parameters. And if we can write $L$ as a function of the parameters, we can calculate the **derivative** of $L$ with respect to each parameter. This derivative tells us how much the loss will change if we change the parameter by a small amount. And it turns out, we can actually calculate what that nudge should be using derivatives!
+```parameter-tuner
+```
+
+How did it go? Since it's just three parameters, you might've actually ended up cracking it - if so, nice! But I hope I got the point across, that choosing parameters *ad hoc*, fitting subjects one by one, is probably not going to work. Real world data ends up being more complex, and often the number of parameters is actually much larger than three. You might want to consider things such as weight, height, and many more.
+
+You might've tried to do small nudges, instead of changing all of the parameters for each subject. Say, find something that works for a subject, and then for other subjects do small alterations. That's a good principle! Ideally, though, it would be nice to know *how* to change the parameters, in which direction... So, what if we try to find a way to relate the loss to the parameters, so that we can nudge the parameters in a good direction? Say, a function where the loss depends on the parameters.
+
+Well, we can do that! Remember that $L$ depends on $\hat{y}$. And, $\hat{y}$ depends on the parameters. So, we **can** write $L$ as a function of the parameters. So this means, that we can relate the parameters to the loss, and we can then understand how the loss changes according to the parameters. If we understand how that happens, we can look for the direction that produces the largest change in the loss - that's the derivative!
+
+````tangent
+How we can relate the parameters to the loss
+
+For a given subject $i$, the dose, age, and label are fixed values. The things we are changing are $a$, $b_1$, and $b_2$.
+
+First, the parameters and the subject's features are combined into a score:
+
+$$
+z_i(a,b_1,b_2) = a + b_1 \cdot \text{dose}_i + b_2 \cdot \text{age}_i
+$$
+
+Next, the logistic function turns that score into a prediction. To keep the equations compact, we'll use the Greek letter sigma, $\sigma$, to represent the logistic function from now on:
+
+$$
+\sigma(z) = \frac{1}{1+e^{-z}}
+$$
+
+This is only a shorthand for the same logistic function we've been using, it isn't a new function. For subject $i$, the prediction is therefore:
+
+$$
+\hat{y}_i(a,b_1,b_2) = \sigma\left(z_i(a,b_1,b_2)\right)
+$$
+
+The loss compares that prediction with the subject's fixed label, $y_i$:
+
+$$
+L_i = -y_i\ln(\hat{y}_i) - (1-y_i)\ln(1-\hat{y}_i)
+$$
+
+Now we can substitute the prediction into the loss. This gives us a loss that depends directly on the parameters:
+
+$$
+\begin{aligned}
+L_i(a,b_1,b_2)
+&= -y_i\ln\left(\sigma\left(z_i(a,b_1,b_2)\right)\right) \\
+&\quad -(1-y_i)\ln\left(1-\sigma\left(z_i(a,b_1,b_2)\right)\right)
+\end{aligned}
+$$
+
+So, we are building $L_i(a,b_1,b_2)$, not just $L(a)$. Writing $L(a)$ would mean that $b_1$ and $b_2$ were being held fixed while only $a$ was allowed to change.
+
+So there we have it, how the loss depends on the parameters.
+
+````
+
+To calculate the derivative of the loss with respect to the parameters, a good way to do that is using the **chain rule**.
+
+````tangent
+What is the chain rule?
+
+The chain rule is useful when one value affects another value through one or more intermediate steps.
+
+Suppose a final value $F$ depends on an intermediate value $g$, and $g$ depends on a parameter $\theta$. The chain rule says:
+
+$$
+\frac{\partial F}{\partial \theta}
+= \frac{\partial F}{\partial g}\frac{\partial g}{\partial \theta}
+$$
+
+The first derivative measures how $F$ changes when $g$ changes. The second measures how $g$ changes when $\theta$ changes. Multiplying them tells us how $F$ ultimately changes when $\theta$ changes.
+
+Here:
+
+- The final value $F$ is the loss, $L_i$.
+- The intermediate value $g$ is the prediction, $\hat{y}_i$.
+- The parameter $\theta$ can be $a$, $b_1$, or $b_2$.
+
+So the outer application of the chain rule is:
+
+$$
+\frac{\partial L_i}{\partial \theta}
+= \frac{\partial L_i}{\partial \hat{y}_i}\frac{\partial \hat{y}_i}{\partial \theta}
+$$
+
+There is one more layer inside the prediction. The parameter first changes the linear expression inside the logistic function, and that expression then changes the prediction.
+
+If $x$ temporarily represents that linear expression, the prediction derivative also uses the chain rule:
+
+$$
+\frac{\partial \hat{y}_i}{\partial \theta}
+= \frac{\partial \hat{y}_i}{\partial x}\frac{\partial x}{\partial \theta}
+$$
+
+This is why the chain rule appears twice: first inside the prediction derivative, and then again when connecting the prediction to the loss.
+
+````
+
+Each parameter changes the prediction, and the prediction changes the loss. We can start with the second part of that chain - the derivative of the loss with respect to the prediction:
+
+$$
+\frac{\partial L_i}{\partial \hat{y}_i} = -\frac{y_i}{\hat{y}_i} + \frac{1-y_i}{1-\hat{y}_i}
+$$
+
+````tangent
+How did we get the derivative of the loss?
+
+Start with the loss for subject $i$:
+
+$$
+L_i = -y_i\ln(\hat{y}_i) - (1-y_i)\ln(1-\hat{y}_i)
+$$
+
+We are differentiating with respect to the prediction, $\hat{y}_i$, so the label $y_i$ is treated as a constant.
+
+For the first term, the derivative of $\ln(\hat{y}_i)$ is $1/\hat{y}_i$:
+
+$$
+\frac{\partial}{\partial\hat{y}_i}\left[-y_i\ln(\hat{y}_i)\right]
+= -\frac{y_i}{\hat{y}_i}
+$$
+
+For the second term, we use the chain rule. Differentiating the inside, $1-\hat{y}_i$, gives us $-1$:
+
+$$
+\begin{aligned}
+\frac{\partial}{\partial\hat{y}_i}\ln(1-\hat{y}_i)
+&= \frac{1}{1-\hat{y}_i}\cdot(-1) \\
+&= -\frac{1}{1-\hat{y}_i}
+\end{aligned}
+$$
+
+That negative sign cancels the negative sign already in the loss:
+
+$$
+\frac{\partial}{\partial\hat{y}_i}\left[-(1-y_i)\ln(1-\hat{y}_i)\right]
+= -(1-y_i)\left(-\frac{1}{1-\hat{y}_i}\right)
+= \frac{1-y_i}{1-\hat{y}_i}
+$$
+
+Adding the derivatives of the two terms gives us:
+
+$$
+\frac{\partial L_i}{\partial \hat{y}_i}
+= -\frac{y_i}{\hat{y}_i} + \frac{1-y_i}{1-\hat{y}_i}
+
+$$
+
+````
+
+Next, the derivatives of the prediction with respect to each parameter are:
+
+$$
+\begin{aligned}
+\frac{\partial \hat{y}_i}{\partial a}   &= \hat{y}_i(1-\hat{y}_i) \\
+\frac{\partial \hat{y}_i}{\partial b_1} &= \hat{y}_i(1-\hat{y}_i)\cdot\text{dose}_i \\
+\frac{\partial \hat{y}_i}{\partial b_2} &= \hat{y}_i(1-\hat{y}_i)\cdot\text{age}_i
+\end{aligned}
+$$
+
+````tangent
+How are the prediction derivatives calculated?
+
+Start with the prediction written as the logistic function's full formula:
+
+$$
+\hat{y}_i = \frac{1}{1+e^{-(a+b_1\cdot\text{dose}_i+b_2\cdot\text{age}_i)}}
+$$
+
+Let $x$ temporarily stand for the entire linear expression inside the function. The derivative of the logistic function with respect to $x$ is:
+
+$$
+\frac{d}{dx}\left(\frac{1}{1+e^{-x}}\right)
+= \frac{e^{-x}}{(1+e^{-x})^2}
+$$
+
+The final expression is the same as $\hat{y}_i(1-\hat{y}_i)$:
+
+$$
+\hat{y}_i(1-\hat{y}_i)
+= \frac{1}{1+e^{-x}}\left(1-\frac{1}{1+e^{-x}}\right)
+= \frac{e^{-x}}{(1+e^{-x})^2}
+$$
+
+Now consider how the linear expression changes with each parameter:
+
+$$
+\begin{aligned}
+\frac{\partial}{\partial a}(a+b_1\cdot\text{dose}_i+b_2\cdot\text{age}_i) &= 1 \\
+\frac{\partial}{\partial b_1}(a+b_1\cdot\text{dose}_i+b_2\cdot\text{age}_i) &= \text{dose}_i \\
+\frac{\partial}{\partial b_2}(a+b_1\cdot\text{dose}_i+b_2\cdot\text{age}_i) &= \text{age}_i
+\end{aligned}
+$$
+
+Multiplying the common logistic-function derivative, $\hat{y}_i(1-\hat{y}_i)$, by $1$, $\text{dose}_i$, or $\text{age}_i$ gives the three prediction derivatives shown above.
+
+````
+
+Now the chain rule connects each parameter to the loss through the prediction.
+
+
+$$
+\begin{aligned}
+\frac{\partial L_i}{\partial a}   &= \frac{\partial L_i}{\partial \hat{y}_i}\frac{\partial \hat{y}_i}{\partial a}   = \hat{y}_i-y_i \\
+\frac{\partial L_i}{\partial b_1} &= \frac{\partial L_i}{\partial \hat{y}_i}\frac{\partial \hat{y}_i}{\partial b_1} = (\hat{y}_i-y_i)\cdot\text{dose}_i \\
+\frac{\partial L_i}{\partial b_2} &= \frac{\partial L_i}{\partial \hat{y}_i}\frac{\partial \hat{y}_i}{\partial b_2} = (\hat{y}_i-y_i)\cdot\text{age}_i
+\end{aligned}
+$$
+
+In each line, the terms from the loss and the logistic function cancel in a way that leaves the simple prediction error, $\hat{y}_i-y_i$.
+
+Together, these three derivatives form $\nabla L_i(a,b_1,b_2)$, the gradient for subject $i$. It tells us how a small change to each parameter would affect this subject's loss.
+
+But fitting one subject at a time is exactly the problem we ran into above. To judge one set of parameters across all $N$ subjects, we take the average:
+
+$$
+\bar{L}(a,b_1,b_2) = \frac{1}{N}\sum_{i=1}^{N} L_i(a,b_1,b_2)
+$$
+
+This average loss is the value plotted in the widget. It is the function that we ultimately want to minimize.
+
+Its gradient is the average of the individual subjects' gradients:
+
+$$
+\nabla\bar{L}(a,b_1,b_2) = \frac{1}{N}\sum_{i=1}^{N}\nabla L_i(a,b_1,b_2)
+$$
+
+So each subject contributes a direction in which it would like the parameters to move. Averaging the gradients combines those competing directions into one nudge that considers every subject at once. This is the nudge that gradient descent will use.
 
 
 to-do:

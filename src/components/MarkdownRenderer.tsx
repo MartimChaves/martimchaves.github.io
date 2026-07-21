@@ -12,6 +12,7 @@ import InteractivePlot from './InteractivePlot'
 import PopulationGrowth from './PopulationGrowth'
 import Bm25Explorer from './Bm25Explorer'
 import Tangent from './Tangent'
+import ParameterTuner from './ParameterTuner'
 
 interface CodeProps {
   inline?: boolean
@@ -144,6 +145,9 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       }
       if (!inline && match?.[1] === 'tangent') {
         return <Tangent source={String(children)} />
+      }
+      if (!inline && match?.[1] === 'parameter-tuner') {
+        return <ParameterTuner />
       }
       if (!inline && (match || String(children).includes('\n'))) {
         return (

@@ -337,9 +337,9 @@ export default function PopulationGrowth({
 
   let verdict = ''
   if (regime === 'grow') {
-    verdict = `the population grows exponentially, multiplying by about ${factor.toFixed(2)}× every generation (~${Math.round(sim.meanGenAge)} yrs, ≈ ${annualPct.toFixed(1)}% / yr). Above ~2 children per couple, each generation is bigger than the last — and that compounds.`
+    verdict = `the population grows exponentially, multiplying by about ${factor.toFixed(2)}× every generation (~${Math.round(sim.meanGenAge)} yrs, ≈ ${annualPct.toFixed(1)}% / yr). Above ~2 children per couple, each generation is bigger than the last, and that compounds.`
   } else if (regime === 'flat') {
-    verdict = `at ~2 children per couple you're at replacement: each generation exactly replaces the last. The population still grows while its age pyramid fills out — and the leftover waves are echoes of the founding age bump slowly dying away — but it settles around a plateau. A plateau isn't exponential.`
+    verdict = `at ~2 children per couple you're at replacement: each generation exactly replaces the last. The population still grows while its age pyramid fills out, and the leftover waves are echoes of the founding age bump slowly dying away, but it settles around a plateau. A plateau isn't exponential.`
   } else {
     verdict = `below ~2 children per couple the population can't replace itself: it drifts down toward extinction (about ${factor.toFixed(2)}× per generation). It's not growing at all.`
   }
