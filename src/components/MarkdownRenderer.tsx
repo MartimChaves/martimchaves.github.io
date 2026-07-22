@@ -13,6 +13,9 @@ import PopulationGrowth from './PopulationGrowth'
 import Bm25Explorer from './Bm25Explorer'
 import Tangent from './Tangent'
 import ParameterTuner from './ParameterTuner'
+import DerivativeCar from './DerivativeCar'
+import LogDerivativeExplorer from './LogDerivativeExplorer'
+import GradientDescentExperiment from './GradientDescentExperiment'
 
 interface CodeProps {
   inline?: boolean
@@ -149,6 +152,15 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       if (!inline && match?.[1] === 'parameter-tuner') {
         return <ParameterTuner />
       }
+      if (!inline && match?.[1] === 'derivative-car') {
+        return <DerivativeCar />
+      }
+      if (!inline && match?.[1] === 'log-derivative') {
+        return <LogDerivativeExplorer />
+      }
+      if (!inline && match?.[1] === 'gradient-descent-experiment') {
+        return <GradientDescentExperiment />
+      }
       if (!inline && (match || String(children).includes('\n'))) {
         return (
           <Box my={5} fontSize="sm" borderRadius="md" overflow="hidden" border="1px solid" borderColor="page.border">
@@ -193,6 +205,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         '.katex-display': {
           overflowX: 'auto',
           overflowY: 'hidden',
+          paddingTop: '0.5rem',
           paddingBottom: '0.5rem',
           maxWidth: '100%',
         },

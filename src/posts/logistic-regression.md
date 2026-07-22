@@ -1,8 +1,8 @@
 ---
 title: "Reinventing Logistic Regression"
-date: "2026-07-16"
+date: "2026-07-22"
 description: "From 19th century population modeling to gradient descent"
-draft: true
+draft: false
 tags: ["ML","Python","AI"]
 slug: "logistic-regression"
 type: "tech"
@@ -30,14 +30,14 @@ x
 ```
 Fig. 1 - Exponential growth versus linear growth
 
-Pierre set off to try and model that. Population would start to grow exponentially, but, at some point, the amount of people itself would slow its growth down, as it approached a limit. What he arrived at was the logistic function - `1 / (1 + exp(-r * x))` - `r` being the growth rate. 
+Pierre set off to try and model that. Population would start to grow exponentially, but, at some point, the amount of people itself would slow its growth down, as it approached a limit. What he arrived at was the logistic function - $\frac{1}{1 + e^{-rx}}$ - $r$ being the growth rate.
 
 ```interactive-plot xMin=-6 xMax=6 yMin=-0.2 yMax=1.2
 1/(1 + exp(-1*x))
 ```
 Fig. 3 - A logistic function
 
-You can play around with the value of the growth rate to increase or decrease the slope around the y-axis, hence the name. The higher the `r`, the higher the growth rate, the faster the population grows. As it is, it converges towards `1` - if you want it to converge to a hypothetical population limit, you can just multiply the whole function by that limit (`L`) - `L / (1 + exp(-r * x))`.
+You can play around with the value of the growth rate to increase or decrease the slope around the y-axis, hence the name. The higher the $r$, the higher the growth rate, the faster the population grows. As it is, it converges towards $1$ - if you want it to converge to a hypothetical population limit, you can just multiply the whole function by that limit ($L$) - $\frac{L}{1 + e^{-rx}}$.
 
 This seemingly simple function is actually quite powerful, because it allows us to convert any number to a value between 0 and 1 - and this, it turns out, came in really handy in the realm of probabilities.
 
@@ -274,14 +274,16 @@ How did it go? Since it's just three parameters, you might've actually ended up 
 
 You might've tried to do small nudges, instead of changing all of the parameters for each subject. Say, find something that works for a subject, and then for other subjects do small alterations. That's a good principle! Ideally, though, it would be nice to know *how* to change the parameters, in which direction... So, what if we try to find a way to relate the loss to the parameters, so that we can nudge the parameters in a good direction? Say, a function where the loss depends on the parameters.
 
-Well, we can do that! Remember that $L$ depends on $\hat{y}$. And, $\hat{y}$ depends on the parameters. So, we **can** write $L$ as a function of the parameters. So this means, that we can relate the parameters to the loss, and we can then understand how the loss changes according to the parameters. If we understand how that happens, we can look for the direction that produces the largest change in the loss - that's the derivative!
+Well, we can do that! Remember that $L$ depends on $\hat{y}$. And, $\hat{y}$ depends on the parameters. So, we **can** write $L$ as a function of the parameters. So this means that we can relate the parameters to the loss, and we can then understand how the loss changes according to the parameters. If we understand how that happens, we can look for the direction that produces the largest change in the loss - that's the derivative!
 
 ````tangent
-How we can relate the parameters to the loss
+How can we relate the parameters to the loss?
+
+This tangent provides analytical proof that we can write a function where the loss depends on the parameters. It's a bit verbose! It's only really worth it if you want to be more confident, or would like more proof.
 
 For a given subject $i$, the dose, age, and label are fixed values. The things we are changing are $a$, $b_1$, and $b_2$.
 
-First, the parameters and the subject's features are combined into a score:
+First, the parameters and the subject's features are combined into a score, that we represent with the letter $z$:
 
 $$
 z_i(a,b_1,b_2) = a + b_1 \cdot \text{dose}_i + b_2 \cdot \text{age}_i
@@ -321,14 +323,56 @@ So there we have it, how the loss depends on the parameters.
 
 ````
 
-To calculate the derivative of the loss with respect to the parameters, a good way to do that is using the **chain rule**.
+To calculate the derivative of the loss with respect to the parameters, a good way to do that is using the **chain rule**:
 
-````tangent
+$$
+\frac{\partial L_i}{\partial \theta}
+= \frac{\partial L_i}{\partial \hat{y}_i}\frac{\partial \hat{y}_i}{\partial \theta}
+$$
+
+Here, we're using $i$ to indicate one specific subject. So $L_i$ is the loss of subject $i$, and $i$ can be any value, it's just a placeholder, something that means "one of the subjects".
+
+`````tangent
 What is the chain rule?
 
-The chain rule is useful when one value affects another value through one or more intermediate steps.
+The chain rule is useful when one value affects another value through one or more intermediate steps. Just like the name implies, the idea is that there are links between the different values, like a chain!
 
-Suppose a final value $F$ depends on an intermediate value $g$, and $g$ depends on a parameter $\theta$. The chain rule says:
+Suppose you have a final value $F$. $F$ depends on an intermediate value $g$. $g$ depends on a parameter $\theta$. If $F$ depends on $g$, and $g$ depends on $\theta$, then we can also say that $F$ depends on $\theta$!
+
+That's what the chain rule says - the derivative of F with respect to theta is the product of the derivative of F with respect to g, and the derivative of g with respect to theta.
+
+````tangent
+Hold on, what is a derivative?
+
+Derivative means change, more specifically "how much change". For example, a speed of 100 kilometers per hour (or 60 miles per hour) is a derivative, a derivative of distance with respect to time - it tells you how much distance is being covered in a measure of time. Specifically, 100 kilometers are being covered every hour.
+
+So, a derivative measures how much one value changes when another value changes. To be precise, it measures how much one value changes when another value changes by a *very small amount*. In the previous example, we would actually measure the derivative by looking at how much distance was covered in a second, or less... From there, if we wanted, we could convert it to a standard that we're familiar with, like kilometers per hour.
+
+Why are we only interested in measuring that change when the change is very small? Because that gives us the **instantaneous rate of change** at that particular point. Going back to the car example, if you're standing still, and there's a very long straight, and then you fully press on the gas - in the beggining the speed of the car will change very fast, but as time goes on, the speed will increase more and more slowly, until it reaches a plateau - that's the acceleration, the derivative of the speed with respect to time. In the beginning, the acceleration is large, as the speed increases very fast. But, when the speed plateaus, the acceleration is zero, since the speed doesn't change. So the derivative of the speed with respect to time, which we casually call the acceleration, has a different value dependinding on for how long we've started steping on the gas. The derivative at any given moment tells us the rate of change at that exact moment, not the average change over a longer period of time - which is why when we measure it, we want to measure it in the smallest amount of unit possible!
+
+Note that, in this example, there are two derivatives being measured: the derivative of the distance with respect to time (the speed), and the derivative of the speed with respect to time (the acceleration). Even though they're related, they're two different things! The widget below illustrates this example. It has a car racing in a track. In long straights, it accelerates, eventually reaching a plateau. When it gets close to a corner, it deaccelerates, plateauing in the corner. Below the track, you can find a speed plot, and an accelaration plot. You can pause the car, and you'll see the calculation of the acceleration based on the current speed. You can also horizontally drag the plots to any point in time.
+
+```derivative-car
+```
+
+We'll be representing derivatives using the $\partial$ symbol and a fraction, like this:
+
+For example,
+
+$$
+\frac{\partial F}{\partial g}
+$$
+
+asks: if we nudge $g$ slightly, how much does $F$ change?
+
+- A positive derivative means that increasing $g$ increases $F$.
+- A negative derivative means that increasing $g$ decreases $F$.
+- A derivative close to zero means that a small change in $g$ barely changes $F$.
+
+We use the partial-derivative symbol $\partial$ here because our functions can depend on several values. It means that we change one value while treating the others as fixed.
+````
+
+And we can represent it like this:
 
 $$
 \frac{\partial F}{\partial \theta}
@@ -337,40 +381,59 @@ $$
 
 The first derivative measures how $F$ changes when $g$ changes. The second measures how $g$ changes when $\theta$ changes. Multiplying them tells us how $F$ ultimately changes when $\theta$ changes.
 
-Here:
+But why does multiplying the derivatives work? Think about what happens when we make a very small change, $\Delta\theta$, to $\theta$ - we'll use the $\Delta$ symbol to represent a small change.
+
+The resulting change in $g$ is approximately:
+
+$$
+\Delta g \approx \frac{\partial g}{\partial \theta}\Delta\theta
+$$
+
+That small change in $g$ then produces a change in $F$:
+
+$$
+\Delta F \approx \frac{\partial F}{\partial g}\Delta g
+$$
+
+Substituting the first relationship into the second gives us:
+
+$$
+\Delta F \approx \frac{\partial F}{\partial g}\frac{\partial g}{\partial \theta}\Delta\theta
+$$
+
+Dividing both sides by $\Delta\theta$ shows the overall rate at which $F$ changes with $\theta$:
+
+$$
+\frac{\Delta F}{\Delta\theta}
+\approx \frac{\partial F}{\partial g}\frac{\partial g}{\partial \theta}
+$$
+
+Another way to see the same idea is to treat the derivatives as change ratios: $(\Delta F/\Delta g)(\Delta g/\Delta\theta)$. The intermediate $\Delta g$ cancels, leaving $\Delta F/\Delta\theta$. As the changes become infinitesimally small, these approximations become the exact chain-rule relationship.
+
+
+In our case:
 
 - The final value $F$ is the loss, $L_i$.
 - The intermediate value $g$ is the prediction, $\hat{y}_i$.
 - The parameter $\theta$ can be $a$, $b_1$, or $b_2$.
 
-So the outer application of the chain rule is:
+So the application of the chain rule is:
 
 $$
 \frac{\partial L_i}{\partial \theta}
 = \frac{\partial L_i}{\partial \hat{y}_i}\frac{\partial \hat{y}_i}{\partial \theta}
 $$
 
-There is one more layer inside the prediction. The parameter first changes the linear expression inside the logistic function, and that expression then changes the prediction.
+`````
 
-If $x$ temporarily represents that linear expression, the prediction derivative also uses the chain rule:
-
-$$
-\frac{\partial \hat{y}_i}{\partial \theta}
-= \frac{\partial \hat{y}_i}{\partial x}\frac{\partial x}{\partial \theta}
-$$
-
-This is why the chain rule appears twice: first inside the prediction derivative, and then again when connecting the prediction to the loss.
-
-````
-
-Each parameter changes the prediction, and the prediction changes the loss. We can start with the second part of that chain - the derivative of the loss with respect to the prediction:
+Each parameter changes the prediction, and the prediction changes the loss. We can start with the first part of that chain - the derivative of the loss with respect to the prediction:
 
 $$
 \frac{\partial L_i}{\partial \hat{y}_i} = -\frac{y_i}{\hat{y}_i} + \frac{1-y_i}{1-\hat{y}_i}
 $$
 
-````tangent
-How did we get the derivative of the loss?
+`````tangent
+How did we get the derivative of the loss with respect to the prediction?
 
 Start with the loss for subject $i$:
 
@@ -387,7 +450,35 @@ $$
 = -\frac{y_i}{\hat{y}_i}
 $$
 
-For the second term, we use the chain rule. Differentiating the inside, $1-\hat{y}_i$, gives us $-1$:
+````tangent
+Why is the derivative of $\ln(x)$ equal to $1/x$?
+
+Check out the plots of $\ln(x)$ and its derivative, $1/x$, below. By the way, we're using $\ln'(x)$ to represent the derivative, the function with an added $'$.
+
+Note how the "growth" of the logarithm flattens out as $x$ increases - this should align with a derivative that decreases, tending towards zero. And in the beginning, the growth is astronomical, since it's departing from $-\infty$. The function that describes this is $1/x$.
+
+```log-derivative
+```
+
+````
+
+For the second term, we use the chain rule again.
+
+To make the two links easier to see, temporarily let
+
+$$
+x=1-\hat{y}_i.
+$$
+
+Now $\ln(1-\hat{y}_i)$ becomes $\ln(x)$. A small change in $\hat{y}_i$ first changes $x$, and that change in $x$ then changes $\ln(x)$. The chain rule connects those two rates:
+
+$$
+\frac{\partial\ln(x)}{\partial\hat{y}_i}
+= \frac{\partial\ln(x)}{\partial x}
+  \frac{\partial x}{\partial\hat{y}_i}.
+$$
+
+The first derivative is $1/x$. The second is $-1$: if $\hat{y}_i$ increases by a very small amount, $1-\hat{y}_i$ decreases by exactly that amount. Replacing $x$ with $1-\hat{y}_i$ gives us:
 
 $$
 \begin{aligned}
@@ -413,7 +504,7 @@ $$
 
 $$
 
-````
+`````
 
 Next, the derivatives of the prediction with respect to each parameter are:
 
@@ -434,14 +525,31 @@ $$
 \hat{y}_i = \frac{1}{1+e^{-(a+b_1\cdot\text{dose}_i+b_2\cdot\text{age}_i)}}
 $$
 
-Let $x$ temporarily stand for the entire linear expression inside the function. The derivative of the logistic function with respect to $x$ is:
+Let $x$ temporarily stand for the entire linear expression inside the function, so:
+
+$$
+\hat{y}_i = \frac{1}{1+e^{-x}}
+$$
+
+We can use the chain rule again:
+
+$$
+\frac{\partial \hat{y}_i}{\partial \theta}
+= \frac{\partial \hat{y}_i}{\partial x}\frac{\partial x}{\partial \theta}
+$$
+
+The chain rule appears twice: first inside the prediction derivative, and then again when connecting the prediction to the loss.
+
+The derivative of the logistic function with respect to $x$ is:
 
 $$
 \frac{d}{dx}\left(\frac{1}{1+e^{-x}}\right)
 = \frac{e^{-x}}{(1+e^{-x})^2}
 $$
 
-The final expression is the same as $\hat{y}_i(1-\hat{y}_i)$:
+I'm not going to lie, this one is a bit tricky to explain, and we'd be going down a rabbit hole explaining why that is. If you want to understand this, you can start with [this video](https://www.youtube.com/watch?v=5HzVMZKk9pk).
+
+The nifty thing is that final expression, $\frac{e^{-x}}{(1+e^{-x})^2}$, is actually the same as $\hat{y}_i(1-\hat{y}_i)$:
 
 $$
 \hat{y}_i(1-\hat{y}_i)
@@ -476,174 +584,153 @@ $$
 
 In each line, the terms from the loss and the logistic function cancel in a way that leaves the simple prediction error, $\hat{y}_i-y_i$.
 
-Together, these three derivatives form $\nabla L_i(a,b_1,b_2)$, the gradient for subject $i$. It tells us how a small change to each parameter would affect this subject's loss.
-
-But fitting one subject at a time is exactly the problem we ran into above. To judge one set of parameters across all $N$ subjects, we take the average:
+Hurray, we found it! A way to know how the loss depends on the parameters! And these three functions, $\hat{y}_i-y_i$, $(\hat{y}_i-y_i)\cdot\text{dose}_i$, and $(\hat{y}_i-y_i)\cdot\text{age}_i$, are the partial derivatives of the loss with respect to each parameter. Together, they form the **gradient** - $\nabla L_i(a,b_1,b_2)$. We can write it like this:
 
 $$
-\bar{L}(a,b_1,b_2) = \frac{1}{N}\sum_{i=1}^{N} L_i(a,b_1,b_2)
+\nabla L_i(a,b_1,b_2) = (
+    \hat{y}_i-y_i,
+    \space
+    (\hat{y}_i-y_i)\cdot\text{dose}_i,
+    \space
+    (\hat{y}_i-y_i)\cdot\text{age}_i
+)
 $$
 
-This average loss is the value plotted in the widget. It is the function that we ultimately want to minimize.
+It tells us how a small change to each parameter would affect this subject's loss.
 
-Its gradient is the average of the individual subjects' gradients:
+But fitting one subject at a time is, as we've discussed before, a problem. To judge one set of parameters across all $N$ subjects, we can just take the average:
 
 $$
 \nabla\bar{L}(a,b_1,b_2) = \frac{1}{N}\sum_{i=1}^{N}\nabla L_i(a,b_1,b_2)
 $$
 
-So each subject contributes a direction in which it would like the parameters to move. Averaging the gradients combines those competing directions into one nudge that considers every subject at once. This is the nudge that gradient descent will use.
+So, now that we know how the loss changes with the parameters, we can use this to change the parameters to minimize the loss!
 
+Let's look at $\frac{\partial L_i}{\partial b_1}$ for a second. It's the derivative of the loss with respect to the $b_1$ parameter. Its value is calculated via $(\hat{y}_i-y_i)\cdot\text{dose}_i$. If this derivative is positive, this means that increasing $b_1$ will increase the loss - so we'll want to subtract something to $b_1$. If this derivative is negative, that means that increasing $b_1$ will decrease the loss, so we want to add something to it. Now, how much should we add or subtract? Well, we can use the derivative itself.
 
-to-do:
-- change previous parameters from alfa/beta to bias/weight
-- all functions to latex for consistency
-- source for historical bits
+If the derivative is positive, we want to subtract, so we can subtract a fraction of the derivative. So, new $b_1$ will be $b_1 - \eta \cdot (\hat{y}_i-y_i)\cdot\text{dose}_i$. If the derivative is negative, we want to add - and the previous equation also works, because subtracting a negative value will result in an addition. $\eta$ is a value that we define, and for that it is called a hyper-parameter - a parameter in a higher dimension, defined by us - it is called the **learning rate**. The name is because, by doing this, by changing the parameters in this way, we're reducing the loss, and so we're **learning**, we're discovering what good parameters look like, what good parameters define the data.
 
-### What it means to learn
+We can do the same for all of the other parameters - essentially, we're subtracting the gradient. This is where the name comes from - **gradient descent**! Et voila, we've arrived, once again.
 
-Say you want to classify emails as spam or not spam. You have features — word counts, sender reputation, subject length. You want a function that maps those features to a probability: 0.9 means "very likely spam", 0.1 means "probably not".
+We can also see why this works mathematically. Let $\theta$ represent all three parameters together. For a small change $\Delta\theta$, the new loss is approximately:
 
-You could write rules by hand. But rules are fragile. What you really want is a function that *learns* what matters from examples — one whose behavior you can tune by showing it data and adjusting its internal parameters to reduce mistakes.
+$$
+\bar L(\theta+\Delta\theta)
+\approx
+\bar L(\theta)+\nabla\bar L(\theta)\cdot\Delta\theta.
+$$
 
-That's the core idea, and it runs all the way through this series.
+If we choose the change to be the negative gradient, scaled by the learning rate,
 
-### The function
+$$
+\Delta\theta=-\eta\nabla\bar L(\theta),
+$$
 
-Logistic regression is that idea in its simplest form. Two parts.
+then:
 
-First, a linear combination of inputs:
+$$
+\bar L(\theta+\Delta\theta)
+\approx
+\bar L(\theta)-\eta\left\|\nabla\bar L(\theta)\right\|^2.
+$$
 
-```
-z = w₁·x₁ + w₂·x₂ + ... + wₙ·xₙ + b
-```
+The squared magnitude of the gradient cannot be negative. Therefore, this adjustment reduces the loss. Worst case scenario, it leaves it unchanged if the gradient is zero.
 
-`w` are the weights (what the function "knows"), `x` are the input features, `b` is a bias term. This is just a dot product: `z = w·x + b`.
-
-`z` can be any real number. But we want a probability — something between 0 and 1. So we squash it through the sigmoid function:
-
-```
-σ(z) = 1 / (1 + e^(-z))
-```
-
-The sigmoid maps any real number to (0, 1). Large positive `z` gives near 1. Large negative `z` gives near 0. `z = 0` gives exactly 0.5.
-
-```
-z:     -∞   -3    0    3   +∞
-σ(z):   0  0.05  0.5  0.95   1
-```
-
-Visualized as a computation graph:
-
-```
-x₁ ──w₁──┐
-x₂ ──w₂──┤
-  ...    ├──► z = w·x + b ──► σ(z) = ŷ ──► L(ŷ, y)
-xₙ ──wₙ──┘
-     b ──┘
-```
-
-That's the full forward pass: `ŷ = σ(w·x + b)`. One input vector in, one probability out.
-
-### The loss function
-
-We have a prediction `ŷ`. We have the true label `y ∈ {0, 1}`. We need to measure how wrong we are.
-
-Binary cross-entropy does this:
-
-```
-L = -[y·log(ŷ) + (1-y)·log(1-ŷ)]
-```
-
-When `y = 1`: loss is `-log(ŷ)`. Predicting `ŷ = 0.99` gives loss ≈ 0.01. Predicting `ŷ = 0.01` gives loss ≈ 4.6. Being confidently wrong is punished harshly. When `y = 0`: same thing, flipped.
-
-This asymmetric punishment is intentional. It forces the model to be calibrated, not just directionally right.
-
-### Gradient descent
-
-We want weights `w` and bias `b` that minimize the loss across all training examples. We find them with gradient descent.
-
-The gradient of the loss tells us the direction of steepest increase. We step the opposite way:
-
-```
-w = w - α · ∂L/∂w
-b = b - α · ∂L/∂b
-```
-
-`α` is the learning rate — how big a step to take.
-
-Computing the gradients with the chain rule yields a satisfying result:
-
-```
-∂L/∂w = (ŷ - y) · x
-∂L/∂b = (ŷ - y)
-```
-
-The gradient is just the prediction error times the input. If we predicted too high (`ŷ > y`), we reduce `w` for features where `x > 0`. If we predicted too low, we increase them. The math tells us exactly which direction to push each weight — and by how much.
-
-### The code
+Here is the complete process in plain Python. Let's start with the data:
 
 ```python
-import numpy as np
+from math import exp, log
 
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
+# Each subject is: (dose, age, label)
+subjects = [
+    (3.2, 38, 1),  # Subject A
+    (3.9, 69, 1),  # Subject B
+    (3.0, 73, 0),  # Subject C
+    (1.1, 43, 0),  # Subject D
+    (2.0, 55, 0),  # Subject E
+]
+```
+These five subjects are the first five subjects from the earlier widget. In this case, it's dummy data, data that we've just made up, but, if we wanted to apply the logistic regression in the "real world", we would need real data. Note that we're importing $e$ and $ln$, as we'll be needing that later on.
 
-def binary_cross_entropy(y_pred, y_true):
-    eps = 1e-9  # avoid log(0)
-    return -np.mean(
-        y_true * np.log(y_pred + eps) + (1 - y_true) * np.log(1 - y_pred + eps)
-    )
-
-class LogisticRegression:
-    def __init__(self, lr=0.1, n_steps=1000):
-        self.lr = lr
-        self.n_steps = n_steps
-        self.w = None
-        self.b = 0.0
-
-    def fit(self, X, y):
-        n_samples, n_features = X.shape
-        self.w = np.zeros(n_features)
-
-        for _ in range(self.n_steps):
-            z = X @ self.w + self.b
-            y_pred = sigmoid(z)
-
-            error = y_pred - y
-            self.w -= self.lr * (X.T @ error) / n_samples
-            self.b -= self.lr * np.mean(error)
-
-    def predict_proba(self, X):
-        return sigmoid(X @ self.w + self.b)
-
-    def predict(self, X, threshold=0.5):
-        return (self.predict_proba(X) >= threshold).astype(int)
+Next, here is the logistic regression equation:
+```python
+def logistic_regression(dose, age, a, b1, b2):
+    score = a + b1 * dose + b2 * age
+    return 1 / (1 + exp(-score))
 ```
 
-Let's test it on an OR gate — the simplest problem where inputs need to be combined:
+Now, we define the initial parameters:
+```python
+# Start with all three parameters at zero.
+a = 0.0
+b1 = 0.0
+b2 = 0.0
+```
+
+After that, we define our hyper-parameters:
+```python
+learning_rate = 0.001
+number_of_steps = 5_000
+```
+
+And finally, the gradient descent loop. It's a loop since in each step we change the parameters a tiny bit to slowly but surely decrease the loss, so we'll have to do that step many times. Note that we're also calculating the loss at each step, and for safety, we're making sure that the prediction is not exactly 0 or 1, as that would lead to infinity when taking the logarithm of the prediction or of 1 minus the prediction.
 
 ```python
-X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=float)
-y = np.array([0, 1, 1, 1])  # OR: true if any input is 1
+for step in range(number_of_steps):
+    gradient_a = 0.0
+    gradient_b1 = 0.0
+    gradient_b2 = 0.0
+    total_loss = 0.0
 
-model = LogisticRegression(lr=0.5, n_steps=2000)
-model.fit(X, y)
+    for dose, age, label in subjects:
+        prediction = logistic_regression(dose, age, a, b1, b2)
+        error = prediction - label
 
-print(model.predict(X))          # [0, 1, 1, 1]
-print(model.predict_proba(X).round(2))  # [0.07, 0.94, 0.94, 1.0]
+        # This subject's contribution to each partial derivative.
+        gradient_a += error
+        gradient_b1 += error * dose
+        gradient_b2 += error * age
+
+        # Clipping only protects log() from receiving exactly 0 or 1.
+        safe_prediction = min(max(prediction, 1e-12), 1 - 1e-12)
+        total_loss -= (
+            label * log(safe_prediction)
+            + (1 - label) * log(1 - safe_prediction)
+        )
+
+    # Average the subjects' gradients and subtract them from the parameters.
+    number_of_subjects = len(subjects)
+    a -= learning_rate * gradient_a / number_of_subjects
+    b1 -= learning_rate * gradient_b1 / number_of_subjects
+    b2 -= learning_rate * gradient_b2 / number_of_subjects
+
+    if step % 1_000 == 0:
+        average_loss = total_loss / number_of_subjects
+        print(f"step={step}, average loss={average_loss:.4f}")
 ```
 
-The model learns the correct classification, with confident probabilities. Now try XOR (`y = [0, 1, 1, 0]`) — it fails. A single linear boundary can't separate XOR. That limitation is exactly what the next post solves.
+Finally, we can print the parameters that we've found to fit the data:
+```python
+print(f"a={a:.3f}, b1={b1:.3f}, b2={b2:.3f}")
+```
 
-### What this unlocks
+We can use these parameters to predict the labels for other subjects, assuming it's real world data!
 
-Logistic regression is one neuron: one linear transformation followed by one nonlinearity. All five concepts that scale this up to LLMs are already here:
+Ok, code is cheap, show me the interactive widget that really drives the take home point:
 
-1. **Parameters** — weights `w` and bias `b` encode what the model knows
-2. **Forward pass** — compute a prediction from inputs and parameters
-3. **Loss** — a scalar that measures how wrong the prediction is
-4. **Gradients** — the direction to adjust parameters to reduce loss
-5. **Gradient descent** — the update rule that iterates toward a solution
+```gradient-descent-experiment
+```
 
-In the next post, we stack many of these neurons together into layers. The decision boundary becomes arbitrarily complex. The gradient descent loop stays exactly the same.
+If you play around with the learning rate, you'll find that the loss can get very jumpy, and it looks like we're going nowhere. That's something that can happen! Picking a good learning rate is important, and that can sometimes be a bit of an art. The idea is that a good enough learning rate will lead us to a loss minimum - and having a very large learning rate can lead to us overshooting the minimum.
+
+If you let it run with the default values, you'll see the loss slowly decreasing - that's gradient descent in action, carrying out logistic regression, fitting the parameters to the data! Bam!
+
+We've mostly focused on the drug example, learning whether or not a subject responds based on the dosage and their age - these aspects, dosage and age, are often called "features". They're the information that we have that will let us fit a logistic regression model. And we've used the word subjects, but the more general term is samples.
+
+So, you can have samples, each sample having N features, and each sample having a label, and you can try to apply logistic regression to that data - doesn't matter the field or the goal (assuming that the labels are binary!).
+
+A small caveat, people mostly use the wording "bias" for the parameter that isn't attached to any feature, and they'll use the letter $b$, instead of $a$. Also, parameters attached to features are mostly called "weights", and you'll often find them represented as $w$, so $w_1$ instead of $b_1$.
+
+I think the coolest thing is that this is at the core of modern AI. Frontier LLMs can have billions or even trillions of parameters, all laid out in a specific way (an architecture), but the fundamental idea that is used to find what those parameters should be is the same as the one in this post - gradient descent! Ok, so it's not *exactly* gradient descent, but it's the same idea. :)
+
+I hope you've enjoyed this post, and drop me an e-mail if you have any feedback. So, down with the gradient, and happy fitting!
