@@ -1,21 +1,21 @@
 ---
 title: "Reinventing Logistic Regression"
 date: "2026-07-22"
-description: "From 19th century population modeling to gradient descent"
+description: "From 19th-century population modeling to gradient descent"
 draft: false
 tags: ["ML","Python","AI"]
 slug: "logistic-regression"
 type: "tech"
 ---
 
-In mid 19th century, in Belgium, there was Pierre Verhulst. In that time, people were worried about famine and chaos. A few years before, Malthus said that population would grow exponentially, while food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, chaos. These crisis would slow down population growth, even heavily reduce it, maybe even leading to some sort of equilibrium.
+In the mid-19th century, in Belgium, there was Pierre Verhulst. At the time, people were worried about famine and chaos. Around four decades earlier, Malthus had argued that population could grow exponentially while the food supply would grow linearly. You get a lot of people, but not a lot of food. Then you get, unfortunately, famine, deaths, and chaos. These crises would slow population growth, perhaps even reducing it enough to produce some sort of equilibrium.
 
 ````tangent
 What does it mean for population to grow exponentially?
 
-An exponential growth of population can happen for many reasons, but fundamentally, it means that the births per person over their lifetime is larger than 1 - for this to happen, each couple needs to have more than 2 children (assuming that people eventually die).
+Population grows exponentially when its rate of growth is proportional to its current size: the more people there are, the more people there are who can have children. This can happen when births consistently exceed deaths, although the real calculation also depends on generation time, age structure, migration, and other factors.
 
-If you look at today, so far, population has indeed grown a lot, it has more than doubled over the last century - but, generally speaking, the agri tech has kept up with the demand.
+Looking at the world today, the population has indeed grown a lot over the last century. Generally speaking, agricultural technology and food production have grown alongside it, although access to that food is far from equal.
 
 Play around with the parameters (life expectancy, number of children per couple, age at which they have them) below and check out how they affect population growth. A few assumptions are being made here, such as that every couple has children, every couple has the same age, and that the population at the start is mostly young people.
 
@@ -30,36 +30,36 @@ x
 ```
 Fig. 1 - Exponential growth versus linear growth
 
-Pierre set off to try and model that. Population would start to grow exponentially, but, at some point, the amount of people itself would slow its growth down, as it approached a limit. What he arrived at was the logistic function - $\frac{1}{1 + e^{-rx}}$ - $r$ being the growth rate.
+Pierre set off to try and model that. Population would initially grow exponentially, but, at some point, the number of people itself would slow that growth as the population approached a limit. A modern normalized version of the logistic function he developed is $\frac{1}{1 + e^{-rx}}$, with $r$ controlling the growth rate.
 
 ```interactive-plot xMin=-6 xMax=6 yMin=-0.2 yMax=1.2
 1/(1 + exp(-1*x))
 ```
-Fig. 3 - A logistic function
+Fig. 2 - A logistic function
 
-You can play around with the value of the growth rate to increase or decrease the slope around the y-axis, hence the name. The higher the $r$, the higher the growth rate, the faster the population grows. As it is, it converges towards $1$ - if you want it to converge to a hypothetical population limit, you can just multiply the whole function by that limit ($L$) - $\frac{L}{1 + e^{-rx}}$.
+You can play around with the growth rate to increase or decrease the slope around the y-axis. The higher $r$ is, the steeper the curve becomes. As written, the function converges towards $1$. If you want it to converge to a hypothetical population limit, you can multiply the whole function by that limit, $K$, giving $\frac{K}{1 + e^{-rx}}$. This is still a simplified form whose midpoint is fixed at $x=0$.
 
 This seemingly simple function is actually quite powerful, because it allows us to convert any number to a value between 0 and 1 - and this, it turns out, came in really handy in the realm of probabilities.
 
 ### The logistic function and probabilities
 
-The logistic function was never meant to be used for probabilities, but by the end of the 19th century and early 20th century, S-shaped curves, like the logistic function, were all over the place. In chemistry, certain reactions could be represented by an S-curve (autocatalytic reactions). The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains, also found S-curves. The logistic function was a great fit for all of these phenomena. It was found in situations where growth of something depended on that something but it eventually had to reach a limit. So, I guess you could say, the logistic function was in the air.
+The logistic function was never meant to be used for probabilities, but by the late 19th and early 20th centuries, S-shaped curves like the logistic function were showing up all over the place. In chemistry, certain reactions could be represented by an S-curve (autocatalytic reactions). The Hill equation showed that blood oxygen saturation also follows an S-curve. Researchers studying the adoption of technology in agriculture and other domains also found S-curves. The logistic function was a great fit for all of these phenomena. It was found in situations where growth of something depended on that something but it eventually had to reach a limit. So, I guess you could say, the logistic function was in the air.
 
-At the same time, a revolution in medicine was happening. For a long time, there was little standardization in the amounts of remedies to administer, and doctors were mostly relying on experience. But medicine, along with everything else, was going industrial. Drugs were no longer created and administered *ad hoc* by doctors, they came in bottles and boxes, and they had to have a potency label. So, researchers studying the effects of these drugs wanted to standardize dosages. How much should be enough, and how much is definitely too much? 
+At the same time, a revolution in medicine was happening. For a long time, there was little standardization in the amounts of remedies to administer, and doctors mostly relied on experience. But medicine, along with everything else, was going industrial. Drugs were no longer created and administered *ad hoc* by doctors; they came in bottles and boxes, and they had to have a potency label. So researchers studying the effects of these drugs wanted to standardize dosages. How much should be enough, and how much is definitely too much?
 
-Researchers were giving different doses of a drug to lab subjects and seeing whether or not each one responded. Individually, the outcome was binary: the treatment either worked or it didn't. Across a population, however, something interesting emerged. At very low doses, almost none of the subjects responded. At very high doses, almost all of them did. In between, the **fraction** of subjects that responded steadily increased with the dose. Sound familiar? Researchers were once again looking at an S-shaped curve. An S-curve that would tell them the relation between a dose and the fraction, the probability, of individuals responding.
+Researchers were giving different doses of a drug to lab subjects and seeing whether or not each one responded. Individually, the outcome was binary: the treatment either worked or it didn't. Across a population, however, something interesting emerged. At very low doses, almost none of the subjects responded. At very high doses, almost all of them did. In between, the **fraction** of subjects that responded steadily increased with the dose. Sound familiar? Researchers were once again looking at an S-shaped curve, one that could describe the relationship between a dose and the fraction, or estimated probability, of individuals responding.
 
-So we're in the 1920s/1930s, and we need an S-curve to describe the impact of a dose of a certain drug. Researchers wanted to compare different drugs, see how they affected people differently, to better determine the right dose, and which one was best. Which one had less side effects, and so on. They wanted to model the data, with a function... A function that could convert a dose into a probability of response.
+So we're in the 1920s and 1930s, and we need an S-curve to describe the impact of a dose of a certain drug. Researchers wanted to compare different drugs, see how they affected people differently, determine the right dose, and decide which one was best, which one had fewer side effects, for example. They wanted to model the data with a function: a function that could convert a dose into a probability of response.
 
-Now, a caveat: there actually were many different functions that researchers were experimenting with. Spoiler alert, over time, the logistic function won. Finally, the logistic function became the function used to convert doses to probabilities.
+Now, a caveat: researchers experimented with several different functions. "Probit models" were already prominent, and they never disappeared. The logistic function was proposed for a study on the potency of a drug in the 1940s and eventually became one of the most widely used ways to convert a score into a probability.
 
-But why did the logistic function win? For a good reason! It was, mathematically, very easy to work with, especially because of its inverse. I'm not sure if Pierre realized this when he was playing around with the logistic function to model population, but its inverse turns out to be quite simple. If we consider $p$ to be the probability, and $d$ the dose, applying the logistic function we get:
+Why did the logistic function become so useful? One reason is that it is mathematically easy to work with, especially because its inverse is simple. I'm not sure if Pierre realized this when he was playing around with the logistic function to model population, but that inverse turns out to be very handy. If we consider $p$ to be the probability, and $d$ the dose, applying the logistic function we get:
 
 $$
 p = \frac{1}{1 + e^{-d}}
 $$
 
-Now, what if we want to go *backwards*? I.e. what if we want to know the dose that will get us a certain probability of success (i.e. the inverse)? Then we get:
+Now, what if we want to go *backwards*? That is, what value of dose gives us a certain probability of success? Applying the inverse gives us:
 
 $$
 d = \ln\!\left(\frac{p}{1-p}\right)
@@ -101,7 +101,7 @@ $$
 ````tangent
 Why does multiplying by $-1$ flip the fraction inside the $\ln$?
 
-First: why is $a^{-1} = \frac{1}{a}$. There's a pattern when you decrease the exponent by one. Using $a = 2$:
+First: why is $a^{-1} = \frac{1}{a}$? There's a pattern when you decrease the exponent by one. Using $a = 2$:
 
 $$
 2^3 = 8 \quad \rightarrow \quad 2^2 = 4 = \frac{8}{2} \quad \rightarrow \quad 2^1 = 2 = \frac{4}{2} \quad \rightarrow \quad 2^0 = 1 = \frac{2}{2}
@@ -145,7 +145,7 @@ $$
 \ln\!\left(\frac{1}{a}\right) = -\ln(a)
 $$
 
-Negating a log flips the thing inside. Which gives us our last step:
+Negating a log flips the thing inside. That gives us our last step:
 
 $$
 -\ln\!\left(\frac{1-p}{p}\right) = \ln\!\left(\frac{p}{1-p}\right)
@@ -159,30 +159,30 @@ You might be familiar with this function! It's none other than the log of the od
 ````tangent
 What are odds? And why use the log of the odds?
 
-The general idea of odds has been around for a long time. The word itself hints at its meaning - something unequal. If you happened to be in ancient Rome, watching a chariot race, you might've turned to the person beside you and said: "I'll give you two coins if Aurelius wins, you'll give me one coin if Romulus wins!". You confidently expect Aurelius to win. And in that unequalness, there's an implicit ratio - you think the likelihood of Aurelius winning is twice as large as the one of Romulus winning. In other words, if they were to race three times, Aurelius should win twice, while Romulus should only win once!
+The general idea of odds has been around for a long time. The word itself hints at its meaning: something unequal. Imagine that you're in ancient Rome, watching a chariot race. You might turn to the person beside you and say, "I'll give you two coins if Aurelius wins; you'll give me one coin if Romulus wins!" You confidently expect Aurelius to win. In that inequality, there's an implicit ratio: you think Aurelius is twice as likely to win as Romulus. In other words, if they were to race three times, you would expect Aurelius to win twice and Romulus once.
 
-In simple terms, when stating the odds of something, we're saying how often we'll win ($W$) versus how often we'll lose ($L$) - and we represent it like this: $W$:$L$. Often, one of those numbers is set to 1 (as in simplifying a fraction), so we'll set it to $\frac{W}{L}$:$1$. This is a bit different from a probability. If we want to know the probability of winning, we can calculate it with the formula $\frac{W}{W+L}$, or $\frac{W/L}{W/L+1}$. So, let's say $X = \frac{W}{L}$. This means that $P = \frac{X}{X+1}$ - if we solve for $X$, we get $X = \frac{P}{1-P}$ - i.e. the odds function we've seen before.
+In simple terms, when stating the odds of something, we're saying how often we'll win ($W$) versus how often we'll lose ($L$), represented as $W:L$. Often, one of those numbers is set to 1, as when simplifying a fraction, giving $\frac{W}{L}:1$. This is a bit different from a probability. If we want to know the probability of winning, we calculate $\frac{W}{W+L}$, or $\frac{W/L}{W/L+1}$. So let's say $X = \frac{W}{L}$. This means that $P = \frac{X}{X+1}$. If we solve for $X$, we get $X = \frac{P}{1-P}$, the odds function we've seen before.
 
-There is one annoying thing about odds though - they're not symmetrical. If winning is twice as likely, then the odds are $2$:$1$. If it's half as likely, the odds are $0.5$:$1$. If winning is just as likely as losing, then the odds are $1$:$1$. Twice as likely or half as likely feel like they should be equidistant from $1$, but they're not. Plus, odds can go from $0$ to $\infty$, and an unlikely win is "crammed" into the space between $0$ and $1$, while a likely win can go from $1$ to $\infty$.
+There is one annoying thing about odds, though: they're not symmetrical. If winning is twice as likely as losing, then the odds are $2:1$. If it is half as likely as losing, the odds are $0.5:1$. If winning is just as likely as losing, then the odds are $1:1$. Twice as likely or half as likely feel like they should be equidistant from $1$, but they aren't. Plus, odds can go from $0$ to $\infty$: an unlikely win is "crammed" into the space between $0$ and $1$, while the odds of a likely win can range from $1$ to $\infty$.
 
-A way to "solve" this is by taking the log of the odds! The log of the space between $0$ and $1$ is as "large" as the log between the space of $1$ and $\infty$. And, it's also symmetrical around the value $1$ - $\ln(0.5) \approx -0.69$, and $\ln(2) \approx 0.69$. So, now we get symmetry.
+A way to "solve" this is by taking the log of the odds. The log of the space between $0$ and $1$ is as "large" as the log of the space between $1$ and $\infty$. And, it's also symmetrical around the value $1$: $\ln(0.5) \approx -0.69$ and $\ln(2) \approx 0.69$. Now we get symmetry.
 
 ````
 
-At the time, and even today, researchers had an intuition for what the log of odds meant, or for comparing two different log of the odds. In the same way that you and I have an intuitive idea of what 1.5 meters means (or 5 feet if you're used to imperial unites), researchers had an intuitive idea of what the log of odds meant.
+At the time, and even today, researchers had an intuition for what log-odds mean and how to compare two log-odds values. In the same way that you and I have an intuitive idea of what 1.5 meters means, or 5 feet if you're used to imperial units, researchers had an intuition for the log-odds scale.
 
-For example, consider drug A and drug B. Drug A has a log of odds 1.7 response when the dose is 2 miligrams. Drug B has a log of odds response of 2.5 for the same dosage. A log-odds of 0 means a 1:1 odds, even odds. Each unit of log-odds roughly triples the odds (since $e$ is around 2.7). Since the difference of the log-odds is 0.8, drug B has around twice the odds of being effective, when compared to drug A. So for every two subjects that don't respond to drug A, one of them would have responded to drug B.
+For example, consider drug A and drug B. At a dose of 2 milligrams, suppose drug A has log-odds of response equal to 1.7, while drug B has log-odds of response equal to 2.5. Log-odds of 0 correspond to $1:1$, or even odds. Increasing the log-odds by one multiplies the odds by $e$, which is around 2.7. Here, the difference is 0.8, so the odds of a response with drug B are $e^{0.8} \approx 2.23$ times the odds with drug A at the same dose. This allows us to compare the odds of response between the two drugs.
 
-Researchers being familiar with it was great, but there was something else that really mattered as well - instead of using the raw probability data, researchers could apply the log of odds transformation to the raw probability data. This meant that they could model the relationship between probability (viewed as log of odds) and dosage in a linear way!
+That familiarity was useful, but something else mattered as well: instead of working directly with probability data, researchers could apply the log-odds transformation. This meant that they could model the relationship between probability (viewed as log of odds) and dosage in a linear way!
 
-At this point, we actually have to make a slight correction. $d = \text{p}$ is one function, the same as $x = y$, so we need to add parameters so that we can describe each of the different drugs. So, really, we're dealing with $\beta d + \alpha$.
+At this point, we have to make a slight correction. Our simplified equation, $d = \text{p}$, assumes the same characteristics for each drug. To describe different drugs and dose-response relationships, we need to add parameters. So, really, we're dealing with $\alpha + \beta d$.
 
 So, summarizing, we're looking at:
 $$
 \alpha + \beta d = \ln\!\left(\frac{p}{1-p}\right)
 $$
 
-You might be confused with the $\ln\!\left(\frac{p}{1-p}\right)$ - but remember, this really is just there to remind us that we're applying the log odds transformation to the raw probability data.
+You might be confused by the $\ln\!\left(\frac{p}{1-p}\right)$ - but remember, this really is just there to remind us that we're applying the log odds transformation to the raw probability data.
 
 If we consider the following:
 $$
@@ -209,13 +209,13 @@ We can actually work with this:
 ```
 Fig. 5 - Dose vs. log-odds of response: a straight line.
 
-It's the same data! And we're still capturing the relationship between the dose and (a transformed) probability. At the core, we're using the logistic function, but we can manipulate it so that it's easier to understand. $\alpha$ tells us where the line crosses zero, and this is the dose at which we have a 50/50 chance of response. $\beta$ is the slope, and it tells us how sharply the response changes with the dose. Remember, we're in the 1920s, there are no computers or graphing calculators, and getting these two numbers from a straight line is something that we can do with a ruler and a pencil!
+It's the same data! And we're still capturing the relationship between the dose and (a transformed) probability. At the core, we're using the logistic function, but we can manipulate it so that it's easier to understand. $\alpha$ is the log-odds when the dose is zero. The line itself crosses zero when $d=-\alpha/\beta$, and that is the dose at which we have a 50/50 chance of response. $\beta$ is the slope, and it tells us how sharply the log-odds of response change with the dose. Remember, we're in the early 20th century, there are no computers or graphing calculators available, and estimating these two numbers from a straight line is something that we can do with a ruler and a pencil!
 
 ### From the logistic function to logistic regression
 
 When the 1940s came around, researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age. This meant that the equation would have more terms.
 
-This lead to one key difference - now we have a lot more variables, so making groups gets tricky. Before, we could aggregate around dosages (2mg, 2.5mg, 3mg, ...), but since each subject is a unique combination of dose and age, we're better off just using the individual data points, instead of aggregating. And since we're using the individual data points, instead of calculating probabilities, we can look at the subject's response as something binary - did they respond or not? Instead of using $p$, we'll be using $y$. If the subject responded, we'll consider $y=1$, otherwise, we'll consider $y=0$.
+This leads to one key difference: now we have more variables, so making groups gets tricky. Before, we could aggregate around dosages (2 mg, 2.5 mg, 3 mg, ...), but each subject is a unique combination of dose and age. We're better off using the individual data points instead of aggregating them. For each individual, the observed response is binary: did they respond or not? We'll use $y$ for this observed response. If the subject responded, we'll consider $y=1$; otherwise, we'll consider $y=0$.
 
 So, now, we get something like this:
 
@@ -223,19 +223,20 @@ $$
 y = \frac{1}{1 + e^{-(a + b_1 \cdot \text{dose} + b_2 \cdot \text{age})}}
 $$
 
-Reminder - we **have** the fundamental data. This is, we know what $y$ should be for a given dose and age - what we need to know is $a$, $b_1$, and $b_2$. If you think about it, these 3 parameters are essentially the descriptors of a drug.
 
-This isn't really something that we can do with a ruler and pencil anymore. But, lucky for us, there are other ways to get these parameteres. Figuring them out is what we call "fitting the parameters to the data" - a.k.a. **regression**. Since we're doing regression using the logistic function, this IS logistic regression! We have arrived!
+Reminder: we **have** the fundamental data. That is, we know the observed value of $y$ for each measured dose and age. What we need to find are $a$, $b_1$, and $b_2$. For this particular model and dataset, these three parameters summarize how the drug's predicted response relates to dose and age.
 
-But then, how do we exactly fit these parameters?
+This isn't really something that we can do with a ruler and pencil anymore. But, lucky for us, there are other ways to get these parameters. Figuring them out is what we call "fitting the parameters to the data", or in other words, **regression**. And since we're using the logistic function, this is called **logistic regression**. We have arrived!
 
-There are many different ways of doing that, some of them involving more or less complex calculations - and in the early 1960s, computers were just becoming available, which made this process much easier, and thus more popular. Historically, the most common method was the **Newton-Raphson method**, but it's a bit tricky, so it has fallen out of style. Nowadays, and this is the method that we'll be exploring, we use something called **gradient descent**. And to use gradient descent, we first have to talk about **loss functions**.
+But how exactly do we fit these parameters?
+
+There are many different ways of doing that, some involving more complex calculations than others. As computers became more widely available, fitting these models became much easier and more popular. The method that we'll explore is **gradient descent**. To use gradient descent, we first have to talk about **loss functions**.
 
 #### Loss functions? I'm at a loss here...
 
-So, for a certain subject, with a specific dose and age, we **know** what $y$ should be, we got that from real world data.
+So, for a certain subject with a specific dose and age, we **know** what $y$ is; we got it from real-world data.
 
-Now, what we're trying to do is **find** the parameters $a$, $b_1$, and $b_2$. This way, we can build out a function that matches the real world data, that **describes** the data. From there, we can use the values of these parameters as descriptors of the drug, and compare it to other drugs. To get fancy, we can "model" the drug.
+Now, what we're trying to do is **find** the parameters $a$, $b_1$, and $b_2$. This way, we can build a function that matches and **describes** the real-world data. From there, we can use the parameters to summarize the relationship and compare it with relationships for other drugs. To get fancy, we can "model" the drug.
 
 To get started, we actually assign random values to the parameters. Then, we can calculate a "temporary $y$" for each data point - we'll use $\hat{y}$ to represent that value. This $\hat{y}$ is going to be different from the real value, because we're using random parameters. So, now we have two different "$y$s": the real expected value, the one we got from real data - $y$ - and the value that we get from our function with randomly initialized parameters - $\hat{y}$. To distinguish between these two, we'll be using the term "label" for the real value $y$, and we'll be using the term "prediction" for the value that we get from our function, $\hat{y}$. We use "label" as in the true label, the real value. We use prediction because, later on, we'll use the function with the appropriate parameters (parameters that fit the data), to predict values for data points with doses and ages that we haven't measured yet.
 
@@ -245,11 +246,11 @@ So, we can ask ourselves, what would be a good loss function that would work wit
 
 Say that a subject responded, so $y=1$. If our prediction is $\hat{y}=0.9$, then the loss should be small. If our prediction is $\hat{y}=0.1$, then the loss should be big. If our prediction is $\hat{y}=0.01$, then the loss should be really big, and ideally much larger than the loss when $\hat{y}=0.1$ - because this way, we're punishing very confident errors.
 
-To do this, we can use the log of the prediction. $ln(1) = 0$, which is perfect, since if $y=1$ and $\hat{y}=1$, then the loss should be 0. Then, $ln(0.9) = -0.105$, $ln(0.1) = -2.303$, $ln(0.01) = -4.605$. Notice how the more wrong the prediction is, the bigger the absolute value of the loss is. The only issue is that it's negative, but we can deal with this by just multiplying it by $-1$. So, when $y=1$ we can calculate the loss by using $-ln(\hat{y})$.
+To do this, we can use the log of the prediction. $\ln(1) = 0$, which is perfect, since if $y=1$ and $\hat{y}=1$, then the loss should be 0. Then, $\ln(0.9) = -0.105$, $\ln(0.1) = -2.303$, and $\ln(0.01) = -4.605$. Notice how the more wrong the prediction is, the larger the absolute value becomes. The only issue is that it's negative, but we can deal with this by multiplying it by $-1$. So, when $y=1$, we can calculate the loss using $-\ln(\hat{y})$.
 
-What if a subject did not respond, so $y=0$? Then, similar to before but in a symmetric way, the loss should be small when $\hat{y}=0.1$, big when $\hat{y}=0.9$, and really big when $\hat{y}=0.99$. We can try using the log again, but we have to be careful - we need to use the log of $1-\hat{y}$ instead of $\hat{y}$. For example, if we predict 0.9, $-ln(1-0.9) = -ln(0.1) = 2.303$. Then, $-ln(1-0.99) = -ln(0.01) = 4.605$. So, again, the more wrong the prediction, the bigger the loss. Then, $-ln(1-0.1) = -ln(0.9) = 0.105$, $-ln(1-0.01) = -ln(0.99) = 0.010$, so the more correct the prediction, the faster the loss gets to zero.
+What if a subject did not respond, so $y=0$? Then, symmetrically, the loss should be small when $\hat{y}=0.1$, big when $\hat{y}=0.9$, and really big when $\hat{y}=0.99$. We can use the log again, but we need the log of $1-\hat{y}$ instead of $\hat{y}$. For example, if we predict 0.9, $-\ln(1-0.9) = -\ln(0.1) = 2.303$. Then, $-\ln(1-0.99) = -\ln(0.01) = 4.605$. Again, the more wrong the prediction is, the larger the loss becomes. Meanwhile, $-\ln(1-0.1) = -\ln(0.9) = 0.105$ and $-\ln(1-0.01) = -\ln(0.99) = 0.010$, so the loss approaches zero as the prediction improves.
 
-Great, so now we just have to combine these two different functions, so that when $y=1$ we use $-ln(\hat{y})$ and when $y=0$ we use $-ln(1-\hat{y})$. We can do this by using the following formula:
+Great, so now we just have to combine these two different functions, so that when $y=1$ we use $-\ln(\hat{y})$ and when $y=0$ we use $-\ln(1-\hat{y})$. We can do this by using the following formula:
 
 $$
 L = y \cdot -\ln(\hat{y}) + (1-y) \cdot -\ln(1-\hat{y})
@@ -257,20 +258,20 @@ $$
 
 Note that the label determines what gets used: if $y=1$, then $(1-y)=0$, so only the first term is used; if $y=0$, then $(1-y)=1$, so only the second term is used.
 
-By the way, this is called the cross-entropy loss. This comes from information theory, and honestly we would be going down a rabbit-hole to understand why it's called that. But now that we reinvented loss functions, more specifically the cross-entropy loss function, we can move on to the next key step, which is **gradient descent**.
+By the way, this is called the cross-entropy loss. This comes from information theory, and honestly we would be going down a rabbit hole to understand why it's called that. But now that we reinvented loss functions, more specifically the cross-entropy loss function, we can move on to the next key step, which is **gradient descent**.
 
 #### Down with the gradient!
 
-So, we initialized our function with random parameters, and we calculated the loss for one of our subjects. How do we go from that to changing our parameters so that the prediction is the same as the label?
+So, we initialized our function with random parameters, and we calculated the loss for one of our subjects. How do we go from that to changing our parameters so that the prediction gets closer to the label?
 
-We could try manually changing the parameters. For each subject, we can choose new parameters that would get us a perfect prediction. But then, we would probably be choosing completely different parameters for each subject, and we would be no closer to finding the optimal parameters for all subjects.
+We could try manually changing the parameters. For each subject, we can choose new parameters that would get us an extremely confident prediction with very low loss. But then, we would probably be choosing completely different parameters for each subject, and we would be no closer to finding the optimal parameters for all subjects.
 
-Let's check out an example. Below you'll find a widget that lets you tune the parameters of the logistic function - essentially letting you manually attempt regression. By default, there are only two subjects, and in each round of tuning the focus is on a single subject. Change the parameters, watch what the prediction is, how it compares to the label, and what the loss is. Once you've found a set of parameters that leads to a low loss for that subject, click proceed. Note that this will actually calculate the predictions and losses for **all** subjects, and the average loss will be ploted below. After this, the focus will be on another subject, and you can try to find a new set of parameters for that subject, and check out how that set of parameters affects the other subjects' losses. The idea is to find parameters that work well for all subjects. Each round of tuning is called a "step". Ideally, as the step count increases, the average loss should decrease - this is how you will know that you are finding parameters that fit the data. You can add more subjects if you'd like!
+Let's check out an example. Below you'll find a widget that lets you tune the parameters of the logistic function - essentially letting you manually attempt regression. By default, there are only two subjects, and in each round of tuning the focus is on a single subject. Change the parameters, watch what the prediction is, how it compares to the label, and what the loss is. Once you've found a set of parameters that leads to a low loss for that subject, click proceed. Note that this will actually calculate the predictions and losses for **all** subjects, and the average loss will be plotted below. After this, the focus will be on another subject, and you can try to find a new set of parameters for that subject, and check out how that set of parameters affects the other subjects' losses. The idea is to find parameters that work well for all subjects. Each round of tuning is called a "step". Ideally, as the step count increases, the average loss should decrease - this is how you will know that you are finding parameters that fit the data. You can add more subjects if you'd like!
 
 ```parameter-tuner
 ```
 
-How did it go? Since it's just three parameters, you might've actually ended up cracking it - if so, nice! But I hope I got the point across, that choosing parameters *ad hoc*, fitting subjects one by one, is probably not going to work. Real world data ends up being more complex, and often the number of parameters is actually much larger than three. You might want to consider things such as weight, height, and many more.
+How did it go? Since it's just three parameters, you might've actually ended up cracking it - if so, nice! But I hope I got the point across, that choosing parameters *ad hoc*, fitting subjects one by one, is probably not going to work. Real-world data ends up being more complex, and often the number of parameters is much larger than three. You might want to include things such as weight, height, and many more, with an additional parameters for each one.
 
 You might've tried to do small nudges, instead of changing all of the parameters for each subject. Say, find something that works for a subject, and then for other subjects do small alterations. That's a good principle! Ideally, though, it would be nice to know *how* to change the parameters, in which direction... So, what if we try to find a way to relate the loss to the parameters, so that we can nudge the parameters in a good direction? Say, a function where the loss depends on the parameters.
 
@@ -283,7 +284,7 @@ This tangent provides analytical proof that we can write a function where the lo
 
 For a given subject $i$, the dose, age, and label are fixed values. The things we are changing are $a$, $b_1$, and $b_2$.
 
-First, the parameters and the subject's features are combined into a score, that we represent with the letter $z$:
+First, the parameters and the subject's features are combined into a score that we represent with the letter $z$:
 
 $$
 z_i(a,b_1,b_2) = a + b_1 \cdot \text{dose}_i + b_2 \cdot \text{age}_i
@@ -330,16 +331,16 @@ $$
 = \frac{\partial L_i}{\partial \hat{y}_i}\frac{\partial \hat{y}_i}{\partial \theta}
 $$
 
-Here, we're using $i$ to indicate one specific subject. So $L_i$ is the loss of subject $i$, and $i$ can be any value, it's just a placeholder, something that means "one of the subjects".
+Here, we're using $i$ as an index that identifies one specific subject. So $L_i$ is the loss of subject $i$, with $i$ ranging from $1$ to the number of subjects in the dataset.
 
 `````tangent
 What is the chain rule?
 
 The chain rule is useful when one value affects another value through one or more intermediate steps. Just like the name implies, the idea is that there are links between the different values, like a chain!
 
-Suppose you have a final value $F$. $F$ depends on an intermediate value $g$. $g$ depends on a parameter $\theta$. If $F$ depends on $g$, and $g$ depends on $\theta$, then we can also say that $F$ depends on $\theta$!
+Suppose you have a final value $F$. The value $F$ depends on an intermediate value $g$, and $g$ depends on a parameter $\theta$. If $F$ depends on $g$, and $g$ depends on $\theta$, then we can also say that $F$ depends on $\theta$!
 
-That's what the chain rule says - the derivative of F with respect to theta is the product of the derivative of F with respect to g, and the derivative of g with respect to theta.
+That's what the chain rule says: the derivative of $F$ with respect to $\theta$ is the product of the derivative of $F$ with respect to $g$ and the derivative of $g$ with respect to $\theta$.
 
 ````tangent
 Hold on, what is a derivative?
@@ -350,14 +351,12 @@ So, a derivative measures how much one value changes when another value changes.
 
 Why are we only interested in measuring that change when the change is very small? Because that gives us the **instantaneous rate of change** at that particular point. Going back to the car example, if you're standing still, and there's a very long straight, and then you fully press on the gas - in the beggining the speed of the car will change very fast, but as time goes on, the speed will increase more and more slowly, until it reaches a plateau - that's the acceleration, the derivative of the speed with respect to time. In the beginning, the acceleration is large, as the speed increases very fast. But, when the speed plateaus, the acceleration is zero, since the speed doesn't change. So the derivative of the speed with respect to time, which we casually call the acceleration, has a different value dependinding on for how long we've started steping on the gas. The derivative at any given moment tells us the rate of change at that exact moment, not the average change over a longer period of time - which is why when we measure it, we want to measure it in the smallest amount of unit possible!
 
-Note that, in this example, there are two derivatives being measured: the derivative of the distance with respect to time (the speed), and the derivative of the speed with respect to time (the acceleration). Even though they're related, they're two different things! The widget below illustrates this example. It has a car racing in a track. In long straights, it accelerates, eventually reaching a plateau. When it gets close to a corner, it deaccelerates, plateauing in the corner. Below the track, you can find a speed plot, and an accelaration plot. You can pause the car, and you'll see the calculation of the acceleration based on the current speed. You can also horizontally drag the plots to any point in time.
+Note that this example contains two derivatives: the derivative of distance with respect to time, which is speed, and the derivative of speed with respect to time, which is acceleration. Even though they're related, they're two different things! The widget below illustrates this with a car racing on a track. On the long straights, it accelerates and eventually reaches a speed plateau. As it approaches a corner, it decelerates before maintaining a lower, constant speed through the corner. Below the track, you can find a speed plot and an acceleration plot. Pause the car to see the acceleration estimated from the nearby speed values. You can also drag the plots horizontally to inspect another point in time.
 
 ```derivative-car
 ```
 
-We'll be representing derivatives using the $\partial$ symbol and a fraction, like this:
-
-For example,
+We'll represent partial derivatives using the $\partial$ symbol and a fraction. For example,
 
 $$
 \frac{\partial F}{\partial g}
@@ -584,7 +583,7 @@ $$
 
 In each line, the terms from the loss and the logistic function cancel in a way that leaves the simple prediction error, $\hat{y}_i-y_i$.
 
-Hurray, we found it! A way to know how the loss depends on the parameters! And these three functions, $\hat{y}_i-y_i$, $(\hat{y}_i-y_i)\cdot\text{dose}_i$, and $(\hat{y}_i-y_i)\cdot\text{age}_i$, are the partial derivatives of the loss with respect to each parameter. Together, they form the **gradient** - $\nabla L_i(a,b_1,b_2)$. We can write it like this:
+Hurray, we found it! A way to know how the loss depends on the parameters! And these three functions, $\hat{y}_i-y_i$, $(\hat{y}_i-y_i)\cdot\text{dose}_i$, and $(\hat{y}_i-y_i)\cdot\text{age}_i$, are the partial derivatives of the loss with respect to each parameter. Together, they form the **gradient**: $\nabla L_i(a,b_1,b_2)$. We can write it like this:
 
 $$
 \nabla L_i(a,b_1,b_2) = (
@@ -604,13 +603,13 @@ $$
 \nabla\bar{L}(a,b_1,b_2) = \frac{1}{N}\sum_{i=1}^{N}\nabla L_i(a,b_1,b_2)
 $$
 
-So, now that we know how the loss changes with the parameters, we can use this to change the parameters to minimize the loss!
+So, now that we know how the loss changes with the parameters, we can use this information to change the parameters and lower the loss!
 
-Let's look at $\frac{\partial L_i}{\partial b_1}$ for a second. It's the derivative of the loss with respect to the $b_1$ parameter. Its value is calculated via $(\hat{y}_i-y_i)\cdot\text{dose}_i$. If this derivative is positive, this means that increasing $b_1$ will increase the loss - so we'll want to subtract something to $b_1$. If this derivative is negative, that means that increasing $b_1$ will decrease the loss, so we want to add something to it. Now, how much should we add or subtract? Well, we can use the derivative itself.
+Let's look at $\frac{\partial \bar L}{\partial b_1}$ for a second: the derivative of the average loss with respect to $b_1$. We calculate it by averaging $(\hat{y}_i-y_i)\cdot\text{dose}_i$ across allall subjects. If this derivative is positive, increasing $b_1$ will increase the average loss, so we'll want to subtract from $b_1$. If it is negative, increasing $b_1$ will decrease the average loss, so we'll want to add to it. How much should we add or subtract? We can use a fraction of the derivative itself.
 
-If the derivative is positive, we want to subtract, so we can subtract a fraction of the derivative. So, new $b_1$ will be $b_1 - \eta \cdot (\hat{y}_i-y_i)\cdot\text{dose}_i$. If the derivative is negative, we want to add - and the previous equation also works, because subtracting a negative value will result in an addition. $\eta$ is a value that we define, and for that it is called a hyper-parameter - a parameter in a higher dimension, defined by us - it is called the **learning rate**. The name is because, by doing this, by changing the parameters in this way, we're reducing the loss, and so we're **learning**, we're discovering what good parameters look like, what good parameters define the data.
+The new value will be $b_1-\eta\cdot\frac{\partial\bar L}{\partial b_1}$. If the derivative is negative, the same equation still works because subtracting a negative value results in an addition. The value $\eta$ is the **learning rate**. It is a hyperparameter: a setting that we choose outside the parameter-fitting process. It controls how large each update is. By repeatedly changing the parameters in a direction that lowers the loss, we're **learning** what parameter values fit the data.
 
-We can do the same for all of the other parameters - essentially, we're subtracting the gradient. This is where the name comes from - **gradient descent**! Et voila, we've arrived, once again.
+We can do the same for all of the other parameters. Essentially, we're subtracting a scaled version of the gradient. This is where the name comes from: **gradient descent**! Et voilà, we've arrived once again.
 
 We can also see why this works mathematically. Let $\theta$ represent all three parameters together. For a small change $\Delta\theta$, the new loss is approximately:
 
@@ -650,7 +649,7 @@ subjects = [
     (2.0, 55, 0),  # Subject E
 ]
 ```
-These five subjects are the first five subjects from the earlier widget. In this case, it's dummy data, data that we've just made up, but, if we wanted to apply the logistic regression in the "real world", we would need real data. Note that we're importing $e$ and $ln$, as we'll be needing that later on.
+These five subjects are the first five subjects from the earlier widget. In this case, it's dummy data that we've just made up, but if we wanted to apply logistic regression in the real world, we would need real data. Note that we're importing the `exp` and `log` functions, as we'll need them later on.
 
 Next, here is the logistic regression equation:
 ```python
@@ -667,13 +666,13 @@ b1 = 0.0
 b2 = 0.0
 ```
 
-After that, we define our hyper-parameters:
+After that, we define our hyperparameters:
 ```python
 learning_rate = 0.001
 number_of_steps = 5_000
 ```
 
-And finally, the gradient descent loop. It's a loop since in each step we change the parameters a tiny bit to slowly but surely decrease the loss, so we'll have to do that step many times. Note that we're also calculating the loss at each step, and for safety, we're making sure that the prediction is not exactly 0 or 1, as that would lead to infinity when taking the logarithm of the prediction or of 1 minus the prediction.
+And finally, the gradient descent loop. In each step, we change the parameters by a small amount in an attempt to decrease the loss, so we'll repeat that update many times. Note that we're also calculating the loss at each step, and for safety, we're making sure that the prediction is not exactly 0 or 1, as that would lead to infinity when taking the logarithm of the prediction or of 1 minus the prediction.
 
 ```python
 for step in range(number_of_steps):
@@ -709,28 +708,28 @@ for step in range(number_of_steps):
         print(f"step={step}, average loss={average_loss:.4f}")
 ```
 
-Finally, we can print the parameters that we've found to fit the data:
+Finally, we can print the parameter values reached after 5,000 updates:
 ```python
 print(f"a={a:.3f}, b1={b1:.3f}, b2={b2:.3f}")
 ```
 
-We can use these parameters to predict the labels for other subjects, assuming it's real world data!
+With real-world data, we could use these parameters to predict probabilities for new subjects. We could then convert those probabilities into labels using a chosen threshold or another decision rule (a simple method could be setting a threshold of 0.5 - any predicted values above 0.5 would get the label 1).
 
 Ok, code is cheap, show me the interactive widget that really drives the take home point:
 
 ```gradient-descent-experiment
 ```
 
-If you play around with the learning rate, you'll find that the loss can get very jumpy, and it looks like we're going nowhere. That's something that can happen! Picking a good learning rate is important, and that can sometimes be a bit of an art. The idea is that a good enough learning rate will lead us to a loss minimum - and having a very large learning rate can lead to us overshooting the minimum.
+If you play around with the learning rate, you'll find that the loss can get very jumpy, and it may look like we're going nowhere. That's something that can happen! Picking a good learning rate is important, and that can sometimes be a bit of an art. A good enough learning rate moves us towards lower loss, while a very large one can repeatedly overshoot.
 
-If you let it run with the default values, you'll see the loss slowly decreasing - that's gradient descent in action, carrying out logistic regression, fitting the parameters to the data! Bam!
+If you let it run with the default values, you'll see the loss slowly decreasing. That's gradient descent in action, carrying out logistic regression and fitting the parameters to the data! Bam!
 
-We've mostly focused on the drug example, learning whether or not a subject responds based on the dosage and their age - these aspects, dosage and age, are often called "features". They're the information that we have that will let us fit a logistic regression model. And we've used the word subjects, but the more general term is samples.
+We've mostly focused on the drug example, learning whether or not a subject responds based on the dosage and their age. These pieces of information, dosage and age, are often called "features." They're the information that we have that will let us fit a logistic regression model. And we've used the word subjects, but the more general term is samples.
 
-So, you can have samples, each sample having N features, and each sample having a label, and you can try to apply logistic regression to that data - doesn't matter the field or the goal (assuming that the labels are binary!).
+So, you can have samples, each sample having $N$ features and a label, and try to apply logistic regression to that data.
 
-A small caveat, people mostly use the wording "bias" for the parameter that isn't attached to any feature, and they'll use the letter $b$, instead of $a$. Also, parameters attached to features are mostly called "weights", and you'll often find them represented as $w$, so $w_1$ instead of $b_1$.
+A small terminology caveat: people mostly use the word "bias" for the parameter that isn't attached to any feature, and they'll often use the letter $b$ instead of $a$. Also, parameters attached to features are mostly called "weights", and you'll often find them represented as $w$, so $w_1$ instead of $b_1$.
 
 I think the coolest thing is that this is at the core of modern AI. Frontier LLMs can have billions or even trillions of parameters, all laid out in a specific way (an architecture), but the fundamental idea that is used to find what those parameters should be is the same as the one in this post - gradient descent! Ok, so it's not *exactly* gradient descent, but it's the same idea. :)
 
-I hope you've enjoyed this post, and drop me an e-mail if you have any feedback. So, down with the gradient, and happy fitting!
+I hope you've enjoyed this post, and drop me an email if you have any feedback. So, down with the gradient, and happy fitting!
