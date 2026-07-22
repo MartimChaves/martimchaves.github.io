@@ -375,7 +375,7 @@ Error generating stack: `+k.message+`
  *
  * @license MIT
  */function jx(){return jx=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e},jx.apply(this,arguments)}function ste(e,t){if(e==null)return{};var n={},r=Object.keys(e),a,i;for(i=0;i<r.length;i++)a=r[i],!(t.indexOf(a)>=0)&&(n[a]=e[a]);return n}function lte(e){return!!(e.metaKey||e.altKey||e.ctrlKey||e.shiftKey)}function ute(e,t){return e.button===0&&(!t||t==="_self")&&!lte(e)}const cte=["onClick","relative","reloadDocument","replace","state","target","to","preventScrollReset","viewTransition"],dte="6";try{window.__reactRouterVersion=dte}catch{}const pte="startTransition",bA=tx[pte];function hte(e){let{basename:t,children:n,future:r,window:a}=e,i=F.useRef();i.current==null&&(i.current=hee({window:a,v5Compat:!0}));let s=i.current,[u,c]=F.useState({action:s.action,location:s.location}),{v7_startTransition:d}=r||{},h=F.useCallback(f=>{d&&bA?bA(()=>c(f)):c(f)},[c,d]);return F.useLayoutEffect(()=>s.listen(h),[s,h]),F.useEffect(()=>ate(r),[r]),F.createElement(ite,{basename:t,children:n,location:u.location,navigationType:u.action,navigator:s,future:r})}const fte=typeof window<"u"&&typeof window.document<"u"&&typeof window.document.createElement<"u",mte=/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i,xs=F.forwardRef(function(t,n){let{onClick:r,relative:a,reloadDocument:i,replace:s,state:u,target:c,to:d,preventScrollReset:h,viewTransition:f}=t,g=ste(t,cte),{basename:b}=F.useContext(As),w,x=!1;if(typeof d=="string"&&mte.test(d)&&(w=d,fte))try{let C=new URL(window.location.href),O=d.startsWith("//")?new URL(C.protocol+d):new URL(d),I=Fk(O.pathname,b);O.origin===C.origin&&I!=null?d=I+O.search+O.hash:x=!0}catch{}let E=jee(d,{relative:a}),_=gte(d,{replace:s,state:u,target:c,preventScrollReset:h,relative:a,viewTransition:f});function T(C){r&&r(C),C.defaultPrevented||_(C)}return F.createElement("a",jx({},g,{href:w||E,onClick:x||i?r:T,ref:n,target:c}))});var yA;(function(e){e.UseScrollRestoration="useScrollRestoration",e.UseSubmit="useSubmit",e.UseSubmitFetcher="useSubmitFetcher",e.UseFetcher="useFetcher",e.useViewTransitionState="useViewTransitionState"})(yA||(yA={}));var vA;(function(e){e.UseFetcher="useFetcher",e.UseFetchers="useFetchers",e.UseScrollRestoration="useScrollRestoration"})(vA||(vA={}));function gte(e,t){let{target:n,replace:r,state:a,preventScrollReset:i,relative:s,viewTransition:u}=t===void 0?{}:t,c=Uee(),d=kd(),h=G9(e,{relative:s});return F.useCallback(f=>{if(ute(f,n)){f.preventDefault();let g=r!==void 0?r:Yh(d)===Yh(h);c(e,{replace:g,state:a,preventScrollReset:i,relative:s,viewTransition:u})}},[d,c,h,r,a,n,e,i,s,u])}function bte(){return v.jsxs("svg",{width:"16",height:"16",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round",children:[v.jsx("circle",{cx:"12",cy:"12",r:"5"}),v.jsx("line",{x1:"12",y1:"1",x2:"12",y2:"3"}),v.jsx("line",{x1:"12",y1:"21",x2:"12",y2:"23"}),v.jsx("line",{x1:"4.22",y1:"4.22",x2:"5.64",y2:"5.64"}),v.jsx("line",{x1:"18.36",y1:"18.36",x2:"19.78",y2:"19.78"}),v.jsx("line",{x1:"1",y1:"12",x2:"3",y2:"12"}),v.jsx("line",{x1:"21",y1:"12",x2:"23",y2:"12"}),v.jsx("line",{x1:"4.22",y1:"19.78",x2:"5.64",y2:"18.36"}),v.jsx("line",{x1:"18.36",y1:"5.64",x2:"19.78",y2:"4.22"})]})}function yte(){return v.jsx("svg",{width:"16",height:"16",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round",children:v.jsx("path",{d:"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"})})}function vte(){const e=kd(),{colorMode:t,toggleColorMode:n}=md(),r=t==="dark",a=(i,s)=>{const u=e.hash===`#${i}`||i==="/"&&e.hash==="";return v.jsx(ar,{as:xs,to:i,fontSize:"sm",fontWeight:"500",color:u?"page.text":"page.textSecondary",textDecoration:"none",letterSpacing:"0.01em",_hover:{color:"page.text",textDecoration:"none"},children:s})};return v.jsx(ve,{as:"header",borderBottom:"1px solid",borderColor:"page.border",bg:"page.bg",children:v.jsxs(ot,{maxW:"760px",mx:"auto",px:{base:5,md:8},py:4,justify:"space-between",align:"center",children:[v.jsxs(ar,{as:xs,to:"/",textDecoration:"none",_hover:{textDecoration:"none"},children:[v.jsx(fe,{fontWeight:"700",fontSize:"md",color:"page.text",letterSpacing:"-0.01em",children:"Martim Chaves"}),v.jsx(fe,{fontSize:"xs",color:"page.textSecondary",fontWeight:"400",children:"AI Engineer & Consultant"})]}),v.jsxs(ot,{align:"center",gap:6,children:[v.jsxs(ve,{as:"nav",display:"flex",gap:6,children:[a("/","Home"),a("/blog","Writing")]}),v.jsx(w9,{"aria-label":r?"Switch to light mode":"Switch to dark mode",icon:r?v.jsx(bte,{}):v.jsx(yte,{}),onClick:n,variant:"ghost",size:"sm",color:"page.textSecondary",_hover:{color:"page.text",bg:"page.surface"}})]})]})})}function wte(){return v.jsx(ve,{as:"footer",mt:20,py:8,borderTop:"1px solid",borderColor:"page.border",children:v.jsxs(ot,{maxW:"760px",mx:"auto",px:{base:5,md:8},justify:"space-between",align:"center",flexWrap:"wrap",gap:3,children:[v.jsxs(fe,{fontSize:"sm",color:"page.textSecondary",children:["© ",new Date().getFullYear()," Martim Chaves"]}),v.jsxs(ot,{gap:5,children:[v.jsx(ar,{href:"https://github.com/MartimChaves",isExternal:!0,fontSize:"sm",color:"page.textSecondary",_hover:{color:"page.text"},children:"GitHub"}),v.jsx(ar,{href:"mailto:martim.chaves@pm.me",fontSize:"sm",color:"page.textSecondary",_hover:{color:"page.text"},children:"Email"})]})]})})}function Ste({children:e}){return v.jsxs(ve,{minH:"100vh",display:"flex",flexDirection:"column",bg:"page.bg",children:[v.jsx(vte,{}),v.jsx(ve,{as:"main",flex:"1",maxW:"760px",mx:"auto",px:{base:5,md:8},w:"100%",pt:12,pb:8,children:e}),v.jsx(wte,{})]})}const xte=`---
-title: "Reinventing Logistic Regression"
+title: "Down with the gradient! Reinventing Logistic Regression"
 date: "2026-07-22"
 description: "From 19th-century population modeling to gradient descent"
 draft: false
@@ -425,7 +425,7 @@ At the same time, a revolution in medicine was happening. For a long time, there
 
 Researchers were giving different doses of a drug to lab subjects and seeing whether or not each one responded. Individually, the outcome was binary: the treatment either worked or it didn't. Across a population, however, something interesting emerged. At very low doses, almost none of the subjects responded. At very high doses, almost all of them did. In between, the **fraction** of subjects that responded steadily increased with the dose. Sound familiar? Researchers were once again looking at an S-shaped curve, one that could describe the relationship between a dose and the fraction, or estimated probability, of individuals responding.
 
-So we're in the 1920s and 1930s, and we need an S-curve to describe the impact of a dose of a certain drug. Researchers wanted to compare different drugs, see how they affected people differently, determine the right dose, and decide which one was best, which one had fewer side effects, for example. They wanted to model the data with a function: a function that could convert a dose into a probability of response.
+So we're in the 1920s and 1930s, and we need an S-curve to describe the impact of a dose of a certain drug. Researchers wanted to compare different drugs, see how they affected people differently, determine the right dose, and decide which one was best. For example, which one had fewer side effects. They wanted to model the data with a function: a function that could convert a dose into a probability of response.
 
 Now, a caveat: researchers experimented with several different functions. "Probit models" were already prominent, and they never disappeared. The logistic function was proposed for a study on the potency of a drug in the 1940s and eventually became one of the most widely used ways to convert a score into a probability.
 
@@ -435,7 +435,7 @@ $$
 p = \\frac{1}{1 + e^{-d}}
 $$
 
-Now, what if we want to go *backwards*? That is, what value of dose gives us a certain probability of success? Applying the inverse gives us:
+Now, what if we want to go *backwards*? That is, what dose gives us a certain probability of success? Applying the inverse gives us:
 
 $$
 d = \\ln\\!\\left(\\frac{p}{1-p}\\right)
@@ -541,17 +541,17 @@ In simple terms, when stating the odds of something, we're saying how often we'l
 
 There is one annoying thing about odds, though: they're not symmetrical. If winning is twice as likely as losing, then the odds are $2:1$. If it is half as likely as losing, the odds are $0.5:1$. If winning is just as likely as losing, then the odds are $1:1$. Twice as likely or half as likely feel like they should be equidistant from $1$, but they aren't. Plus, odds can go from $0$ to $\\infty$: an unlikely win is "crammed" into the space between $0$ and $1$, while the odds of a likely win can range from $1$ to $\\infty$.
 
-A way to "solve" this is by taking the log of the odds. The log of the space between $0$ and $1$ is as "large" as the log of the space between $1$ and $\\infty$. And, it's also symmetrical around the value $1$: $\\ln(0.5) \\approx -0.69$ and $\\ln(2) \\approx 0.69$. Now we get symmetry.
+A way to "solve" this is by taking the log of the odds. The log of the space between $0$ and $1$ is as "large" as the log of the space between $1$ and $\\infty$. And reciprocal odds become symmetrical around the value $0$: $\\ln(0.5) \\approx -0.69$ and $\\ln(2) \\approx 0.69$. Now we get symmetry.
 
 \`\`\`\`
 
-At the time, and even today, researchers had an intuition for what log-odds mean and how to compare two log-odds values. In the same way that you and I have an intuitive idea of what 1.5 meters means, or 5 feet if you're used to imperial units, researchers had an intuition for the log-odds scale.
+At the time, researchers had an intuition for what log-odds meant and how to compare two log-odds values, and they still do today. In the same way that you and I have an intuitive idea of what 1.5 meters means, or 5 feet if you're used to imperial units, researchers had an intuition for the log-odds scale.
 
 For example, consider drug A and drug B. At a dose of 2 milligrams, suppose drug A has log-odds of response equal to 1.7, while drug B has log-odds of response equal to 2.5. Log-odds of 0 correspond to $1:1$, or even odds. Increasing the log-odds by one multiplies the odds by $e$, which is around 2.7. Here, the difference is 0.8, so the odds of a response with drug B are $e^{0.8} \\approx 2.23$ times the odds with drug A at the same dose. This allows us to compare the odds of response between the two drugs.
 
 That familiarity was useful, but something else mattered as well: instead of working directly with probability data, researchers could apply the log-odds transformation. This meant that they could model the relationship between probability (viewed as log of odds) and dosage in a linear way!
 
-At this point, we have to make a slight correction. Our simplified equation, $d = \\text{p}$, assumes the same characteristics for each drug. To describe different drugs and dose-response relationships, we need to add parameters. So, really, we're dealing with $\\alpha + \\beta d$.
+At this point, we have to make a slight correction. Our simplified equation has no parameters, so it assumes the same characteristics for each drug. To describe different drugs and dose-response relationships, we need to add parameters. So, really, instead of just $d$, we're dealing with $\\alpha + \\beta d$.
 
 So, summarizing, we're looking at:
 $$
@@ -589,20 +589,21 @@ It's the same data! And we're still capturing the relationship between the dose 
 
 ### From the logistic function to logistic regression
 
-When the 1940s came around, researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age. This meant that the equation would have more terms.
+Researchers wanted to know the probability of getting a response to a certain dosage with more accuracy, and for that they looked at other relevant variables, such as the patient's age. This meant that the equation would have more terms.
 
 This leads to one key difference: now we have more variables, so making groups gets tricky. Before, we could aggregate around dosages (2 mg, 2.5 mg, 3 mg, ...), but each subject is a unique combination of dose and age. We're better off using the individual data points instead of aggregating them. For each individual, the observed response is binary: did they respond or not? We'll use $y$ for this observed response. If the subject responded, we'll consider $y=1$; otherwise, we'll consider $y=0$.
 
 So, now, we get something like this:
 
 $$
-y = \\frac{1}{1 + e^{-(a + b_1 \\cdot \\text{dose} + b_2 \\cdot \\text{age})}}
+\\hat{y} = \\frac{1}{1 + e^{-(a + b_1 \\cdot \\text{dose} + b_2 \\cdot \\text{age})}}
 $$
 
+You might have noticed that we're using $\\hat{y}$ instead of just $y$ - this will make sense later on.
 
 Reminder: we **have** the fundamental data. That is, we know the observed value of $y$ for each measured dose and age. What we need to find are $a$, $b_1$, and $b_2$. For this particular model and dataset, these three parameters summarize how the drug's predicted response relates to dose and age.
 
-This isn't really something that we can do with a ruler and pencil anymore. But, lucky for us, there are other ways to get these parameters. Figuring them out is what we call "fitting the parameters to the data", or in other words, **regression**. And since we're using the logistic function, this is called **logistic regression**. We have arrived!
+This isn't really something that we can do with a ruler and pencil anymore. But, lucky for us, there are other ways to get these parameters. Figuring them out is what we call "fitting the parameters to the data," or in other words, **regression**. And since we're using the logistic function, this is called **logistic regression**. We have arrived!
 
 But how exactly do we fit these parameters?
 
@@ -614,11 +615,11 @@ So, for a certain subject with a specific dose and age, we **know** what $y$ is;
 
 Now, what we're trying to do is **find** the parameters $a$, $b_1$, and $b_2$. This way, we can build a function that matches and **describes** the real-world data. From there, we can use the parameters to summarize the relationship and compare it with relationships for other drugs. To get fancy, we can "model" the drug.
 
-To get started, we actually assign random values to the parameters. Then, we can calculate a "temporary $y$" for each data point - we'll use $\\hat{y}$ to represent that value. This $\\hat{y}$ is going to be different from the real value, because we're using random parameters. So, now we have two different "$y$s": the real expected value, the one we got from real data - $y$ - and the value that we get from our function with randomly initialized parameters - $\\hat{y}$. To distinguish between these two, we'll be using the term "label" for the real value $y$, and we'll be using the term "prediction" for the value that we get from our function, $\\hat{y}$. We use "label" as in the true label, the real value. We use prediction because, later on, we'll use the function with the appropriate parameters (parameters that fit the data), to predict values for data points with doses and ages that we haven't measured yet.
+To get started, we actually assign random values to the parameters. Then, we can calculate a "temporary $y$" for each data point - we'll use $\\hat{y}$ to represent that value. This $\\hat{y}$ is going to be different from the real value, because we're using random parameters. So, now we have two different "$y$s": the real observed value, the one we got from real data - $y$ - and the value that we get from our function with randomly initialized parameters - $\\hat{y}$. To distinguish between these two, we'll be using the term "label" for the real value $y$, and we'll be using the term "prediction" for the value that we get from our function, $\\hat{y}$. We use "label" as in the true label, the real value. We use prediction because, later on, we'll use the function with the appropriate parameters (parameters that fit the data) to predict values for data points with doses and ages that we haven't measured yet.
 
-Loss is a word we use to mean **difference** - the difference between the label and the prediction. The smaller the difference, the better! The smaller the difference, the more accurate our function is, which is what we want. The simplest loss function is just: $L = y - \\hat{y}$. That's it. But the thing with that loss function, is that it can be negative. This is a problem if we're averaging out the losses for different subjects, because then positive and negative losses can cancel each other out, giving us an overall false sense of accuracy.
+Loss is a word we use to mean **error** - how wrong the prediction is compared with the label. The smaller the error, the better! The smaller the error, the more accurate our function is, which is what we want. The simplest thing we could try is the signed difference: $y - \\hat{y}$. That's it. But the thing with that signed difference is that it can be negative. This is a problem if we're averaging out the losses for different subjects, because then positive and negative losses can cancel each other out, giving us an overall false sense of accuracy.
 
-So, we can ask ourselves, what would be a good loss function that would work with logistic regression? A good way to think about this is by asking how big the loss should be?
+So, we can ask ourselves: what would be a good loss function that would work with logistic regression? A good way to think about this is by asking how big the loss should be?
 
 Say that a subject responded, so $y=1$. If our prediction is $\\hat{y}=0.9$, then the loss should be small. If our prediction is $\\hat{y}=0.1$, then the loss should be big. If our prediction is $\\hat{y}=0.01$, then the loss should be really big, and ideally much larger than the loss when $\\hat{y}=0.1$ - because this way, we're punishing very confident errors.
 
@@ -634,7 +635,7 @@ $$
 
 Note that the label determines what gets used: if $y=1$, then $(1-y)=0$, so only the first term is used; if $y=0$, then $(1-y)=1$, so only the second term is used.
 
-By the way, this is called the cross-entropy loss. This comes from information theory, and honestly we would be going down a rabbit hole to understand why it's called that. But now that we reinvented loss functions, more specifically the cross-entropy loss function, we can move on to the next key step, which is **gradient descent**.
+By the way, this is called the cross-entropy loss. This comes from information theory, and honestly we would be going down a rabbit hole to understand why it's called that. But now that we've reinvented loss functions, more specifically the cross-entropy loss function, we can move on to the next key step, which is **gradient descent**.
 
 #### Down with the gradient!
 
@@ -647,16 +648,16 @@ Let's check out an example. Below you'll find a widget that lets you tune the pa
 \`\`\`parameter-tuner
 \`\`\`
 
-How did it go? Since it's just three parameters, you might've actually ended up cracking it - if so, nice! But I hope I got the point across, that choosing parameters *ad hoc*, fitting subjects one by one, is probably not going to work. Real-world data ends up being more complex, and often the number of parameters is much larger than three. You might want to include things such as weight, height, and many more, with an additional parameters for each one.
+How did it go? Since it's just three parameters, you might've actually ended up cracking it - if so, nice! But I hope I got the point across that choosing parameters *ad hoc*, fitting subjects one by one, is probably not going to work. Real-world data ends up being more complex, and often the number of parameters is much larger than three. You might want to include things such as weight, height, and many more, with an additional parameter for each one.
 
 You might've tried to do small nudges, instead of changing all of the parameters for each subject. Say, find something that works for a subject, and then for other subjects do small alterations. That's a good principle! Ideally, though, it would be nice to know *how* to change the parameters, in which direction... So, what if we try to find a way to relate the loss to the parameters, so that we can nudge the parameters in a good direction? Say, a function where the loss depends on the parameters.
 
-Well, we can do that! Remember that $L$ depends on $\\hat{y}$. And, $\\hat{y}$ depends on the parameters. So, we **can** write $L$ as a function of the parameters. So this means that we can relate the parameters to the loss, and we can then understand how the loss changes according to the parameters. If we understand how that happens, we can look for the direction that produces the largest change in the loss - that's the derivative!
+Well, we can do that! Remember that $L$ depends on $\\hat{y}$. And $\\hat{y}$ depends on the parameters. So, we **can** write $L$ as a function of the parameters. So this means that we can relate the parameters to the loss, and we can then understand how the loss changes according to the parameters. If we understand how that happens, derivatives can tell us which way to change each parameter!
 
 \`\`\`\`tangent
 How can we relate the parameters to the loss?
 
-This tangent provides analytical proof that we can write a function where the loss depends on the parameters. It's a bit verbose! It's only really worth it if you want to be more confident, or would like more proof.
+This tangent provides analytical proof that we can write a function where the loss depends on the parameters. It's a bit verbose! It's only really worth it if you want to be more confident or would like more proof.
 
 For a given subject $i$, the dose, age, and label are fixed values. The things we are changing are $a$, $b_1$, and $b_2$.
 
@@ -672,7 +673,7 @@ $$
 \\sigma(z) = \\frac{1}{1+e^{-z}}
 $$
 
-This is only a shorthand for the same logistic function we've been using, it isn't a new function. For subject $i$, the prediction is therefore:
+This is only a shorthand for the same logistic function we've been using; it isn't a new function. For subject $i$, the prediction is therefore:
 
 $$
 \\hat{y}_i(a,b_1,b_2) = \\sigma\\left(z_i(a,b_1,b_2)\\right)
@@ -700,7 +701,7 @@ So there we have it, how the loss depends on the parameters.
 
 \`\`\`\`
 
-To calculate the derivative of the loss with respect to the parameters, a good way to do that is using the **chain rule**:
+To calculate the derivative of the loss with respect to the parameters, we can use the **chain rule**:
 
 $$
 \\frac{\\partial L_i}{\\partial \\theta}
@@ -721,18 +722,18 @@ That's what the chain rule says: the derivative of $F$ with respect to $\\theta$
 \`\`\`\`tangent
 Hold on, what is a derivative?
 
-Derivative means change, more specifically "how much change". For example, a speed of 100 kilometers per hour (or 60 miles per hour) is a derivative, a derivative of distance with respect to time - it tells you how much distance is being covered in a measure of time. Specifically, 100 kilometers are being covered every hour.
+Derivative means change, more specifically "how much change." For example, a speed of 100 kilometers per hour (or 60 miles per hour) is a derivative: the derivative of distance with respect to time. It tells you how much distance is being covered in a measure of time. Specifically, 100 kilometers are being covered every hour.
 
 So, a derivative measures how much one value changes when another value changes. To be precise, it measures how much one value changes when another value changes by a *very small amount*. In the previous example, we would actually measure the derivative by looking at how much distance was covered in a second, or less... From there, if we wanted, we could convert it to a standard that we're familiar with, like kilometers per hour.
 
-Why are we only interested in measuring that change when the change is very small? Because that gives us the **instantaneous rate of change** at that particular point. Going back to the car example, if you're standing still, and there's a very long straight, and then you fully press on the gas - in the beggining the speed of the car will change very fast, but as time goes on, the speed will increase more and more slowly, until it reaches a plateau - that's the acceleration, the derivative of the speed with respect to time. In the beginning, the acceleration is large, as the speed increases very fast. But, when the speed plateaus, the acceleration is zero, since the speed doesn't change. So the derivative of the speed with respect to time, which we casually call the acceleration, has a different value dependinding on for how long we've started steping on the gas. The derivative at any given moment tells us the rate of change at that exact moment, not the average change over a longer period of time - which is why when we measure it, we want to measure it in the smallest amount of unit possible!
+Why are we only interested in measuring that change when the change is very small? Because that gives us the **instantaneous rate of change** at that particular point. Going back to the car example, if you're standing still and there's a very long straight, and then you fully press on the gas, in the beginning the speed of the car will change very fast. But as time goes on, the speed will increase more and more slowly until it reaches a plateau. That's the acceleration, the derivative of the speed with respect to time. In the beginning, the acceleration is large, as the speed increases very fast. But when the speed plateaus, the acceleration is zero, since the speed doesn't change. So the derivative of the speed with respect to time, which we casually call the acceleration, has a different value depending on how long we've been stepping on the gas. The derivative at any given moment tells us the rate of change at that exact moment, not the average change over a longer period of time - which is why, when we measure it, we want to use the smallest interval possible!
 
 Note that this example contains two derivatives: the derivative of distance with respect to time, which is speed, and the derivative of speed with respect to time, which is acceleration. Even though they're related, they're two different things! The widget below illustrates this with a car racing on a track. On the long straights, it accelerates and eventually reaches a speed plateau. As it approaches a corner, it decelerates before maintaining a lower, constant speed through the corner. Below the track, you can find a speed plot and an acceleration plot. Pause the car to see the acceleration estimated from the nearby speed values. You can also drag the plots horizontally to inspect another point in time.
 
 \`\`\`derivative-car
 \`\`\`
 
-We'll represent partial derivatives using the $\\partial$ symbol and a fraction. For example,
+We'll represent partial derivatives using the $\\partial$ symbol and a fraction. For example:
 
 $$
 \\frac{\\partial F}{\\partial g}
@@ -922,9 +923,9 @@ $$
 = \\frac{e^{-x}}{(1+e^{-x})^2}
 $$
 
-I'm not going to lie, this one is a bit tricky to explain, and we'd be going down a rabbit hole explaining why that is. If you want to understand this, you can start with [this video](https://www.youtube.com/watch?v=5HzVMZKk9pk).
+I'm not going to lie: this one is a bit tricky to explain, and we'd be going down a rabbit hole explaining why that is. If you want to understand this, you can start with [this video](https://www.youtube.com/watch?v=5HzVMZKk9pk).
 
-The nifty thing is that final expression, $\\frac{e^{-x}}{(1+e^{-x})^2}$, is actually the same as $\\hat{y}_i(1-\\hat{y}_i)$:
+The nifty thing is that the final expression, $\\frac{e^{-x}}{(1+e^{-x})^2}$, is actually the same as $\\hat{y}_i(1-\\hat{y}_i)$:
 
 $$
 \\hat{y}_i(1-\\hat{y}_i)
@@ -981,7 +982,7 @@ $$
 
 So, now that we know how the loss changes with the parameters, we can use this information to change the parameters and lower the loss!
 
-Let's look at $\\frac{\\partial \\bar L}{\\partial b_1}$ for a second: the derivative of the average loss with respect to $b_1$. We calculate it by averaging $(\\hat{y}_i-y_i)\\cdot\\text{dose}_i$ across allall subjects. If this derivative is positive, increasing $b_1$ will increase the average loss, so we'll want to subtract from $b_1$. If it is negative, increasing $b_1$ will decrease the average loss, so we'll want to add to it. How much should we add or subtract? We can use a fraction of the derivative itself.
+Let's look at $\\frac{\\partial \\bar L}{\\partial b_1}$ for a second: the derivative of the average loss with respect to $b_1$. We calculate it by averaging $(\\hat{y}_i-y_i)\\cdot\\text{dose}_i$ across all subjects. If this derivative is positive, increasing $b_1$ will increase the average loss, so we'll want to subtract from $b_1$. If it is negative, increasing $b_1$ will decrease the average loss, so we'll want to add to it. How much should we add or subtract? We can use a fraction of the derivative itself.
 
 The new value will be $b_1-\\eta\\cdot\\frac{\\partial\\bar L}{\\partial b_1}$. If the derivative is negative, the same equation still works because subtracting a negative value results in an addition. The value $\\eta$ is the **learning rate**. It is a hyperparameter: a setting that we choose outside the parameter-fitting process. It controls how large each update is. By repeatedly changing the parameters in a direction that lowers the loss, we're **learning** what parameter values fit the data.
 
@@ -1009,7 +1010,7 @@ $$
 \\bar L(\\theta)-\\eta\\left\\|\\nabla\\bar L(\\theta)\\right\\|^2.
 $$
 
-The squared magnitude of the gradient cannot be negative. Therefore, this adjustment reduces the loss. Worst case scenario, it leaves it unchanged if the gradient is zero.
+The squared magnitude of the gradient cannot be negative. Therefore, for a sufficiently small learning rate, this adjustment reduces the loss. In the worst-case scenario, it leaves it unchanged if the gradient is zero.
 
 Here is the complete process in plain Python. Let's start with the data:
 
@@ -1089,9 +1090,9 @@ Finally, we can print the parameter values reached after 5,000 updates:
 print(f"a={a:.3f}, b1={b1:.3f}, b2={b2:.3f}")
 \`\`\`
 
-With real-world data, we could use these parameters to predict probabilities for new subjects. We could then convert those probabilities into labels using a chosen threshold or another decision rule (a simple method could be setting a threshold of 0.5 - any predicted values above 0.5 would get the label 1).
+With real-world data, we could use these parameters to predict probabilities for new subjects. We could then convert those probabilities into labels using a chosen threshold or another decision rule (a simple method could be setting a threshold of 0.5: any predicted values above 0.5 would get the label 1).
 
-Ok, code is cheap, show me the interactive widget that really drives the take home point:
+Ok, code is cheap, show me the interactive widget that really drives the take-home point:
 
 \`\`\`gradient-descent-experiment
 \`\`\`
@@ -1104,7 +1105,7 @@ We've mostly focused on the drug example, learning whether or not a subject resp
 
 So, you can have samples, each sample having $N$ features and a label, and try to apply logistic regression to that data.
 
-A small terminology caveat: people mostly use the word "bias" for the parameter that isn't attached to any feature, and they'll often use the letter $b$ instead of $a$. Also, parameters attached to features are mostly called "weights", and you'll often find them represented as $w$, so $w_1$ instead of $b_1$.
+A small terminology caveat: people mostly use the word "bias" for the parameter that isn't attached to any feature, and they'll often use the letter $b$ instead of $a$. Also, parameters attached to features are mostly called "weights," and you'll often find them represented as $w$, so $w_1$ instead of $b_1$.
 
 I think the coolest thing is that this is at the core of modern AI. Frontier LLMs can have billions or even trillions of parameters, all laid out in a specific way (an architecture), but the fundamental idea that is used to find what those parameters should be is the same as the one in this post - gradient descent! Ok, so it's not *exactly* gradient descent, but it's the same idea. :)
 
