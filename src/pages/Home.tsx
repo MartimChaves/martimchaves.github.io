@@ -127,6 +127,15 @@ export default function Home() {
               tech: ['FastAPI', 'React', 'TypeScript', 'Anthropic Claude', 'PostgreSQL', 'Celery', 'Stripe'],
               links: [],
             },
+            {
+              name: 'urge surfer',
+              description: 'A local-first, open-source web app that turns impulsive urges into a meditative pause. Users name and rate an urge, slowly trace self-compassion phrases in cursive, then rate it again and log the wave.',
+              tech: ['JavaScript', 'HTML', 'CSS', 'Canvas API', 'Caddy', 'Docker'],
+              links: [
+                { label: 'Live', href: 'https://urgesurfer.surf' },
+                { label: 'GitHub', href: 'https://github.com/MartimChaves/urge-surfer' },
+              ],
+            },
           ].map((project) => (
             <Box
               key={project.name}
