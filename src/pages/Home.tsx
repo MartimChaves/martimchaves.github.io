@@ -128,6 +128,12 @@ export default function Home() {
               links: [],
             },
             {
+              name: 'casa-a-mostra',
+              description: 'A WhatsApp demo for real estate agencies. It asks leads what they need in English or Portuguese and searches a sample property list. Leads can book a viewing, and the agent receives a summary.',
+              tech: ['Python', 'FastAPI', 'Anthropic Claude', 'Twilio', 'SQLModel', 'SQLite', 'Docker'],
+              links: [],
+            },
+            {
               name: 'urge surfer',
               description: 'A local-first, open-source web app that turns impulsive urges into a meditative pause. Users name and rate an urge, slowly trace self-compassion phrases in cursive, then rate it again and log the wave.',
               tech: ['JavaScript', 'HTML', 'CSS', 'Canvas API', 'Caddy', 'Docker'],
