@@ -119,13 +119,13 @@ export default function Home() {
               name: 'ragbandit',
               description: 'A full-stack web app for building and managing document processing pipelines. Includes an interactive pipeline builder, dataset management, semantic search, and a REST API for programmatic access.',
               tech: ['FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'pgvector', 'Celery', 'Redis', 'Docker'],
-              links: [],
+              links: [{ label: 'Live', href: 'https://ragbandit.com' }],
             },
             {
               name: 'smol invoice agent',
               description: 'An AI agent that processes PDF invoices using Claude. Extracts and validates invoice data, normalizes vendor names, categorizes line items, detects anomalies, and learns from user corrections over time. Exposes a REST API for programmatic access.',
               tech: ['FastAPI', 'React', 'TypeScript', 'Anthropic Claude', 'PostgreSQL', 'Celery', 'Stripe'],
-              links: [],
+              links: [{ label: 'Live', href: 'https://smolinvoiceagent.com' }],
             },
             {
               name: 'casa-a-mostra',
